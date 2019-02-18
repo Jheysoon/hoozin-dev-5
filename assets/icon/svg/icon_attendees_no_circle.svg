@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37.568 21">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #bce0fd;
+      }
+
+      .cls-2 {
+        fill: #7fc4fd;
+      }
+
+      .cls-3 {
+        fill: #2699fb;
+      }
+    </style>
+  </defs>
+  <g id="Group_1301" data-name="Group 1301" transform="translate(-330 -115)">
+    <g id="Group_1027" data-name="Group 1027" transform="translate(346 115)">
+      <path id="Rectangle_31" data-name="Rectangle 31" class="cls-1" d="M8.173,0h5.222a8.173,8.173,0,0,1,8.173,8.173v0a2.043,2.043,0,0,1-2.043,2.043H2.043A2.043,2.043,0,0,1,0,8.173v0A8.173,8.173,0,0,1,8.173,0Z" transform="translate(0 10.784)"/>
+      <circle id="Ellipse_14" data-name="Ellipse 14" class="cls-1" cx="5.676" cy="5.676" r="5.676" transform="translate(5.108)"/>
+    </g>
+    <g id="Group_1029" data-name="Group 1029" transform="translate(338 115)">
+      <path id="Rectangle_31-2" data-name="Rectangle 31" class="cls-2" d="M8.173,0h5.222a8.173,8.173,0,0,1,8.173,8.173v0a2.043,2.043,0,0,1-2.043,2.043H2.043A2.043,2.043,0,0,1,0,8.173v0A8.173,8.173,0,0,1,8.173,0Z" transform="translate(0 10.784)"/>
+      <circle id="Ellipse_14-2" data-name="Ellipse 14" class="cls-2" cx="5.676" cy="5.676" r="5.676" transform="translate(5.108)"/>
+    </g>
+    <g id="Group_1030" data-name="Group 1030" transform="translate(330 115)">
+      <path id="Rectangle_31-3" data-name="Rectangle 31" class="cls-3" d="M8.173,0h5.222a8.173,8.173,0,0,1,8.173,8.173v0a2.043,2.043,0,0,1-2.043,2.043H2.043A2.043,2.043,0,0,1,0,8.173v0A8.173,8.173,0,0,1,8.173,0Z" transform="translate(0 10.784)"/>
+      <circle id="Ellipse_14-3" data-name="Ellipse 14" class="cls-3" cx="5.676" cy="5.676" r="5.676" transform="translate(5.108)"/>
+    </g>
+  </g>
+</svg>

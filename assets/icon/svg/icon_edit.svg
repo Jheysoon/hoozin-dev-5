@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2699fb;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-4 {
+        filter: url(#Search_Field);
+      }
+    </style>
+    <filter id="Search_Field" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
+      <feOffset dy="6" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_1242" data-name="Group 1242" transform="translate(-158 -619)">
+    <g class="cls-4" transform="matrix(1, 0, 0, 1, 158, 619)">
+      <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="42" height="42" rx="21" transform="translate(9 3)"/>
+    </g>
+    <g id="Compose" transform="translate(-110 398)">
+      <rect id="Rectangle_324" data-name="Rectangle 324" class="cls-2" width="16" height="16" transform="translate(290 237)"/>
+      <path id="Path_110" data-name="Path 110" class="cls-3" d="M8.154,3.077,2.462,8.923,0,16l7.077-2.308L12.769,8Zm7.231-.462-2-2a1.865,1.865,0,0,0-2.769,0L8.923,2.308l4.615,4.769,1.846-1.846A1.95,1.95,0,0,0,16,3.846,1.9,1.9,0,0,0,15.385,2.615Z" transform="translate(290 237)"/>
+    </g>
+  </g>
+</svg>

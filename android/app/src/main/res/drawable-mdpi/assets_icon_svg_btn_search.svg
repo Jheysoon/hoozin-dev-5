@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2699fb;
+      }
+
+      .cls-2 {
+        fill: #fff;
+        stroke: rgba(0,0,0,0);
+        fill-rule: evenodd;
+      }
+
+      .cls-3 {
+        filter: url(#Search_Field);
+      }
+    </style>
+    <filter id="Search_Field" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
+      <feOffset dy="6" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="btn_Search" transform="translate(-303 -615)">
+    <g class="cls-3" transform="matrix(1, 0, 0, 1, 303, 615)">
+      <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="42" height="42" rx="21" transform="translate(9 3)"/>
+    </g>
+    <path id="Search" class="cls-2" d="M23.737,21.719,17.117,15.1A9.372,9.372,0,0,0,18.93,9.513,9.554,9.554,0,0,0,9.432,0,9.389,9.389,0,0,0,0,9.445a9.555,9.555,0,0,0,9.5,9.514,9.341,9.341,0,0,0,5.6-1.834l.007-.005,6.614,6.618a1.428,1.428,0,1,0,2.017-2.019ZM9.493,17.062a7.644,7.644,0,0,1-7.6-7.61A7.513,7.513,0,0,1,9.438,1.9a7.644,7.644,0,0,1,7.6,7.61,7.513,7.513,0,0,1-7.544,7.556Z" transform="translate(321 627)"/>
+  </g>
+</svg>

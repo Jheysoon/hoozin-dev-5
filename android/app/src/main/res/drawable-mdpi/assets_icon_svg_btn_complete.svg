@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 112 48">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2699fb;
+      }
+
+      .cls-2 {
+        fill: #fff;
+        font-size: 18px;
+        font-family: Helvetica;
+      }
+
+      .cls-3 {
+        filter: url(#Search_Field);
+      }
+    </style>
+    <filter id="Search_Field" x="0" y="0" width="112" height="48" filterUnits="userSpaceOnUse">
+      <feOffset dy="6" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="btn_Complete" transform="translate(-153 -438)">
+    <g class="cls-3" transform="matrix(1, 0, 0, 1, 153, 438)">
+      <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="94" height="30" rx="15" transform="translate(9 3)"/>
+    </g>
+    <text id="Placeholder_Label" data-name="Placeholder Label" class="cls-2" transform="translate(209 463)"><tspan x="-38.518" y="0">Complete</tspan></text>
+  </g>
+</svg>

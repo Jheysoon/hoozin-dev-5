@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 26.5">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #1d6cbc;
+      }
+
+      .cls-2 {
+        fill: none;
+        stroke: #707070;
+        stroke-width: 2px;
+      }
+    </style>
+  </defs>
+  <g id="pin_Event_blue" transform="translate(-56 -176)">
+    <circle id="Ellipse_1" data-name="Ellipse 1" class="cls-1" cx="9.5" cy="9.5" r="9.5" transform="translate(56 176)"/>
+    <line id="Line_36" data-name="Line 36" class="cls-2" y2="8" transform="translate(65.5 194.5)"/>
+  </g>
+</svg>

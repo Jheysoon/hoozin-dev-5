@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2699fb;
+      }
+
+      .cls-2 {
+        fill: #7fc4fd;
+      }
+
+      .cls-3 {
+        fill: #bce0fd;
+      }
+
+      .cls-4 {
+        fill: #fff;
+      }
+
+      .cls-5 {
+        filter: url(#Search_Field);
+      }
+    </style>
+    <filter id="Search_Field" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
+      <feOffset dy="6" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="btn_EventActive_Attendees" transform="translate(-33 -557)">
+    <g class="cls-5" transform="matrix(1, 0, 0, 1, 33, 557)">
+      <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="42" height="42" rx="21" transform="translate(9 3)"/>
+    </g>
+    <g id="Group_1303" data-name="Group 1303" transform="translate(0)">
+      <g id="Group_1027" data-name="Group 1027" transform="translate(59 571)">
+        <path id="Rectangle_31" data-name="Rectangle 31" class="cls-2" d="M8.173,0h5.222a8.173,8.173,0,0,1,8.173,8.173v0a2.043,2.043,0,0,1-2.043,2.043H2.043A2.043,2.043,0,0,1,0,8.173v0A8.173,8.173,0,0,1,8.173,0Z" transform="translate(0 10.784)"/>
+        <circle id="Ellipse_14" data-name="Ellipse 14" class="cls-2" cx="5.676" cy="5.676" r="5.676" transform="translate(5.108)"/>
+      </g>
+      <g id="Group_1029" data-name="Group 1029" transform="translate(52 571)">
+        <path id="Rectangle_31-2" data-name="Rectangle 31" class="cls-3" d="M8.173,0h5.222a8.173,8.173,0,0,1,8.173,8.173v0a2.043,2.043,0,0,1-2.043,2.043H2.043A2.043,2.043,0,0,1,0,8.173v0A8.173,8.173,0,0,1,8.173,0Z" transform="translate(0 10.784)"/>
+        <circle id="Ellipse_14-2" data-name="Ellipse 14" class="cls-3" cx="5.676" cy="5.676" r="5.676" transform="translate(5.108)"/>
+      </g>
+      <g id="Group_1030" data-name="Group 1030" transform="translate(45 571)">
+        <path id="Rectangle_31-3" data-name="Rectangle 31" class="cls-4" d="M8.173,0h5.222a8.173,8.173,0,0,1,8.173,8.173v0a2.043,2.043,0,0,1-2.043,2.043H2.043A2.043,2.043,0,0,1,0,8.173v0A8.173,8.173,0,0,1,8.173,0Z" transform="translate(0 10.784)"/>
+        <circle id="Ellipse_14-3" data-name="Ellipse 14" class="cls-4" cx="5.676" cy="5.676" r="5.676" transform="translate(5.108)"/>
+      </g>
+    </g>
+  </g>
+</svg>

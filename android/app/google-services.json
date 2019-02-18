@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "377447420217",
+    "firebase_url": "https://hoozin-65750.firebaseio.com",
+    "project_id": "hoozin-65750",
+    "storage_bucket": "hoozin-65750.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:377447420217:android:343cac762078a81e",
+        "android_client_info": {
+          "package_name": "org.app.hoozin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "377447420217-tqv5jhoi9smfrun2hi5vb0lfvb5k0cnp.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "377447420217-tqv5jhoi9smfrun2hi5vb0lfvb5k0cnp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPaMe52EH0BtdODtc4678UcRH7HJHLs6I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

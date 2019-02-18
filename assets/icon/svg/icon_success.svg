@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2699fb;
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        fill: none;
+      }
+
+      .cls-4 {
+        filter: url(#Search_Field);
+      }
+    </style>
+    <filter id="Search_Field" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
+      <feOffset dy="6" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_1162" data-name="Group 1162" transform="translate(-158 -619)">
+    <g class="cls-4" transform="matrix(1, 0, 0, 1, 158, 619)">
+      <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="42" height="42" rx="21" transform="translate(9 3)"/>
+    </g>
+    <g id="Yes" transform="translate(-277 465)">
+      <path id="Checkbox" class="cls-2" d="M8.375,14.75,1,7.375l1.75-1.75,5.625,5.5L18.5,1l1.75,1.75Z" transform="translate(454 171.5)"/>
+      <rect id="Rectangle_556" data-name="Rectangle 556" class="cls-3" width="16" height="16" transform="translate(455 170)"/>
+    </g>
+  </g>
+</svg>

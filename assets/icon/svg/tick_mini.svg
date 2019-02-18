@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.25 16.25">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2699fb;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <g id="Yes" transform="translate(-455 -170)">
+    <path id="Checkbox" class="cls-1" d="M8.375,14.75,1,7.375l1.75-1.75,5.625,5.5L18.5,1l1.75,1.75Z" transform="translate(454 171.5)"/>
+    <rect id="Rectangle_556" data-name="Rectangle 556" class="cls-2" width="16" height="16" transform="translate(455 170)"/>
+  </g>
+</svg>

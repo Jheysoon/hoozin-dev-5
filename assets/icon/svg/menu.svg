@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2699fb;
+        opacity: 0.656;
+      }
+
+      .cls-2 {
+        fill: #f8f8fa;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <g id="Symbol_99_2" data-name="Symbol 99 – 2" transform="translate(-875 -34)">
+    <rect id="Search_Field" data-name="Search Field" class="cls-1" width="36" height="36" rx="18" transform="translate(875 34)"/>
+    <path id="Grabber" class="cls-2" d="M0,1.5H22V0H0ZM0,5H22V3.5H0ZM0,8.5H22V7H0Z" transform="translate(882 48)"/>
+  </g>
+</svg>

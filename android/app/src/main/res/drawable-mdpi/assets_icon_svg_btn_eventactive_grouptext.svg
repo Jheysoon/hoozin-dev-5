@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2699fb;
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        fill: #ff003b;
+        font-size: 14px;
+        font-family: Helvetica-Bold, Helvetica;
+        font-weight: 700;
+        letter-spacing: -0.011em;
+      }
+
+      .cls-4 {
+        filter: url(#Search_Field);
+      }
+    </style>
+    <filter id="Search_Field" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
+      <feOffset dy="6" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="btn_EventActive_GroupText" transform="translate(-314 -617)">
+    <g id="Group_1253" data-name="Group 1253" transform="translate(26 -2)">
+      <g class="cls-4" transform="matrix(1, 0, 0, 1, 288, 619)">
+        <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="42" height="42" rx="21" transform="translate(9 3)"/>
+      </g>
+      <g id="Group_1252" data-name="Group 1252" transform="translate(-1499.09 217)">
+        <rect id="Rectangle_29" data-name="Rectangle 29" class="cls-2" width="27.628" height="21.781" rx="10.891" transform="translate(1803.928 415)"/>
+        <path id="Path_734" data-name="Path 734" class="cls-2" d="M1740.351,700.226c-2.8,2.119-4.708,6.067-4.17,6.749.7,1.037,9.281-2.658,9.281-2.658Z" transform="translate(67 -269.395)"/>
+      </g>
+    </g>
+    <text id="Placeholder_Label" data-name="Placeholder Label" class="cls-3" transform="translate(340 646)"><tspan x="0" y="0">3</tspan></text>
+  </g>
+</svg>

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 258 54">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #7fc4fd;
+      }
+
+      .cls-2 {
+        fill: #fff;
+        font-size: 54px;
+        font-family: Helvetica-Light, Helvetica;
+        font-weight: 300;
+      }
+
+      .cls-3 {
+        fill: #fc3764;
+      }
+
+      .cls-4 {
+        fill: #6eb25a;
+      }
+
+      .cls-5 {
+        fill: #ef9a12;
+      }
+
+      .cls-6 {
+        fill: #2699fb;
+      }
+
+      .cls-7 {
+        fill: #601dbc;
+      }
+    </style>
+  </defs>
+  <g id="hoozin_logo" transform="translate(-51 -149)">
+    <g id="hoozin_logo_h" transform="translate(-50 -3366)">
+      <circle id="Ellipse_338" data-name="Ellipse 338" class="cls-1" cx="26" cy="26" r="26" transform="translate(101 3516)"/>
+      <text id="h" class="cls-2" transform="translate(113 3557)"><tspan x="0" y="0">h</tspan></text>
+    </g>
+    <g id="hoozin_logo_o_red" transform="translate(-59 -3366)">
+      <circle id="Ellipse_339" data-name="Ellipse 339" class="cls-3" cx="26" cy="26" r="26" transform="translate(153 3516)"/>
+      <text id="o" class="cls-2" transform="translate(164 3557)"><tspan x="0" y="0">o</tspan></text>
+    </g>
+    <g id="hoozin_logo_o_green" transform="translate(-69 -3366)">
+      <circle id="Ellipse_340" data-name="Ellipse 340" class="cls-4" cx="26" cy="26" r="26" transform="translate(205 3516)"/>
+      <text id="o-2" data-name="o" class="cls-2" transform="translate(216 3557)"><tspan x="0" y="0">o</tspan></text>
+    </g>
+    <g id="hoozin_logo_z" transform="translate(-80 -3366)">
+      <circle id="Ellipse_341" data-name="Ellipse 341" class="cls-5" cx="26" cy="26" r="26" transform="translate(257 3516)"/>
+      <text id="z" class="cls-2" transform="translate(271 3557)"><tspan x="0" y="0">z</tspan></text>
+    </g>
+    <g id="hoozin_logo_i" transform="translate(-90 -3366)">
+      <circle id="Ellipse_342" data-name="Ellipse 342" class="cls-6" cx="26" cy="26" r="26" transform="translate(309 3516)"/>
+      <text id="i" class="cls-2" transform="translate(329 3557)"><tspan x="0" y="0">i</tspan></text>
+    </g>
+    <g id="hoozin_logo_n" transform="translate(-104 -3366)">
+      <circle id="Ellipse_343" data-name="Ellipse 343" class="cls-7" cx="26" cy="26" r="26" transform="translate(361 3516)"/>
+      <text id="n" class="cls-2" transform="translate(372 3557)"><tspan x="0" y="0">n</tspan></text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
+	<string>ca-app-pub-3940256099942544/2934735716</string>
+	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
+	<string>ca-app-pub-3940256099942544/4411468910</string>
+	<key>CLIENT_ID</key>
+	<string>377447420217-dbhi0p1stcgfb1v8r6t988dp40i6esnc.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.377447420217-dbhi0p1stcgfb1v8r6t988dp40i6esnc</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDIzVCrCMmnxoP43EVIh-9COB1uHaE1Qds</string>
+	<key>GCM_SENDER_ID</key>
+	<string>377447420217</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.app.hoozin</string>
+	<key>PROJECT_ID</key>
+	<string>hoozin-65750</string>
+	<key>STORAGE_BUCKET</key>
+	<string>hoozin-65750.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<true></true>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<false></false>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:377447420217:ios:343cac762078a81e</string>
+	<key>DATABASE_URL</key>
+	<string>https://hoozin-65750.firebaseio.com</string>
+</dict>
+</plist>
