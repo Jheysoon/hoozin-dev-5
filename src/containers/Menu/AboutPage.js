@@ -1,11 +1,31 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Image from "react-native-remote-svg";
-import { Container, Content, Footer, Left, Body, Right } from "native-base";
+import {
+  Container,
+  Content,
+  Footer,
+  Left,
+  Body,
+  Right,
+  Header,
+  Button,
+  Icon
+} from "native-base";
+import { Col, Row, Grid } from "react-native-easy-grid";
 import { IconsMap } from "assets/assetMap";
 import AppBarComponent from "../../components/AppBar/appbar.index";
 
+import ShowProfile from "./../Profile/view-profile/view-profile.index";
+
 class About extends Component {
+  constructor(props) {
+    super(props);
+
+    this.onAbout = this.onAbout.bind(this);
+    this.onProfile = this.onProfile.bind(this);
+    this.onFriends = this.onFriends.bind(this);
+  }
   static navigationOptions = {
     header: null
   };
@@ -15,16 +35,45 @@ class About extends Component {
       <Container style={{ backgroundColor: "#ffffff" }}>
         <AppBarComponent />
         <View style={styles.tabBarView}>
-          <TouchableOpacity onPress={() => this.onAbout()}>
-            <Image source={images.img_about_infocus} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.onProfile()}>
-            <Image source={images.img_btn_profile} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.onFriends()}>
-            <Image source={images.img_btn_friends} />
-          </TouchableOpacity>
+          <Grid>
+            <Col
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              <TouchableOpacity onPress={() => this.onAbout()}>
+                <Image source={images.img_about_infocus} />
+              </TouchableOpacity>
+            </Col>
+
+            <Col
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              <TouchableOpacity onPress={() => this.onProfile()}>
+                <Image source={images.img_btn_profile} />
+              </TouchableOpacity>
+            </Col>
+
+            <Col
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              <TouchableOpacity onPress={() => this.onFriends()}>
+                <Image source={images.img_btn_friends} />
+              </TouchableOpacity>
+            </Col>
+          </Grid>
         </View>
+
         <Content>
           <View style={{ padding: 15 }}>
             <Text style={styles.textStyle}>hoozin was designed to…</Text>

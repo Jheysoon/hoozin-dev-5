@@ -1,161 +1,233 @@
-import React, { Component } from 'react'
+import React, { Component } from "react";
+import { View, TextInput, TouchableOpacity, Platform } from "react-native";
+import Image from "react-native-remote-svg";
 import {
-    View,
-    TextInput,
-    TouchableOpacity,
-    Platform
-} from 'react-native';
-import Image from 'react-native-remote-svg';
-import { Container, Content, Textarea, Footer, Left, Right, Body, Fab, Icon, Spinner } from 'native-base';
-import { connect } from 'react-redux';
+  Container,
+  Content,
+  Textarea,
+  Footer,
+  Left,
+  Right,
+  Body,
+  Fab,
+  Icon,
+  Spinner
+} from "native-base";
+import { connect } from "react-redux";
 
-import { setVisibleIndicatorAction, fetchProfileDataAction } from '../../../actions/auth';
-import { IconsMap } from 'assets/assetMap';
-import { strings } from '../../../locales/i18n';
-import AppBarComponent from '../../../components/AppBar/appbar.index';
-import { UserManagementServiceAPI } from '../../../api';
-
+import {
+  setVisibleIndicatorAction,
+  fetchProfileDataAction
+} from "../../../actions/auth";
+import { IconsMap } from "assets/assetMap";
+import { strings } from "../../../locales/i18n";
+import AppBarComponent from "../../../components/AppBar/appbar.index";
+import { UserManagementServiceAPI } from "../../../api";
+import { Col, Row, Grid } from "react-native-easy-grid";
 // styleshhet
-import { ViewUserProfileStyles } from './view-profile.style'
+import { ViewUserProfileStyles } from "./view-profile.style";
 
 /* Redux container component for viewing user profile */
 class ViewUserProfileContainer extends Component {
-    static navigationOptions = {
-        header: null
+  static navigationOptions = {
+    header: null
+  };
+
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      facebook: null,
+      instagram: null,
+      linkedin: null,
+      twitter: null,
+      snapchat: null,
+      strava: null,
+      mapmyfitness: null,
+      name: null,
+      email: null,
+      password: null,
+      confirmPass: null,
+      phone: null,
+      address: null,
+      animating: true,
+      userData: null
     };
-
-    constructor(props, context) {
-        super(props, context)
-        this.state = {
-            facebook: null, instagram: null, linkedin: null, twitter: null, snapchat: null, strava: null,
-            mapmyfitness: null, name: null, email: null, password: null, confirmPass: null, phone: null, address: null, animating: true, userData: null
+    this.mount = true;
+  }
+  componentWillMount() {
+    console.log("++props list ++", this.props);
+    if (this.props.user && this.props.user.socialUID) {
+      //this.props.fetchProfileData(this.props.user.socialUID);
+      const userSvc = new UserManagementServiceAPI();
+      userSvc.getUserDetailsAPI(this.props.user.socialUID).then(userData => {
+        if (userData) {
+          console.log("++ user data ++", userData);
+          this.setState({ userData: userData, animating: false });
         }
-        this.mount = true
+      });
+      console.log("++props list ++", this.props);
     }
-    componentWillMount() {
-        console.log("++props list ++", this.props);
-        if (this.props.user && this.props.user.socialUID) {
-            //this.props.fetchProfileData(this.props.user.socialUID);
-            const userSvc = new UserManagementServiceAPI();
-            userSvc.getUserDetailsAPI(this.props.user.socialUID)
-                .then(userData => {
-                    if (userData) {
-                        console.log("++ user data ++", userData);
-                        this.setState({ userData: userData, animating: false });
-                    }
-                });
-            console.log("++props list ++", this.props);
-        }
-    }
+  }
 
-    onEditPress() {
-        this.props.navigation.navigate({
-            routeName: 'EditProfile',
-            key: 'EditProfile',
-        });
-    }
-    onCancel() {
-        this.props.navigation.goBack();
-    }
-    onProfile() {
-        this.props.navigation.navigate({
-            routeName: 'ShowProfile',
-            key: 'ShowProfile',
-        });
-    }
-    onFriends() {
+  onEditPress() {
+    this.props.navigation.navigate({
+      routeName: "EditProfile",
+      key: "EditProfile"
+    });
+  }
+  onCancel() {
+    this.props.navigation.goBack();
+  }
+  onProfile() {
+    this.props.navigation.navigate({
+      routeName: "ShowProfile",
+      key: "ShowProfile"
+    });
+  }
+  onFriends() {}
+  onAbout() {
+    this.props.navigation.navigate({
+      routeName: "About",
+      key: "About"
+    });
+  }
 
-    }
-    onAbout() {
-        this.props.navigation.navigate({
-            routeName: 'About',
-            key: 'About',
-        });
-    }
+  loadImagesStart() {
+    this.setState({ animating: true });
+  }
 
-    loadImagesStart() {
-        this.setState({ animating: true });
-    }
+  loadImagesComplete() {
+    this.setState({ animating: false });
+  }
 
-    loadImagesComplete() {
-        this.setState({ animating: false });
-    }
+  render() {
+    //let facebook = this.state.facebook !== null ? this.state.facebook : this.props.user.facebook
+    //let instagram = this.state.instagram !== null ? this.state.instagram : this.props.user.instagram
+    //let linkedin = this.state.linkedin !== null ? this.state.linkedin : this.props.user.linkedin
+    //let twitter = this.state.twitter !== null ? this.state.twitter : this.props.user.twitter
+    //let snapchat = this.state.snapchat !== null ? this.state.snapchat : this.props.user.snapchat
+    //let strava = this.state.strava !== null ? this.state.strava : this.props.user.strava
+    //let mapmyfitness = this.state.mapmyfitness !== null ? this.state.mapmyfitness : this.props.user.mapmyfitness
+    //let name = this.state.name !== null ? this.state.name : this.props.name ? this.props.name : this.props.user.name
+    //let email = this.state.email !== null ? this.state.email : this.props.email ? this.props.email : this.props.user.email
+    let password =
+      this.state.password !== null ? this.state.password : this.props.password;
+    let confirmPass =
+      this.state.confirmPass !== null
+        ? this.state.confirmPass
+        : this.props.confirmPass;
+    //let phone = this.state.phone !== null ? this.state.phone : this.props.user.phone
+    //let address = this.state.address !== null ? this.state.address : this.props.user.address
+    let animating = this.state.animating;
+    let countryCode = "IN";
 
-    render() {
-        //let facebook = this.state.facebook !== null ? this.state.facebook : this.props.user.facebook
-        //let instagram = this.state.instagram !== null ? this.state.instagram : this.props.user.instagram
-        //let linkedin = this.state.linkedin !== null ? this.state.linkedin : this.props.user.linkedin
-        //let twitter = this.state.twitter !== null ? this.state.twitter : this.props.user.twitter
-        //let snapchat = this.state.snapchat !== null ? this.state.snapchat : this.props.user.snapchat
-        //let strava = this.state.strava !== null ? this.state.strava : this.props.user.strava
-        //let mapmyfitness = this.state.mapmyfitness !== null ? this.state.mapmyfitness : this.props.user.mapmyfitness
-        //let name = this.state.name !== null ? this.state.name : this.props.name ? this.props.name : this.props.user.name
-        //let email = this.state.email !== null ? this.state.email : this.props.email ? this.props.email : this.props.user.email
-        let password = this.state.password !== null ? this.state.password : this.props.password
-        let confirmPass = this.state.confirmPass !== null ? this.state.confirmPass : this.props.confirmPass
-        //let phone = this.state.phone !== null ? this.state.phone : this.props.user.phone
-        //let address = this.state.address !== null ? this.state.address : this.props.user.address
-        let animating = this.state.animating
-        let countryCode = 'IN'
+    return (
+      <React.Fragment>
+        <Container style={{ backgroundColor: "#ffffff" }}>
+          <AppBarComponent />
+          <View style={ViewUserProfileStyles.tabBarView}>
+            {/* <TouchableOpacity onPress={() => this.onAbout()}>
+              <Image source={images.img_btn_about} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.onProfile()}>
+              <Image source={images.img_btn_profile_infocus} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.onFriends()}>
+              <Image source={images.img_btn_friends} />
+            </TouchableOpacity> */}
 
-        return (
-            <React.Fragment>
-                <Container style={{ backgroundColor: '#ffffff' }}>
-                    <AppBarComponent />
-                    <View style={ViewUserProfileStyles.tabBarView}>
-                        <TouchableOpacity
-                            onPress={() => this.onAbout()} >
-                            <Image source={images.img_btn_about} />
-                        </TouchableOpacity >
-                        <TouchableOpacity
-                            onPress={() => this.onProfile()} >
-                            <Image source={images.img_btn_profile_infocus} />
-                        </TouchableOpacity >
-                        <TouchableOpacity
-                            onPress={() => this.onFriends()} >
-                            <Image source={images.img_btn_friends} />
-                        </TouchableOpacity >
-                    </View>
-                    <Content>
-                        <View style={ViewUserProfileStyles.avatarView}>
-                            <TouchableOpacity
-                                onPress={() => null} >
-                                {this.state.userData && this.state.userData.profileImgUrl ?
-                                    <Image source={{ uri: this.state.userData.profileImgUrl }} style={{ width: 117, height: 117, borderRadius: 117 / 2 }} onLoadEnd={() => this.loadImagesComplete()} onLoadStart={() => this.loadImagesStart()} /> :
-                                    <Image source={IconsMap.icon_user_avatar} />
-                                }
-                            </TouchableOpacity >
-                        </View>
-                        <View style={ViewUserProfileStyles.dataView}>
-                            <View style={ViewUserProfileStyles.nameArea}>
-                                <TextInput multiline={false}
-                                    style={
-                                        [ViewUserProfileStyles.textInput, ViewUserProfileStyles.line]
-                                    }
-                                    autoCapitalize='none'
-                                    editable={false}
-                                    selectTextOnFocus={false}
-                                    autoCorrect={false}
-                                    value={this.state.userData && this.state.userData.name || ''}
-                                    placeholder={strings('profile_page.name')}
-                                    placeholderTextColor={'#8E8E93'}
-                                    underlineColorAndroid='transparent'
-                                />
-                                <TextInput multiline={false}
-                                    style={
-                                        [ViewUserProfileStyles.textInput, ViewUserProfileStyles.line]
-                                    }
-                                    autoCapitalize='none'
-                                    editable={false}
-                                    selectTextOnFocus={false}
-                                    autoCorrect={false}
-                                    value={this.state.userData && this.state.userData.email || ''}
-                                    placeholder={strings('login.email')}
-                                    placeholderTextColor={'#8E8E93'}
-                                    underlineColorAndroid='transparent'
-                                />
-                            </View>
-                            {/* {
+            <Grid>
+              <Col
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <TouchableOpacity onPress={() => this.onAbout()}>
+                  <Image source={images.img_btn_about} />
+                </TouchableOpacity>
+              </Col>
+
+              <Col
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <TouchableOpacity onPress={() => this.onProfile()}>
+                  <Image source={images.img_btn_profile_infocus} />
+                </TouchableOpacity>
+              </Col>
+
+              <Col
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <TouchableOpacity onPress={() => this.onFriends()}>
+                  <Image source={images.img_btn_friends} />
+                </TouchableOpacity>
+              </Col>
+            </Grid>
+          </View>
+
+          <Content>
+            <View style={ViewUserProfileStyles.avatarView}>
+              <TouchableOpacity onPress={() => null}>
+                {this.state.userData && this.state.userData.profileImgUrl ? (
+                  <Image
+                    source={{ uri: this.state.userData.profileImgUrl }}
+                    style={{ width: 117, height: 117, borderRadius: 117 / 2 }}
+                    onLoadEnd={() => this.loadImagesComplete()}
+                    onLoadStart={() => this.loadImagesStart()}
+                  />
+                ) : (
+                  <Image source={IconsMap.icon_user_avatar} />
+                )}
+              </TouchableOpacity>
+            </View>
+            <View style={ViewUserProfileStyles.dataView}>
+              <View style={ViewUserProfileStyles.nameArea}>
+                <TextInput
+                  multiline={false}
+                  style={[
+                    ViewUserProfileStyles.textInput,
+                    ViewUserProfileStyles.line
+                  ]}
+                  autoCapitalize="none"
+                  editable={false}
+                  selectTextOnFocus={false}
+                  autoCorrect={false}
+                  value={
+                    (this.state.userData && this.state.userData.name) || ""
+                  }
+                  placeholder={strings("profile_page.name")}
+                  placeholderTextColor={"#8E8E93"}
+                  underlineColorAndroid="transparent"
+                />
+                <TextInput
+                  multiline={false}
+                  style={[
+                    ViewUserProfileStyles.textInput,
+                    ViewUserProfileStyles.line
+                  ]}
+                  autoCapitalize="none"
+                  editable={false}
+                  selectTextOnFocus={false}
+                  autoCorrect={false}
+                  value={
+                    (this.state.userData && this.state.userData.email) || ""
+                  }
+                  placeholder={strings("login.email")}
+                  placeholderTextColor={"#8E8E93"}
+                  underlineColorAndroid="transparent"
+                />
+              </View>
+              {/* {
                                 this.props.user && this.props.user.accountType == ('google' || 'facebook')?
                                     null
                                     :
@@ -193,203 +265,243 @@ class ViewUserProfileContainer extends Component {
                                     </View>
                             } */}
 
-                            <View style={ViewUserProfileStyles.phoneArea}>
-                                <View style={ViewUserProfileStyles.phoneMaskArea}>
-                                    <TextInput multiline={false}
-                                        style={
-                                            [ViewUserProfileStyles.textInput, ViewUserProfileStyles.line]
-                                        }
-                                        autoCapitalize='none'
-                                        keyboardType="phone-pad"
-                                        editable={false}
-                                        selectTextOnFocus={false}
-                                        autoCorrect={false}
-                                        value={this.state.userData && this.state.userData.phone || ''}
-                                        placeholder={strings('profile_page.phone')}
-                                        placeholderTextColor={'#8E8E93'}
-                                        underlineColorAndroid='transparent'
-                                    />
-                                </View>
-                                <Textarea
-                                    rowSpan={4}
-                                    style={
-                                        [ViewUserProfileStyles.textInput, ViewUserProfileStyles.line]
-                                    }
-                                    autoCapitalize='none'
-                                    editable={false}
-                                    selectTextOnFocus={false}
-                                    autoCorrect={false}
-                                    value={this.state.userData && this.state.userData.address || ''}
-                                    placeholder={strings('profile_page.address')}
-                                    placeholderTextColor={'#8E8E93'}
-                                    underlineColorAndroid='transparent'
-                                />
-                            </View>
-                        </View>
-                        <View style={ViewUserProfileStyles.sociallinkView}>
-                            <View style={ViewUserProfileStyles.socialContent} >
-                                <View style={ViewUserProfileStyles.socialInput}>
-                                {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_fb_26x26} />:
-                                            <Image source={IconsMap.icon_fb} />
-                                        }
+              <View style={ViewUserProfileStyles.phoneArea}>
+                <View style={ViewUserProfileStyles.phoneMaskArea}>
+                  <TextInput
+                    multiline={false}
+                    style={[
+                      ViewUserProfileStyles.textInput,
+                      ViewUserProfileStyles.line
+                    ]}
+                    autoCapitalize="none"
+                    keyboardType="phone-pad"
+                    editable={false}
+                    selectTextOnFocus={false}
+                    autoCorrect={false}
+                    value={
+                      (this.state.userData && this.state.userData.phone) || ""
+                    }
+                    placeholder={strings("profile_page.phone")}
+                    placeholderTextColor={"#8E8E93"}
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
+                <Textarea
+                  rowSpan={4}
+                  style={[
+                    ViewUserProfileStyles.textInput,
+                    ViewUserProfileStyles.line
+                  ]}
+                  autoCapitalize="none"
+                  editable={false}
+                  selectTextOnFocus={false}
+                  autoCorrect={false}
+                  value={
+                    (this.state.userData && this.state.userData.address) || ""
+                  }
+                  placeholder={strings("profile_page.address")}
+                  placeholderTextColor={"#8E8E93"}
+                  underlineColorAndroid="transparent"
+                />
+              </View>
+            </View>
+            <View style={ViewUserProfileStyles.sociallinkView}>
+              <View style={ViewUserProfileStyles.socialContent}>
+                <View style={ViewUserProfileStyles.socialInput}>
+                  {Platform.OS === "ios" ? (
+                    <Image source={IconsMap.icon_fb_26x26} />
+                  ) : (
+                    <Image source={IconsMap.icon_fb} />
+                  )}
 
-                                    <TextInput multiline={false}
-                                        style={ViewUserProfileStyles.socialTextInput}
-                                        autoCapitalize='none'
-                                        editable={false}
-                                        selectTextOnFocus={false}
-                                        autoCorrect={false}
-                                        value={this.state.userData && this.state.userData.facebook || ''}
-                                        underlineColorAndroid='transparent'
-                                    />
-                                </View>
-                                <View style={ViewUserProfileStyles.socialLine}>
-                                </View>
-                            </View>
+                  <TextInput
+                    multiline={false}
+                    style={ViewUserProfileStyles.socialTextInput}
+                    autoCapitalize="none"
+                    editable={false}
+                    selectTextOnFocus={false}
+                    autoCorrect={false}
+                    value={
+                      (this.state.userData && this.state.userData.facebook) ||
+                      ""
+                    }
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
+                <View style={ViewUserProfileStyles.socialLine} />
+              </View>
 
-                            <View style={ViewUserProfileStyles.socialContent} >
-                                <View style={ViewUserProfileStyles.socialInput}>
-                                {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_instagram} />:
-                                            <Image source={IconsMap.icon_instagram_png} />
-                                        }
+              <View style={ViewUserProfileStyles.socialContent}>
+                <View style={ViewUserProfileStyles.socialInput}>
+                  {Platform.OS === "ios" ? (
+                    <Image source={IconsMap.icon_instagram} />
+                  ) : (
+                    <Image source={IconsMap.icon_instagram_png} />
+                  )}
 
-                                    <TextInput multiline={false}
-                                        style={ViewUserProfileStyles.socialTextInput}
-                                        editable={false}
-                                        selectTextOnFocus={false}
-                                        autoCapitalize='none'
-                                        autoCorrect={false}
-                                        value={this.state.userData && this.state.userData.instagram || ''}
-                                        underlineColorAndroid='transparent'
-                                    />
-                                </View>
-                                <View style={ViewUserProfileStyles.socialLine}>
-                                </View>
-                            </View>
+                  <TextInput
+                    multiline={false}
+                    style={ViewUserProfileStyles.socialTextInput}
+                    editable={false}
+                    selectTextOnFocus={false}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    value={
+                      (this.state.userData && this.state.userData.instagram) ||
+                      ""
+                    }
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
+                <View style={ViewUserProfileStyles.socialLine} />
+              </View>
 
-                            <View style={ViewUserProfileStyles.socialContent} >
-                                <View style={ViewUserProfileStyles.socialInput}>
-                                {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_linkedin} />:
-                                            <Image source={IconsMap.icon_linkedin_png} />
-                                        }
+              <View style={ViewUserProfileStyles.socialContent}>
+                <View style={ViewUserProfileStyles.socialInput}>
+                  {Platform.OS === "ios" ? (
+                    <Image source={IconsMap.icon_linkedin} />
+                  ) : (
+                    <Image source={IconsMap.icon_linkedin_png} />
+                  )}
 
-                                    <TextInput multiline={false}
-                                        style={ViewUserProfileStyles.socialTextInput}
-                                        autoCapitalize='none'
-                                        editable={false}
-                                        selectTextOnFocus={false}
-                                        autoCorrect={false}
-                                        value={this.state.userData && this.state.userData.linkedin || ''}
-                                        underlineColorAndroid='transparent'
-                                    />
-                                </View>
-                                <View style={ViewUserProfileStyles.socialLine}>
-                                </View>
-                            </View>
+                  <TextInput
+                    multiline={false}
+                    style={ViewUserProfileStyles.socialTextInput}
+                    autoCapitalize="none"
+                    editable={false}
+                    selectTextOnFocus={false}
+                    autoCorrect={false}
+                    value={
+                      (this.state.userData && this.state.userData.linkedin) ||
+                      ""
+                    }
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
+                <View style={ViewUserProfileStyles.socialLine} />
+              </View>
 
-                            <View style={ViewUserProfileStyles.socialContent} >
-                                <View style={ViewUserProfileStyles.socialInput}>
-                                {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_twitter} />:
-                                            <Image source={IconsMap.icon_twitter_png} />
-                                        }
+              <View style={ViewUserProfileStyles.socialContent}>
+                <View style={ViewUserProfileStyles.socialInput}>
+                  {Platform.OS === "ios" ? (
+                    <Image source={IconsMap.icon_twitter} />
+                  ) : (
+                    <Image source={IconsMap.icon_twitter_png} />
+                  )}
 
-                                    <TextInput multiline={false}
-                                        style={ViewUserProfileStyles.socialTextInput}
-                                        autoCapitalize='none'
-                                        editable={false}
-                                        selectTextOnFocus={false}
-                                        autoCorrect={false}
-                                        value={this.state.userData && this.state.userData.twitter || ''}
-                                        underlineColorAndroid='transparent'
-                                    />
-                                </View>
-                                <View style={ViewUserProfileStyles.socialLine}>
-                                </View>
-                            </View>
+                  <TextInput
+                    multiline={false}
+                    style={ViewUserProfileStyles.socialTextInput}
+                    autoCapitalize="none"
+                    editable={false}
+                    selectTextOnFocus={false}
+                    autoCorrect={false}
+                    value={
+                      (this.state.userData && this.state.userData.twitter) || ""
+                    }
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
+                <View style={ViewUserProfileStyles.socialLine} />
+              </View>
 
-                            <View style={ViewUserProfileStyles.socialContent} >
-                                <View style={ViewUserProfileStyles.socialInput}>
-                                {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_snapchat} />:
-                                            <Image source={IconsMap.icon_snapchat_png} />
-                                        }
+              <View style={ViewUserProfileStyles.socialContent}>
+                <View style={ViewUserProfileStyles.socialInput}>
+                  {Platform.OS === "ios" ? (
+                    <Image source={IconsMap.icon_snapchat} />
+                  ) : (
+                    <Image source={IconsMap.icon_snapchat_png} />
+                  )}
 
-                                    <TextInput multiline={false}
-                                        style={ViewUserProfileStyles.socialTextInput}
-                                        autoCapitalize='none'
-                                        editable={false}
-                                        selectTextOnFocus={false}
-                                        autoCorrect={false}
-                                        value={this.state.userData && this.state.userData.snapchat || ''}
-                                        underlineColorAndroid='transparent'
-                                    />
-                                </View>
-                                <View style={ViewUserProfileStyles.socialLine}>
-                                </View>
-                            </View>
+                  <TextInput
+                    multiline={false}
+                    style={ViewUserProfileStyles.socialTextInput}
+                    autoCapitalize="none"
+                    editable={false}
+                    selectTextOnFocus={false}
+                    autoCorrect={false}
+                    value={
+                      (this.state.userData && this.state.userData.snapchat) ||
+                      ""
+                    }
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
+                <View style={ViewUserProfileStyles.socialLine} />
+              </View>
 
-                            <View style={ViewUserProfileStyles.socialContent} >
-                                <View style={ViewUserProfileStyles.socialInput}>
-                                {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_strava} />:
-                                            <Image source={IconsMap.icon_strava_png} />
-                                        }
+              <View style={ViewUserProfileStyles.socialContent}>
+                <View style={ViewUserProfileStyles.socialInput}>
+                  {Platform.OS === "ios" ? (
+                    <Image source={IconsMap.icon_strava} />
+                  ) : (
+                    <Image source={IconsMap.icon_strava_png} />
+                  )}
 
-                                    <TextInput multiline={false}
-                                        style={ViewUserProfileStyles.socialTextInput}
-                                        autoCapitalize='none'
-                                        editable={false}
-                                        selectTextOnFocus={false}
-                                        autoCorrect={false}
-                                        value={this.state.userData && this.state.userData.strava || ''}
-                                        underlineColorAndroid='transparent'
-                                    />
-                                </View>
-                                <View style={ViewUserProfileStyles.socialLine}>
-                                </View>
-                            </View>
+                  <TextInput
+                    multiline={false}
+                    style={ViewUserProfileStyles.socialTextInput}
+                    autoCapitalize="none"
+                    editable={false}
+                    selectTextOnFocus={false}
+                    autoCorrect={false}
+                    value={
+                      (this.state.userData && this.state.userData.strava) || ""
+                    }
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
+                <View style={ViewUserProfileStyles.socialLine} />
+              </View>
 
-                            <View style={ViewUserProfileStyles.socialContent} >
-                                <View style={ViewUserProfileStyles.socialInput}>
-                                {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_ua} />:
-                                            <Image source={IconsMap.icon_ua_png} />
-                                        }
+              <View style={ViewUserProfileStyles.socialContent}>
+                <View style={ViewUserProfileStyles.socialInput}>
+                  {Platform.OS === "ios" ? (
+                    <Image source={IconsMap.icon_ua} />
+                  ) : (
+                    <Image source={IconsMap.icon_ua_png} />
+                  )}
 
-                                    <TextInput multiline={false}
-                                        style={ViewUserProfileStyles.socialTextInput}
-                                        editable={false}
-                                        selectTextOnFocus={false}
-                                        autoCapitalize='none'
-                                        autoCorrect={false}
-                                        value={this.state.userData && this.state.userData.mapmyfitness || ''}
-                                        underlineColorAndroid='transparent'
-                                    />
-                                </View>
-                                <View style={ViewUserProfileStyles.socialLine}>
-                                </View>
-                            </View>
-
-                        </View>
-                    </Content>
-                    {Platform.OS === 'ios'?
-                    <Footer style={ViewUserProfileStyles.bottomView_ios}>
-                        <Left>
-                            <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate({
-                                    routeName: 'EventList',
-                                    key: 'EventList',
-                                })}
-                                style={ViewUserProfileStyles.fabLeftWrapperStyles}
-                            >
-                                {Platform.OS === 'ios' ?
-                                    <Image source={IconsMap.icon_list_circle} style={ViewUserProfileStyles.fabStyles} /> :
-                                    <Image source={{
-                                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                  <TextInput
+                    multiline={false}
+                    style={ViewUserProfileStyles.socialTextInput}
+                    editable={false}
+                    selectTextOnFocus={false}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    value={
+                      (this.state.userData &&
+                        this.state.userData.mapmyfitness) ||
+                      ""
+                    }
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
+                <View style={ViewUserProfileStyles.socialLine} />
+              </View>
+            </View>
+          </Content>
+          {Platform.OS === "ios" ? (
+            <Footer style={ViewUserProfileStyles.bottomView_ios}>
+              <Left>
+                <TouchableOpacity
+                  onPress={() =>
+                    this.props.navigation.navigate({
+                      routeName: "EventList",
+                      key: "EventList"
+                    })
+                  }
+                  style={ViewUserProfileStyles.fabLeftWrapperStyles}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_list_circle}
+                      style={ViewUserProfileStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                 <defs>
                   <style>
                     .cls-1 {
@@ -438,19 +550,27 @@ class ViewUserProfileContainer extends Component {
                   </g>
                 </g>
               </svg>
-              ` }} style={ViewUserProfileStyles.fabStyles} />
-                                }
-                            </TouchableOpacity>
-                        </Left>
-                        <Body>
-                            <TouchableOpacity
-                                style={{ position: 'absolute', left: 30 }}
-                                onPress={() => this.onEditPress()}
-                            >
-                                {Platform.OS === 'ios' ?
-                                    <Image source={IconsMap.icon_edit} style={ViewUserProfileStyles.fabStyles} /> :
-                                    <Image source={{
-                                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+              `
+                      }}
+                      style={ViewUserProfileStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Left>
+              <Body>
+                <TouchableOpacity
+                  style={{ position: "absolute", left: 30 }}
+                  onPress={() => this.onEditPress()}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_edit}
+                      style={ViewUserProfileStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                                     <defs>
                                       <style>
                                         .cls-1 {
@@ -487,22 +607,31 @@ class ViewUserProfileContainer extends Component {
                                       </g>
                                     </g>
                                   </svg>
-                                  ` }} style={ViewUserProfileStyles.fabStyles} />
-                                }
-                            </TouchableOpacity>
-                        </Body>
-                        <Right></Right>
-                    </Footer>:
-                    <View style={ViewUserProfileStyles.bottomView_android}>
-                    <Left>
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('EventList')}
-                            style={ViewUserProfileStyles.fabLeftWrapperStyles}
-                        >
-                            {Platform.OS === 'ios' ?
-                                <Image source={IconsMap.icon_list_circle} style={ViewUserProfileStyles.fabStyles} /> :
-                                <Image source={{
-                                    uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                                  `
+                      }}
+                      style={ViewUserProfileStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Body>
+              <Right />
+            </Footer>
+          ) : (
+            <View style={ViewUserProfileStyles.bottomView_android}>
+              <Left>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.navigate("EventList")}
+                  style={ViewUserProfileStyles.fabLeftWrapperStyles}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_list_circle}
+                      style={ViewUserProfileStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
             <defs>
               <style>
                 .cls-1 {
@@ -551,19 +680,27 @@ class ViewUserProfileContainer extends Component {
               </g>
             </g>
           </svg>
-          ` }} style={ViewUserProfileStyles.fabStyles} />
-                            }
-                        </TouchableOpacity>
-                    </Left>
-                    <Body style={{ position: 'relative', top: -25 }}>
-                        <TouchableOpacity
-                            style={{ position: 'absolute', left: 30 }}
-                            onPress={() => this.onEditPress()}
-                        >
-                            {Platform.OS === 'ios' ?
-                                <Image source={IconsMap.icon_edit} style={ViewUserProfileStyles.fabStyles} /> :
-                                <Image source={{
-                                    uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+          `
+                      }}
+                      style={ViewUserProfileStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Left>
+              <Body style={{ position: "relative", top: -25 }}>
+                <TouchableOpacity
+                  style={{ position: "absolute", left: 30 }}
+                  onPress={() => this.onEditPress()}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_edit}
+                      style={ViewUserProfileStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                                 <defs>
                                   <style>
                                     .cls-1 {
@@ -600,46 +737,59 @@ class ViewUserProfileContainer extends Component {
                                   </g>
                                 </g>
                               </svg>
-                              ` }} style={ViewUserProfileStyles.fabStyles} />
-                            }
-                        </TouchableOpacity>
-                    </Body>
-                    <Right></Right>
-                </View>}
-                </Container>
-                {animating &&
-                    <View style={ViewUserProfileStyles.overlay}>
-                        <Spinner color={'lightgoldenrodyellow'} style={ViewUserProfileStyles.spinner} />
-                    </View>
-                }
-            </React.Fragment>
-        );
-    }
+                              `
+                      }}
+                      style={ViewUserProfileStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Body>
+              <Right />
+            </View>
+          )}
+        </Container>
+        {animating && (
+          <View style={ViewUserProfileStyles.overlay}>
+            <Spinner
+              color={"lightgoldenrodyellow"}
+              style={ViewUserProfileStyles.spinner}
+            />
+          </View>
+        )}
+      </React.Fragment>
+    );
+  }
 }
 
 const images = {
-    img_about_infocus: require('assets/icon/btn_About_infocus.png'),
-    img_btn_about: require('assets/icon/btn_About.png'),
-    img_btn_friends_infocus: require('assets/icon/btn_Friends_infocus.png'),
-    img_btn_friends: require('assets/icon/btn_Friends.png'),
-    img_btn_profile_infocus: require('assets/icon/btn_Profile_infocus.png'),
-    img_btn_profile: require('assets/icon/btn_Profile.png'),
-}
-
+  img_about_infocus: require("assets/icon/btn_About_infocus.png"),
+  img_btn_about: require("assets/icon/btn_About.png"),
+  img_btn_friends_infocus: require("assets/icon/btn_Friends_infocus.png"),
+  img_btn_friends: require("assets/icon/btn_Friends.png"),
+  img_btn_profile_infocus: require("assets/icon/btn_Profile_infocus.png"),
+  img_btn_profile: require("assets/icon/btn_Profile.png")
+};
 
 const mapStateToProps = (state, ownProps) => {
-    return {
-        result: state.auth.profileStatus,
-        user: state.auth.user,
-        indicatorShow: state.auth.indicatorShow,
-    };
-}
+  return {
+    result: state.auth.profileStatus,
+    user: state.auth.user,
+    indicatorShow: state.auth.indicatorShow
+  };
+};
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        onShowIndicator: (bShow) => { dispatch(setVisibleIndicatorAction(bShow)) },
-        fetchProfileData: (socialUID) => { dispatch(fetchProfileDataAction(socialUID)) },
-    };
-}
+const mapDispatchToProps = dispatch => {
+  return {
+    onShowIndicator: bShow => {
+      dispatch(setVisibleIndicatorAction(bShow));
+    },
+    fetchProfileData: socialUID => {
+      dispatch(fetchProfileDataAction(socialUID));
+    }
+  };
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(ViewUserProfileContainer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ViewUserProfileContainer);
