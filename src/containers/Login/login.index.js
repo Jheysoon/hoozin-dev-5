@@ -245,27 +245,14 @@ class LoginContainer extends Component {
                   <Image source={IconsMap.icon_fb_40x40} />
                 </Button>
 
-                {/* Deprecated google button will be replaced by a built in button component provided by react-native-google-signin */}
-                <GoogleSigninButton
-                  style={{ width: 48, height: 48 }}
-                  size={GoogleSigninButton.Size.Wide}
-                  color={GoogleSigninButton.Color.Dark}
-                  onPress={() => {
-                    this.onGooglePressed();
-                  }}
-                  disabled={false}
-                />
-
-                {/* Deprecating this component as per HOOZ-25 JIRA*/}
-                {/* <Button
+                <Button
                   transparent
                   light
                   style={LoginStyles.googleLogin}
                   onPress={() => this.onGooglePressed()}
                 >
                   <Image source={IconsMap.icon_google_48x48} />
-                </Button> */}
-                {/* Deprecating this component as per HOOZ-25 JIRA*/}
+                </Button>
               </View>
             </View>
           </KeyboardAwareScrollView>

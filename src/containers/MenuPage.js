@@ -7,7 +7,17 @@ import {
   Platform
 } from "react-native";
 import Image from "react-native-remote-svg";
-import { Container, Content, Footer, Left, Body, Right } from "native-base";
+import {
+  Container,
+  Content,
+  Footer,
+  Left,
+  Body,
+  Right,
+  List,
+  ListItem,
+  Text
+} from "native-base";
 import { connect } from "react-redux";
 import { logOutAction } from "../actions/auth";
 import AppBarComponent from "../components/AppBar/appbar.index";
@@ -45,77 +55,90 @@ class MenuPage extends Component {
       <Container style={{ backgroundColor: "#ffffff" }}>
         <AppBarComponent openState={this.state.isMenuOpened} />
         <Content>
-          <View style={styles.menus}>
-            <TouchableOpacity onPress={() => this.onAboutPressed()}>
-              <Image
-                source={images.img_about}
-                resizeMode="cover"
-                style={styles.buttons}
-              />
-            </TouchableOpacity>
+          <List>
+            <ListItem
+              style={{
+                borderBottomColor: "#00000",
+                borderBottomWidth: 1
+              }}
+              button
+              onPress={() => this.onAboutPressed()}
+            >
+              <Text
+                style={{
+                  paddingLeft: 10,
+                  color: "#004D9B",
+                  paddingRight: 10
+                }}
+              >
+                About
+              </Text>
+            </ListItem>
 
-            <TouchableOpacity onPress={() => this.onProfilePressed()}>
-              <Image
-                source={images.img_profile}
-                resizeMode="cover"
-                style={styles.buttons}
-              />
-            </TouchableOpacity>
+            <ListItem
+              button
+              onPress={() => this.onProfilePressed()}
+              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
+            >
+              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>Profile</Text>
+            </ListItem>
 
-            <TouchableOpacity onPress={() => this.onFriendsPressed()}>
-              <Image
-                source={images.img_friends}
-                resizeMode="cover"
-                style={styles.buttons}
-              />
-            </TouchableOpacity>
+            <ListItem
+              button
+              onPress={() => this.onFriendsPressed()}
+              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
+            >
+              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>Friends</Text>
+            </ListItem>
 
-            <TouchableOpacity
+            <ListItem
+              button
               onPress={() => this.onTermsAndConditionPressed(this.state.tosUrl)}
+              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
             >
-              <Image
-                source={images.img_terms}
-                resizeMode="cover"
-                style={styles.buttons}
-              />
-            </TouchableOpacity>
+              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>
+                Terms of Service
+              </Text>
+            </ListItem>
 
-            <TouchableOpacity onPress={() => this.onProvideFeedbackPressed()}>
-              <Image
-                source={images.img_feedback}
-                resizeMode="cover"
-                style={styles.buttons}
-              />
-            </TouchableOpacity>
+            <ListItem
+              button
+              onPress={() => this.onProvideFeedbackPressed()}
+              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
+            >
+              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>
+                Provide Feedback
+              </Text>
+            </ListItem>
 
-            <TouchableOpacity
+            <ListItem
+              button
               onPress={() => this.onPrivacyPressed(this.state.privacyUrl)}
+              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
             >
-              <Image
-                source={images.img_privacy}
-                resizeMode="cover"
-                style={styles.buttons}
-              />
-            </TouchableOpacity>
+              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>
+                Privacy Policy
+              </Text>
+            </ListItem>
 
-            <TouchableOpacity
+            <ListItem
+              button
               onPress={() => this.onCookieUsagePressed(this.state.cookiesUrl)}
+              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
             >
-              <Image
-                source={images.img_cookies}
-                resizeMode="cover"
-                style={styles.buttons}
-              />
-            </TouchableOpacity>
+              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>
+                User of Cookies
+              </Text>
+            </ListItem>
 
-            <TouchableOpacity onPress={() => this.onLogoutPressed()}>
-              <Image
-                source={images.img_logout}
-                resizeMode="cover"
-                style={styles.buttons}
-              />
-            </TouchableOpacity>
-          </View>
+            <ListItem
+              button
+              onPress={() => this.onLogoutPressed()}
+              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
+            >
+              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>Logout</Text>
+            </ListItem>
+          </List>
         </Content>
 
         {/* Have to comment this out first, for security  reasons only */}
