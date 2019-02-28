@@ -3,6 +3,7 @@ package org.app.hoozin;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.marianhello.bgloc.react.BackgroundGeolocationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.RNTextInputMask.RNTextInputMaskPackage;
@@ -61,6 +62,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
+            new RNGoogleSigninPackage(),
             new BackgroundGeolocationPackage(),          
             new VectorIconsPackage(),
             new RNTextInputMaskPackage(),

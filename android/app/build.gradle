@@ -110,6 +110,14 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
     signingConfigs {
+        debug {
+            storeFile file(MYAPP_RELEASE_STORE_FILE)
+            storePassword MYAPP_RELEASE_STORE_PASSWORD
+            keyAlias MYAPP_RELEASE_KEY_ALIAS
+            keyPassword MYAPP_RELEASE_KEY_PASSWORD
+        }
+
+
         release {
             if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
                 storeFile file(MYAPP_RELEASE_STORE_FILE)
@@ -150,8 +158,12 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-mauron85-background-geolocation')
+    implementation(project(":react-native-google-signin"))
+
+
+
     
+    compile project(':react-native-mauron85-background-geolocation')   
     compile project(':react-native-vector-icons')
     compile project(':react-native-text-input-mask')
     compile project(':react-native-settings')
@@ -171,7 +183,6 @@ dependencies {
     implementation(project(":react-native-google-sign-in")) {
         exclude group: "com.google.android.gms"
     }
-
     implementation project(':react-native-fs')
     implementation project(':react-native-camera')
     implementation project(':react-native-contacts')
