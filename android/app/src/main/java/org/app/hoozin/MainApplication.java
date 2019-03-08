@@ -3,7 +3,8 @@ package org.app.hoozin;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import co.apptailor.Worker.BaseReactPackage;
+import co.apptailor.googlesignin.RNGoogleSigninPackage;
+import com.marianhello.bgloc.react.BackgroundGeolocationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.RNTextInputMask.RNTextInputMaskPackage;
 import io.rumors.reactnativesettings.RNSettingsPackage;
@@ -19,28 +20,26 @@ import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 import org.reactnative.camera.RNCameraPackage;
 import com.krazylabs.OpenAppSettingsPackage;
-import io.invertase.firebase.RNFirebasePackage;
-import com.RNFetchBlob.RNFetchBlobPackage;
-import com.rnfs.RNFSPackage;
-import org.reactnative.camera.RNCameraPackage;
-import com.rt2zz.reactnativecontacts.ReactNativeContacts;
+
+
+
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
-import com.reactlibrary.googlesignin.RNGoogleSignInPackage;
-import com.facebook.reactnative.androidsdk.FBSDKPackage;
+
+
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import io.invertase.firebase.RNFirebasePackage;
+
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.database.RNFirebaseDatabasePackage;
 import io.invertase.firebase.storage.RNFirebaseStoragePackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
-import com.airbnb.android.react.maps.MapsPackage;
-import com.devfd.RNGeocoder.RNGeocoderPackage;
+
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -62,38 +61,30 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
-              new MainReactPackage(),
-            new BaseReactPackage(),
+            new MainReactPackage(),
+            new RNGoogleSigninPackage(),
+            new BackgroundGeolocationPackage(),          
             new VectorIconsPackage(),
             new RNTextInputMaskPackage(),
             new RNSettingsPackage(),
-            new MapsPackage(),
             new PickerPackage(),
             new RNI18nPackage(),
-            new RNGoogleSignInPackage(),
-            new RNGeocoderPackage(),
-            new RNFSPackage(),
             new RNFirebasePackage(),
-            new RNFetchBlobPackage(),
-            new FBSDKPackage(),
-            new ReactNativeContacts(),
-            new RNCameraPackage(),
             new OpenAppSettingsPackage(),
-              new RNFirebasePackage(),
-              new RNFetchBlobPackage(),
-              new RNFSPackage(),
-              new RNCameraPackage(),
-              new ReactNativeContacts(),
-              new MapsPackage(),
-              new FBSDKPackage(mCallbackManager),
-              new RNGoogleSignInPackage(),
-              new RNFirebaseAuthPackage(),
-              new RNFirebaseFirestorePackage(),
-              new RNFirebaseMessagingPackage(),
-              new RNFirebaseDatabasePackage(),
-              new RNFirebaseStoragePackage(),
-              new RNFirebaseNotificationsPackage(),
-              new RNGeocoderPackage()
+            new RNFetchBlobPackage(),
+            new RNFSPackage(),
+            new RNCameraPackage(),
+            new ReactNativeContacts(),
+            new MapsPackage(),
+            new FBSDKPackage(mCallbackManager),
+            new RNGoogleSignInPackage(),
+            new RNFirebaseAuthPackage(),
+            new RNFirebaseFirestorePackage(),
+            new RNFirebaseMessagingPackage(),
+            new RNFirebaseDatabasePackage(),
+            new RNFirebaseStoragePackage(),
+            new RNFirebaseNotificationsPackage(),
+            new RNGeocoderPackage()
       );
     }
 

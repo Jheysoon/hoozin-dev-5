@@ -2,6 +2,12 @@
 
 ext {
     googlePlayServicesVersion   = "15.0.1"
+    buildToolsVersion = "27.0.3"
+    minSdkVersion = 16
+    compileSdkVersion = 27
+    targetSdkVersion = 26
+    supportLibVersion = "27.1.1"
+    googlePlayServicesAuthVersion = "15.0.1" // <--- use this version or newer
 }
 
 buildscript {
@@ -44,6 +50,15 @@ allprojects {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url "$rootDir/../node_modules/react-native/android"
         }
+
+
+        // ADD THIS --- image crop picker
+      maven { url 'https://maven.google.com' }
+ 
+      // ADD THIS --- image crop picker
+      maven { url "https://jitpack.io" }
+
+
         configurations.all {
             resolutionStrategy {
                 force "com.google.android.gms:play-services-basement:$googlePlayServicesVersion"

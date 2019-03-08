@@ -1,310 +1,430 @@
-import React, { Component } from 'react'
+import React, { Component } from "react";
 import {
-    View,
-    TextInput,
-    Alert,
-    TouchableOpacity,
-    Text,
-    Linking,
-    Platform
-} from 'react-native';
-import Image from 'react-native-remote-svg';
-import { Container, Content, Footer, Left, Right, Body, Textarea, Spinner } from 'native-base';
-import Geocoder from 'react-native-geocoder';
-import { RNCamera } from 'react-native-camera';
-import CheckBox from 'react-native-check-box';
-import { connect } from 'react-redux';
+  View,
+  TextInput,
+  Alert,
+  TouchableOpacity,
+  Text,
+  Linking,
+  Platform
+} from "react-native";
+import Image from "react-native-remote-svg";
+import {
+  Container,
+  Content,
+  Footer,
+  Left,
+  Right,
+  Body,
+  Textarea,
+  Spinner
+} from "native-base";
+import Geocoder from "react-native-geocoder";
+import { RNCamera } from "react-native-camera";
+import CheckBox from "react-native-check-box";
+import { connect } from "react-redux";
 
-import { strings } from '../../../locales/i18n';
-import { createUserAction, clearCreateStatusAction, setVisibleIndicatorAction } from '../../../actions/auth';
-import CameraService from '../../../utils/camera.service';
-import { IconsMap } from 'assets/assetMap';
-import AppBarComponent from '../../../components/AppBar/appbar.index';
-import { AuthServiceAPI } from '../../../api';
-
+import { strings } from "../../../locales/i18n";
+import {
+  createUserAction,
+  clearCreateStatusAction,
+  setVisibleIndicatorAction
+} from "../../../actions/auth";
+import CameraService from "../../../utils/camera.service";
+import { IconsMap } from "assets/assetMap";
+import AppBarComponent from "../../../components/AppBar/appbar.index";
+import { AuthServiceAPI } from "../../../api";
+import { Col, Row, Grid } from "react-native-easy-grid";
 // Stylesheet
-import { CreateProfileStyles } from './create-profile.style';
+import { CreateProfileStyles } from "./create-profile.style";
 
 /* Redux container component for creating user profile for the first time */
 class UserCreateProfileContainer extends Component {
-    static navigationOptions = {
-        header: null
+  static navigationOptions = {
+    header: null
+  };
+
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      facebook: null,
+      instagram: null,
+      linkedin: null,
+      twitter: null,
+      snapchat: null,
+      strava: null,
+      mapmyfitness: null,
+      name: null,
+      email: null,
+      password: null,
+      confirmPass: null,
+      phone: "",
+      address: null,
+      animating: false,
+      userCountryCode: "IN",
+      isCameraActive: false,
+      userLocation: null,
+      userProfileImg: null,
+      agreementAccepted: false,
+      tosUrl: "https://hoozin.app/termcondition",
+      privacyUrl: "https://hoozin.app/privacypolicy",
+      cookiesUrl: "https://hoozin.app/useofcookies"
     };
+    this.mount = true;
+  }
 
-    constructor(props, context) {
-        super(props, context)
-        this.state = {
-            facebook: null, instagram: null, linkedin: null, twitter: null, snapchat: null, strava: null,
-            mapmyfitness: null, name: null, email: null, password: null, confirmPass: null, phone: '', address: null, animating: false, userCountryCode: 'IN',
-            isCameraActive: false, userLocation: null, userProfileImg: null, agreementAccepted: false, tosUrl: "https://hoozin.app/termcondition", privacyUrl: "https://hoozin.app/privacypolicy", cookiesUrl: "https://hoozin.app/useofcookies"
-        }
-        this.mount = true
+  componentWillMount() {
+    const { params } = this.props.navigation.state;
+    if (!!params && !!params.shouldClearAutofill) {
+      console.log(params.shouldClearAutofill);
+      this.setState({ name: "", email: "" });
     }
+    this.getUserLocation();
+  }
 
-    componentWillMount() {
-        const { params } = this.props.navigation.state;
-        if (!!params && !!params.shouldClearAutofill) {
-            console.log(params.shouldClearAutofill);
-            this.setState({ name: '', email: '' });
-        }
-        this.getUserLocation();
-    }
-
-    getUserLocation() {
-        navigator.geolocation.setRNConfiguration({ skipPermissionRequests: false });
-        navigator.geolocation.getCurrentPosition(position => {
-            console.log("== current position ==", position);
-            Geocoder.geocodePosition({ lat: position.coords.latitude, lng: position.coords.longitude })
-                .then(result => {
-                    if (result) {
-                        console.log("== geocode result ==", result[0]);
-                        this.setState({ userCountryCode: result[0].countryCode, userLocation: { latitude: position.coords.latitude, longitude: position.coords.longitude } });
-                    }
-                })
-        },
-            error => {
-                console.log("+location retrieval error+", error);
-            },
-            {
-                enableHighAccuracy: true
-            }
-        );
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (!this.mount) return
-
-        let { indicatorShow } = nextProps
-
-        if (indicatorShow != this.state.animating) {
+  getUserLocation() {
+    navigator.geolocation.setRNConfiguration({ skipPermissionRequests: false });
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        console.log("== current position ==", position);
+        Geocoder.geocodePosition({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        }).then(result => {
+          if (result) {
+            console.log("== geocode result ==", result[0]);
             this.setState({
-                animating: indicatorShow,
-            })
-        }
-
-        if (nextProps.result !== null) {
-            const { result, exitStatus } = nextProps;
-            this.showIndicator(false)
-
-            if (result) {
-                const { replace } = this.props.navigation;
-                replace('NearbyEvents');
-            }
-            else if (!result && exitStatus == 1) {
-                Alert.alert(
-                    '',
-                    'The password must be at least 6 characters long',
-                    [{ text: 'OK', onPress: () => console.log('OK Pressed') },], { cancelable: false }
-                );
-            }
-            else if (!result && (!exitStatus || exitStatus == 2)) {
-                Alert.alert(
-                    '',
-                    'The email address is already in use by another account!',
-                    [{ text: 'OK', onPress: () => console.log('OK Pressed') },], { cancelable: false }
-                );
-            }
-
-            this.props.onClearCreate()
-        }
-    }
-
-    componentWillUnmount() {
-        this.mount = false;
-    }
-
-    /**
-     * @description Mask the phone input
-     * @param {string} number 
-     */
-    maskPhoneNumber(number) {
-        // use RegExp to just match and group part of the phone number which will be formated next
-        const x = number.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-        number = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-        this.setState({ phone: number });
-    }
-
-    /**
-     * @description update local state properties
-     * @param {string} state 
-     * @param {string} text 
-     */
-    updateState(state, text) {
-        const obj = {};
-        obj[state] = text;
-        this.setState(obj);
-    }
-
-    /**
-     * @description Tab bar on profile page - About page
-     */
-    onAbout() {
-        this.props.navigation.navigate({
-            routeName: 'About',
-            key: 'About', 
+              userCountryCode: result[0].countryCode,
+              userLocation: {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+              }
+            });
+          }
         });
+      },
+      error => {
+        console.log("+location retrieval error+", error);
+      },
+      {
+        enableHighAccuracy: true
+      }
+    );
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!this.mount) return;
+
+    let { indicatorShow } = nextProps;
+
+    if (indicatorShow != this.state.animating) {
+      this.setState({
+        animating: indicatorShow
+      });
     }
 
-    /**
-     * @description Tab bar on profile page - Profile page
-     */
-    onProfile() {
-        this.props.navigation.navigate({
-            routeName: 'ShowProfile',
-            key: 'ShowProfile', 
-        });
-    }
+    if (nextProps.result !== null) {
+      const { result, exitStatus } = nextProps;
+      this.showIndicator(false);
 
-    /**
-     * @description Tab bar on profile page - Friends page
-     */
-    onFriends() {
-
-    }
-
-    /**
-     * @description switch camera view
-     */
-    onAddProfileImage() {
-        this.setState({ isCameraActive: true });
-    }
-
-    /**
-     * @description Capture user profile image
-     */
-    takeUserProfilePicture() {
-        const camSvc = new CameraService();
-        this.setState({ animating: true });
-
-        camSvc.captureUserProfilePicture(this.camera, this.props.user.socialUID)
-            .then(uploadResult => this.setState({ userProfileImg: uploadResult.downloadURL, isCameraActive: false }));
-    }
-
-    loadImages() {
-        this.setState({ animating: false });
-    }
-
-    /**
-     * @description dismiss user creation and delete user profile from Firebase Auth
-     */
-    onCancel() {
+      if (result) {
+        const { replace } = this.props.navigation;
+        replace("NearbyEvents");
+      } else if (!result && exitStatus == 1) {
         Alert.alert(
-            'Cancel profile creation',
-            'This will clear all the information from this app you have shared with us so far',
-            [{
-                text: 'Yes, Proceed', onPress: () => {
-                    console.log("[Create Profile] user to be deleted", this.props.user);
-                    const { navigate } = this.props.navigation;
-                    if (!!this.props.navigation.state.params && !!this.props.navigation.state.params.shouldClearAutofill) {
-                        navigate('Login');
-                        return;
-                    }
-                    else {
-                        const authSvc = new AuthServiceAPI();
-                        authSvc.removeUser()
-                            .then(() => {
-                                navigate('Login')
-                            });
-                    }
-                }
-            }, {
-                text: 'Cancel', onPress: () => { }, style: 'cancel'
-            }], { cancelable: false }
-        )
+          "",
+          "The password must be at least 6 characters long",
+          [{ text: "OK", onPress: () => console.log("OK Pressed") }],
+          { cancelable: false }
+        );
+      } else if (!result && (!exitStatus || exitStatus == 2)) {
+        Alert.alert(
+          "",
+          "The email address is already in use by another account!",
+          [{ text: "OK", onPress: () => console.log("OK Pressed") }],
+          { cancelable: false }
+        );
+      }
+
+      this.props.onClearCreate();
     }
+  }
 
-    /**
-     * @description create user profile
-     */
-    onConfirm() {
-        let name = this.state.name !== null ? this.state.name : this.props.name ? this.props.name : this.props.user.name
-        let email = this.state.email !== null ? this.state.email : this.props.email ? this.props.email : this.props.user.email
-        let password = this.state.password
-        let confirmPass = this.state.confirmPass
-        let phone = this.state.phone
-        let address = this.state.address || ""
-        // Milstone #1 or Milestone #2 - issue related to password field check bypass due to accountType being null, initially
-        let accountType = this.props.user && this.props.user.accountType ? this.props.user.accountType : 'custom'
-        let socialUID = this.props.user ? this.props.user.socialUID : null
-        let countryCode = this.state.userCountryCode || 'US'
-        let profileImgUrl = this.state.userProfileImg || this.props.user.profileImageUrl || ''
-        let userLocation = this.state.userLocation
+  componentWillUnmount() {
+    this.mount = false;
+  }
 
-        if ((!name || !email || !phone) || (accountType == 'custom' && (!password || !confirmPass)) && this.state.agreementAccepted) {
-            Alert.alert(
-                'Required information missing',
-                'Name, Email/Password, Phone are required',
-                [{ text: 'OK, got it', onPress: () => console.log('OK Pressed') },], { cancelable: false }
-            )
-        }
-        else if (!this.state.agreementAccepted) {
-            Alert.alert(
-                'Terms not accepted',
-                'You must accept the agreement',
-                [{ text: 'OK, got it', onPress: () => console.log('OK Pressed') },], { cancelable: false }
-            )
-        }
-        else if (accountType == 'custom' && password !== confirmPass) {
-            Alert.alert(
-                'Password doesn\'t match',
-                'Both password must match. Please enter again',
-                [{ text: 'OK, got it', onPress: () => console.log('OK Pressed') },], { cancelable: false }
-            )
-        }
-        else {
-            this.showIndicator(true)
-            this.props.onCreate(name, email, this.state.password, phone, address, this.state.facebook, this.state.instagram,
-                this.state.linkedin, this.state.twitter, this.state.snapchat, this.state.strava, this.state.mapmyfitness, accountType, socialUID, countryCode, profileImgUrl, userLocation);
-        }
-    }
+  /**
+   * @description Mask the phone input
+   * @param {string} number
+   */
+  maskPhoneNumber(number) {
+    // use RegExp to just match and group part of the phone number which will be formated next
+    const x = number.replace(/\D/g, "").match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+    number = !x[2] ? x[1] : "(" + x[1] + ") " + x[2] + (x[3] ? "-" + x[3] : "");
+    this.setState({ phone: number });
+  }
 
-    /**
-     * @description show / hide spinner
-     * @param {boolean} bShow 
-     */
-    showIndicator(bShow) {
-        this.props.onShowIndicator(bShow)
-    }
+  /**
+   * @description update local state properties
+   * @param {string} state
+   * @param {string} text
+   */
+  updateState(state, text) {
+    const obj = {};
+    obj[state] = text;
+    this.setState(obj);
+  }
 
-    onAcceptAgreement() {
-        this.setState({ agreementAccepted: !this.state.agreementAccepted });
-        console.log("++ agreement ++", this.state.agreementAccepted);
-    }
+  /**
+   * @description Tab bar on profile page - About page
+   */
+  onAbout() {
+    this.props.navigation.navigate({
+      routeName: "About",
+      key: "About"
+    });
+  }
 
-    // Milestone #2 or Milestone #3 - issue related to clicking T&C links and app crashes
-    openLinks(url) {
-        Linking.canOpenURL(url).then(supported => {
-            if (!supported) {
-                console.log('Can\'t handle url: ' + url);
+  /**
+   * @description Tab bar on profile page - Profile page
+   */
+  onProfile() {
+    this.props.navigation.navigate({
+      routeName: "ShowProfile",
+      key: "ShowProfile"
+    });
+  }
+
+  /**
+   * @description Tab bar on profile page - Friends page
+   */
+  onFriends() {}
+
+  /**
+   * @description switch camera view
+   */
+  onAddProfileImage() {
+    this.setState({ isCameraActive: true });
+  }
+
+  /**
+   * @description Capture user profile image
+   */
+  takeUserProfilePicture() {
+    const camSvc = new CameraService();
+    this.setState({ animating: true });
+
+    camSvc
+      .captureUserProfilePicture(this.camera, this.props.user.socialUID)
+      .then(uploadResult =>
+        this.setState({
+          userProfileImg: uploadResult.downloadURL,
+          isCameraActive: false
+        })
+      );
+  }
+
+  loadImages() {
+    this.setState({ animating: false });
+  }
+
+  /**
+   * @description dismiss user creation and delete user profile from Firebase Auth
+   */
+  onCancel() {
+    Alert.alert(
+      "Cancel profile creation",
+      "This will clear all the information from this app you have shared with us so far",
+      [
+        {
+          text: "Yes, Proceed",
+          onPress: () => {
+            console.log("[Create Profile] user to be deleted", this.props.user);
+            const { navigate } = this.props.navigation;
+            if (
+              !!this.props.navigation.state.params &&
+              !!this.props.navigation.state.params.shouldClearAutofill
+            ) {
+              navigate("Login");
+              return;
             } else {
-                return Linking.openURL(url);
+              const authSvc = new AuthServiceAPI();
+              authSvc.removeUser().then(() => {
+                navigate("Login");
+              });
             }
-        }).catch(err => console.error('An error occurred', err));
+          }
+        },
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel"
+        }
+      ],
+      { cancelable: false }
+    );
+  }
+
+  /**
+   * @description create user profile
+   */
+  onConfirm() {
+    let name =
+      this.state.name !== null
+        ? this.state.name
+        : this.props.name
+        ? this.props.name
+        : this.props.user.name;
+    let email =
+      this.state.email !== null
+        ? this.state.email
+        : this.props.email
+        ? this.props.email
+        : this.props.user.email;
+    let password = this.state.password;
+    let confirmPass = this.state.confirmPass;
+    let phone = this.state.phone;
+    let address = this.state.address || "";
+    // Milstone #1 or Milestone #2 - issue related to password field check bypass due to accountType being null, initially
+    let accountType =
+      this.props.user && this.props.user.accountType
+        ? this.props.user.accountType
+        : "custom";
+    let socialUID = this.props.user ? this.props.user.socialUID : null;
+    let countryCode = this.state.userCountryCode || "US";
+    let profileImgUrl =
+      this.state.userProfileImg || this.props.user.profileImageUrl || "";
+    let userLocation = this.state.userLocation;
+
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      (accountType == "custom" &&
+        (!password || !confirmPass) &&
+        this.state.agreementAccepted)
+    ) {
+      Alert.alert(
+        "Required information missing",
+        "Name, Email/Password, Phone are required",
+        [{ text: "OK, got it", onPress: () => console.log("OK Pressed") }],
+        { cancelable: false }
+      );
+    } else if (!this.state.agreementAccepted) {
+      Alert.alert(
+        "Terms not accepted",
+        "You must accept the agreement",
+        [{ text: "OK, got it", onPress: () => console.log("OK Pressed") }],
+        { cancelable: false }
+      );
+    } else if (accountType == "custom" && password !== confirmPass) {
+      Alert.alert(
+        "Password doesn't match",
+        "Both password must match. Please enter again",
+        [{ text: "OK, got it", onPress: () => console.log("OK Pressed") }],
+        { cancelable: false }
+      );
+    } else {
+      this.showIndicator(true);
+      this.props.onCreate(
+        name,
+        email,
+        this.state.password,
+        phone,
+        address,
+        this.state.facebook,
+        this.state.instagram,
+        this.state.linkedin,
+        this.state.twitter,
+        this.state.snapchat,
+        this.state.strava,
+        this.state.mapmyfitness,
+        accountType,
+        socialUID,
+        countryCode,
+        profileImgUrl,
+        userLocation
+      );
     }
+  }
 
-    render() {
-        let facebook = this.state.facebook !== null ? this.state.facebook : this.props.facebook
-        let instagram = this.state.instagram !== null ? this.state.instagram : this.props.instagram
-        let linkedin = this.state.linkedin !== null ? this.state.linkedin : this.props.linkedin
-        let twitter = this.state.twitter !== null ? this.state.twitter : this.props.twitter
-        let snapchat = this.state.snapchat !== null ? this.state.snapchat : this.props.snapchat
-        let strava = this.state.strava !== null ? this.state.strava : this.props.strava
-        let mapmyfitness = this.state.mapmyfitness !== null ? this.state.mapmyfitness : this.props.mapmyfitness
-        let name = this.state.name !== null ? this.state.name : this.props.name ? this.props.name : this.props.user.name
-        let email = this.state.email !== null ? this.state.email : this.props.email ? this.props.email : this.props.user.email
-        let password = this.state.password !== null ? this.state.password : this.props.password
-        let confirmPass = this.state.confirmPass !== null ? this.state.confirmPass : this.props.confirmPass
-        let phone = this.state.phone !== '' ? this.state.phone : this.props.phone
-        let address = this.state.address !== null ? this.state.address : this.props.address
-        let animating = this.state.animating
-        let countryCode = this.state.userCountryCode
-        let profileImgUrl = this.state.userProfileImg || this.props.user.profileImageUrl || ''
+  /**
+   * @description show / hide spinner
+   * @param {boolean} bShow
+   */
+  showIndicator(bShow) {
+    this.props.onShowIndicator(bShow);
+  }
 
-        return (
-            <React.Fragment>
-                <Container style={{ backgroundColor: '#ffffff' }}>
-                    <AppBarComponent isMenuHidden={true} />
-                    <View style={CreateProfileStyles.tabBarView}>
+  onAcceptAgreement() {
+    this.setState({ agreementAccepted: !this.state.agreementAccepted });
+    console.log("++ agreement ++", this.state.agreementAccepted);
+  }
+
+  // Milestone #2 or Milestone #3 - issue related to clicking T&C links and app crashes
+  openLinks(url) {
+    Linking.canOpenURL(url)
+      .then(supported => {
+        if (!supported) {
+          console.log("Can't handle url: " + url);
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch(err => console.error("An error occurred", err));
+  }
+
+  render() {
+    let facebook =
+      this.state.facebook !== null ? this.state.facebook : this.props.facebook;
+    let instagram =
+      this.state.instagram !== null
+        ? this.state.instagram
+        : this.props.instagram;
+    let linkedin =
+      this.state.linkedin !== null ? this.state.linkedin : this.props.linkedin;
+    let twitter =
+      this.state.twitter !== null ? this.state.twitter : this.props.twitter;
+    let snapchat =
+      this.state.snapchat !== null ? this.state.snapchat : this.props.snapchat;
+    let strava =
+      this.state.strava !== null ? this.state.strava : this.props.strava;
+    let mapmyfitness =
+      this.state.mapmyfitness !== null
+        ? this.state.mapmyfitness
+        : this.props.mapmyfitness;
+    let name =
+      this.state.name !== null
+        ? this.state.name
+        : this.props.name
+        ? this.props.name
+        : this.props.user.name;
+    let email =
+      this.state.email !== null
+        ? this.state.email
+        : this.props.email
+        ? this.props.email
+        : this.props.user.email;
+    let password =
+      this.state.password !== null ? this.state.password : this.props.password;
+    let confirmPass =
+      this.state.confirmPass !== null
+        ? this.state.confirmPass
+        : this.props.confirmPass;
+    let phone = this.state.phone !== "" ? this.state.phone : this.props.phone;
+    let address =
+      this.state.address !== null ? this.state.address : this.props.address;
+    let animating = this.state.animating;
+    let countryCode = this.state.userCountryCode;
+    let profileImgUrl =
+      this.state.userProfileImg || this.props.user.profileImageUrl || "";
+
+    return (
+      <React.Fragment>
+        <Container style={{ backgroundColor: "#ffffff" }}>
+          <AppBarComponent isMenuHidden={true} />
+          {/* <View style={CreateProfileStyles.tabBarView}>
                         <TouchableOpacity
                             onPress={() => this.onAbout()} >
                             <Image source={images.img_btn_about} />
@@ -317,312 +437,378 @@ class UserCreateProfileContainer extends Component {
                             onPress={() => this.onFriends()} >
                             <Image source={images.img_btn_friends} />
                         </TouchableOpacity >
+                    </View> */}
+
+          <View style={CreateProfileStyles.tabBarView}>
+            <Grid>
+              <Col
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <TouchableOpacity onPress={() => this.onAbout()}>
+                  <Image source={images.img_btn_about} />
+                </TouchableOpacity>
+              </Col>
+
+              <Col
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <TouchableOpacity onPress={() => this.onProfile()}>
+                  <Image source={images.img_btn_profile_infocus} />
+                </TouchableOpacity>
+              </Col>
+
+              <Col
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <TouchableOpacity onPress={() => this.onFriends()}>
+                  <Image source={images.img_btn_friends} />
+                </TouchableOpacity>
+              </Col>
+            </Grid>
+          </View>
+
+          {!this.state.isCameraActive ? (
+            <Content>
+              <View style={CreateProfileStyles.avatarView}>
+                <TouchableOpacity onPress={() => this.onAddProfileImage()}>
+                  {this.props.user.profileImageUrl ||
+                  this.state.userProfileImg ? (
+                    <Image
+                      source={{
+                        uri:
+                          this.state.userProfileImg ||
+                          this.props.user.profileImageUrl
+                      }}
+                      style={{ width: 117, height: 117, borderRadius: 117 / 2 }}
+                      onLoadEnd={() => this.loadImages()}
+                    />
+                  ) : (
+                    <Image source={IconsMap.icon_user_avatar} />
+                  )}
+                </TouchableOpacity>
+              </View>
+              <View style={CreateProfileStyles.dataView}>
+                <View style={CreateProfileStyles.nameArea}>
+                  <TextInput
+                    multiline={false}
+                    style={[
+                      CreateProfileStyles.textInput,
+                      CreateProfileStyles.line
+                    ]}
+                    autoCapitalize="words"
+                    autoCorrect={false}
+                    onChangeText={text => this.updateState("name", text)}
+                    value={name}
+                    placeholder={strings("profile_page.name")}
+                    placeholderTextColor={"#8E8E93"}
+                    underlineColorAndroid="transparent"
+                  />
+                  <TextInput
+                    multiline={false}
+                    style={[
+                      CreateProfileStyles.textInput,
+                      CreateProfileStyles.line
+                    ]}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    onChangeText={text => this.updateState("email", text)}
+                    value={email}
+                    placeholder={strings("login.email")}
+                    placeholderTextColor={"#8E8E93"}
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
+                {!!this.props.navigation.state.params &&
+                !!this.props.navigation.state.params.shouldClearAutofill ? (
+                  <View style={CreateProfileStyles.passwordArea}>
+                    <View style={CreateProfileStyles.iconArea}>
+                      <Image
+                        source={IconsMap.icon_password}
+                        resizeMode="contain"
+                      />
                     </View>
-                    {!this.state.isCameraActive ?
-                        <Content>
-                            <View style={CreateProfileStyles.avatarView}>
-                                <TouchableOpacity
-                                    onPress={() => this.onAddProfileImage()} >
-                                    {this.props.user.profileImageUrl || this.state.userProfileImg ?
-                                        <Image source={{ uri: this.state.userProfileImg || this.props.user.profileImageUrl }} style={{ width: 117, height: 117, borderRadius: 117 / 2 }} onLoadEnd={() => this.loadImages()} /> :
-                                        <Image source={IconsMap.icon_user_avatar} />
-                                    }
-                                </TouchableOpacity >
-                            </View>
-                            <View style={CreateProfileStyles.dataView}>
-                                <View style={CreateProfileStyles.nameArea}>
-                                    <TextInput multiline={false}
-                                        style={
-                                            [CreateProfileStyles.textInput, CreateProfileStyles.line]
-                                        }
-                                        autoCapitalize='words'
-                                        autoCorrect={false}
-                                        onChangeText={
-                                            (text) => this.updateState('name', text)
-                                        }
-                                        value={name}
-                                        placeholder={strings('profile_page.name')}
-                                        placeholderTextColor={'#8E8E93'}
-                                        underlineColorAndroid='transparent'
-                                    />
-                                    <TextInput multiline={false}
-                                        style={
-                                            [CreateProfileStyles.textInput, CreateProfileStyles.line]
-                                        }
-                                        autoCapitalize='none'
-                                        autoCorrect={false}
-                                        onChangeText={
-                                            (text) => this.updateState('email', text)
-                                        }
-                                        value={email}
-                                        placeholder={strings('login.email')}
-                                        placeholderTextColor={'#8E8E93'}
-                                        underlineColorAndroid='transparent'
-                                    />
-                                </View>
-                                {
-                                    !!this.props.navigation.state.params && !!this.props.navigation.state.params.shouldClearAutofill ?
+                    <View style={CreateProfileStyles.passwordInput}>
+                      <TextInput
+                        multiline={false}
+                        style={[
+                          CreateProfileStyles.textInput,
+                          CreateProfileStyles.line
+                        ]}
+                        ellipsizeMode="clip"
+                        secureTextEntry={true}
+                        onChangeText={text =>
+                          this.updateState("password", text)
+                        }
+                        value={password}
+                        placeholder={strings("login.password")}
+                        placeholderTextColor={"#8E8E93"}
+                        underlineColorAndroid="transparent"
+                      />
+                      <TextInput
+                        multiline={false}
+                        style={[
+                          CreateProfileStyles.textInput,
+                          CreateProfileStyles.line
+                        ]}
+                        ellipsizeMode="clip"
+                        secureTextEntry={true}
+                        onChangeText={text =>
+                          this.updateState("confirmPass", text)
+                        }
+                        value={confirmPass}
+                        placeholder={strings("profile_page.confirm_password")}
+                        placeholderTextColor={"#8E8E93"}
+                        underlineColorAndroid="transparent"
+                      />
+                    </View>
+                  </View>
+                ) : null}
 
-                                        <View style={CreateProfileStyles.passwordArea}>
-                                            <View style={CreateProfileStyles.iconArea} >
-                                                <Image source={IconsMap.icon_password}
-                                                    resizeMode='contain' />
-                                            </View>
-                                            <View style={CreateProfileStyles.passwordInput} >
-                                                <TextInput multiline={false}
-                                                    style={
-                                                        [CreateProfileStyles.textInput, CreateProfileStyles.line]
-                                                    }
-                                                    ellipsizeMode='clip'
-                                                    secureTextEntry={true}
-                                                    onChangeText={
-                                                        (text) => this.updateState('password', text)
-                                                    }
-                                                    value={password}
-                                                    placeholder={strings('login.password')}
-                                                    placeholderTextColor={'#8E8E93'}
-                                                    underlineColorAndroid='transparent'
-                                                />
-                                                <TextInput multiline={false}
-                                                    style={
-                                                        [CreateProfileStyles.textInput, CreateProfileStyles.line]
-                                                    }
-                                                    ellipsizeMode='clip'
-                                                    secureTextEntry={true}
-                                                    onChangeText={
-                                                        (text) => this.updateState('confirmPass', text)
-                                                    }
-                                                    value={confirmPass}
-                                                    placeholder={strings('profile_page.confirm_password')}
-                                                    placeholderTextColor={'#8E8E93'}
-                                                    underlineColorAndroid='transparent'
-                                                />
-                                            </View>
-                                        </View> : null
-                                }
+                <View style={CreateProfileStyles.phoneArea}>
+                  <View style={CreateProfileStyles.phoneMaskArea}>
+                    <TextInput
+                      multiline={false}
+                      style={[
+                        CreateProfileStyles.textInput,
+                        CreateProfileStyles.line
+                      ]}
+                      autoCapitalize="none"
+                      keyboardType="phone-pad"
+                      maxLength={14}
+                      autoCorrect={false}
+                      onChangeText={text => this.maskPhoneNumber(text)}
+                      value={phone}
+                      placeholder={strings("profile_page.phone")}
+                      placeholderTextColor={"#8E8E93"}
+                      underlineColorAndroid="transparent"
+                    />
+                  </View>
+                  <Textarea
+                    rowSpan={4}
+                    style={[
+                      CreateProfileStyles.addressText,
+                      CreateProfileStyles.line
+                    ]}
+                    autoCapitalize="words"
+                    autoCorrect={false}
+                    onChangeText={text => this.updateState("address", text)}
+                    value={address}
+                    placeholder={strings("profile_page.address")}
+                    placeholderTextColor={"#8E8E93"}
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
+              </View>
+              <View style={CreateProfileStyles.sociallinkView}>
+                <View style={CreateProfileStyles.socialContent}>
+                  <View style={CreateProfileStyles.socialInput}>
+                    {Platform.OS === "ios" ? (
+                      <Image source={IconsMap.icon_fb_26x26} />
+                    ) : (
+                      <Image source={IconsMap.icon_fb} />
+                    )}
 
-                                <View style={CreateProfileStyles.phoneArea}>
-                                    <View style={CreateProfileStyles.phoneMaskArea}>
-                                        <TextInput multiline={false}
-                                            style={
-                                                [CreateProfileStyles.textInput, CreateProfileStyles.line]
-                                            }
-                                            autoCapitalize='none'
-                                            keyboardType="phone-pad"
-                                            maxLength={14}
-                                            autoCorrect={false}
-                                            onChangeText={
-                                                (text) => this.maskPhoneNumber(text)
-                                            }
-                                            value={phone}
-                                            placeholder={strings('profile_page.phone')}
-                                            placeholderTextColor={'#8E8E93'}
-                                            underlineColorAndroid='transparent'
-                                        />
-                                    </View>
-                                    <Textarea
-                                        rowSpan={4}
-                                        style={
-                                            [CreateProfileStyles.addressText, CreateProfileStyles.line]
-                                        }
-                                        autoCapitalize='words'
-                                        autoCorrect={false}
-                                        onChangeText={
-                                            (text) => this.updateState('address', text)
-                                        }
-                                        value={address}
-                                        placeholder={strings('profile_page.address')}
-                                        placeholderTextColor={'#8E8E93'}
-                                        underlineColorAndroid='transparent'
-                                    />
-                                </View>
-                            </View>
-                            <View style={CreateProfileStyles.sociallinkView}>
-                                <View style={CreateProfileStyles.socialContent} >
-                                    <View style={CreateProfileStyles.socialInput}>
-                                        {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_fb_26x26} />:
-                                            <Image source={IconsMap.icon_fb} />
-                                        }
+                    <TextInput
+                      multiline={false}
+                      style={CreateProfileStyles.socialTextInput}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      onChangeText={text => this.updateState("facebook", text)}
+                      value={facebook}
+                      underlineColorAndroid="transparent"
+                    />
+                  </View>
+                  <View style={CreateProfileStyles.socialLine} />
+                </View>
 
-                                        <TextInput multiline={false}
-                                            style={CreateProfileStyles.socialTextInput}
-                                            autoCapitalize='none'
-                                            autoCorrect={false}
+                <View style={CreateProfileStyles.socialContent}>
+                  <View style={CreateProfileStyles.socialInput}>
+                    {Platform.OS === "ios" ? (
+                      <Image source={IconsMap.icon_instagram} />
+                    ) : (
+                      <Image source={IconsMap.icon_instagram_png} />
+                    )}
 
-                                            onChangeText={
-                                                (text) => this.updateState('facebook', text)
-                                            }
-                                            value={facebook}
-                                            underlineColorAndroid='transparent'
-                                        />
-                                    </View>
-                                    <View style={CreateProfileStyles.socialLine}>
-                                    </View>
-                                </View>
+                    <TextInput
+                      multiline={false}
+                      style={CreateProfileStyles.socialTextInput}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      onChangeText={text => this.updateState("instagram", text)}
+                      value={instagram}
+                      underlineColorAndroid="transparent"
+                    />
+                  </View>
+                  <View style={CreateProfileStyles.socialLine} />
+                </View>
 
-                                <View style={CreateProfileStyles.socialContent} >
-                                    <View style={CreateProfileStyles.socialInput}>
-                                        {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_instagram} />:
-                                            <Image source={IconsMap.icon_instagram_png} />
-                                        }
+                <View style={CreateProfileStyles.socialContent}>
+                  <View style={CreateProfileStyles.socialInput}>
+                    {Platform.OS === "ios" ? (
+                      <Image source={IconsMap.icon_linkedin} />
+                    ) : (
+                      <Image source={IconsMap.icon_linkedin_png} />
+                    )}
 
-                                        <TextInput multiline={false}
-                                            style={CreateProfileStyles.socialTextInput}
-                                            autoCapitalize='none'
-                                            autoCorrect={false}
+                    <TextInput
+                      multiline={false}
+                      style={CreateProfileStyles.socialTextInput}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      onChangeText={text => this.updateState("linkedin", text)}
+                      value={linkedin}
+                      underlineColorAndroid="transparent"
+                    />
+                  </View>
+                  <View style={CreateProfileStyles.socialLine} />
+                </View>
 
-                                            onChangeText={
-                                                (text) => this.updateState('instagram', text)
-                                            }
-                                            value={instagram}
-                                            underlineColorAndroid='transparent'
-                                        />
-                                    </View>
-                                    <View style={CreateProfileStyles.socialLine}>
-                                    </View>
-                                </View>
+                <View style={CreateProfileStyles.socialContent}>
+                  <View style={CreateProfileStyles.socialInput}>
+                    {Platform.OS === "ios" ? (
+                      <Image source={IconsMap.icon_twitter} />
+                    ) : (
+                      <Image source={IconsMap.icon_twitter_png} />
+                    )}
 
-                                <View style={CreateProfileStyles.socialContent} >
-                                    <View style={CreateProfileStyles.socialInput}>
-                                        {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_linkedin} />:
-                                            <Image source={IconsMap.icon_linkedin_png} />
-                                        }
+                    <TextInput
+                      multiline={false}
+                      style={CreateProfileStyles.socialTextInput}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      onChangeText={text => this.updateState("twitter", text)}
+                      value={twitter}
+                      underlineColorAndroid="transparent"
+                    />
+                  </View>
+                  <View style={CreateProfileStyles.socialLine} />
+                </View>
 
-                                        <TextInput multiline={false}
-                                            style={CreateProfileStyles.socialTextInput}
-                                            autoCapitalize='none'
-                                            autoCorrect={false}
+                <View style={CreateProfileStyles.socialContent}>
+                  <View style={CreateProfileStyles.socialInput}>
+                    {Platform.OS === "ios" ? (
+                      <Image source={IconsMap.icon_snapchat} />
+                    ) : (
+                      <Image source={IconsMap.icon_snapchat_png} />
+                    )}
 
-                                            onChangeText={
-                                                (text) => this.updateState('linkedin', text)
-                                            }
-                                            value={linkedin}
-                                            underlineColorAndroid='transparent'
-                                        />
-                                    </View>
-                                    <View style={CreateProfileStyles.socialLine}>
-                                    </View>
-                                </View>
+                    <TextInput
+                      multiline={false}
+                      style={CreateProfileStyles.socialTextInput}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      onChangeText={text => this.updateState("snapchat", text)}
+                      value={snapchat}
+                      underlineColorAndroid="transparent"
+                    />
+                  </View>
+                  <View style={CreateProfileStyles.socialLine} />
+                </View>
 
-                                <View style={CreateProfileStyles.socialContent} >
-                                    <View style={CreateProfileStyles.socialInput}>
-                                        {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_twitter} />:
-                                            <Image source={IconsMap.icon_twitter_png} />
-                                        }
+                <View style={CreateProfileStyles.socialContent}>
+                  <View style={CreateProfileStyles.socialInput}>
+                    {Platform.OS === "ios" ? (
+                      <Image source={IconsMap.icon_strava} />
+                    ) : (
+                      <Image source={IconsMap.icon_strava_png} />
+                    )}
 
-                                        <TextInput multiline={false}
-                                            style={CreateProfileStyles.socialTextInput}
-                                            autoCapitalize='none'
-                                            autoCorrect={false}
+                    <TextInput
+                      multiline={false}
+                      style={CreateProfileStyles.socialTextInput}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      onChangeText={text => this.updateState("strava", text)}
+                      value={strava}
+                      underlineColorAndroid="transparent"
+                    />
+                  </View>
+                  <View style={CreateProfileStyles.socialLine} />
+                </View>
 
-                                            onChangeText={
-                                                (text) => this.updateState('twitter', text)
-                                            }
-                                            value={twitter}
-                                            underlineColorAndroid='transparent'
-                                        />
-                                    </View>
-                                    <View style={CreateProfileStyles.socialLine}>
-                                    </View>
-                                </View>
+                <View style={CreateProfileStyles.socialContent}>
+                  <View style={CreateProfileStyles.socialInput}>
+                    {Platform.OS === "ios" ? (
+                      <Image source={IconsMap.icon_ua} />
+                    ) : (
+                      <Image source={IconsMap.icon_ua_png} />
+                    )}
 
-                                <View style={CreateProfileStyles.socialContent} >
-                                    <View style={CreateProfileStyles.socialInput}>
-                                        {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_snapchat} />:
-                                            <Image source={IconsMap.icon_snapchat_png} />
-                                        }
-
-                                        <TextInput multiline={false}
-                                            style={CreateProfileStyles.socialTextInput}
-                                            autoCapitalize='none'
-                                            autoCorrect={false}
-
-                                            onChangeText={
-                                                (text) => this.updateState('snapchat', text)
-                                            }
-                                            value={snapchat}
-                                            underlineColorAndroid='transparent'
-                                        />
-                                    </View>
-                                    <View style={CreateProfileStyles.socialLine}>
-                                    </View>
-                                </View>
-
-                                <View style={CreateProfileStyles.socialContent} >
-                                    <View style={CreateProfileStyles.socialInput}>
-                                        {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_strava} />:
-                                            <Image source={IconsMap.icon_strava_png} />
-                                        }
-
-                                        <TextInput multiline={false}
-                                            style={CreateProfileStyles.socialTextInput}
-                                            autoCapitalize='none'
-                                            autoCorrect={false}
-
-                                            onChangeText={
-                                                (text) => this.updateState('strava', text)
-                                            }
-                                            value={strava}
-                                            underlineColorAndroid='transparent'
-                                        />
-                                    </View>
-                                    <View style={CreateProfileStyles.socialLine}>
-                                    </View>
-                                </View>
-
-                                <View style={CreateProfileStyles.socialContent} >
-                                    <View style={CreateProfileStyles.socialInput}>
-                                        {Platform.OS === 'ios'?
-                                            <Image source={IconsMap.icon_ua} />:
-                                            <Image source={IconsMap.icon_ua_png} />
-                                        }
-
-                                        <TextInput multiline={false}
-                                            style={CreateProfileStyles.socialTextInput}
-                                            autoCapitalize='none'
-                                            autoCorrect={false}
-
-                                            onChangeText={
-                                                (text) => this.updateState('mapmyfitness', text)
-                                            }
-                                            value={mapmyfitness}
-                                            underlineColorAndroid='transparent'
-                                        />
-                                    </View>
-                                    <View style={CreateProfileStyles.socialLine}>
-                                    </View>
-                                </View>
-                                <View style={{ paddingTop: 40, width: '100%' }}>
-                                    <CheckBox
-                                        style={{ paddingRight: 10, width: '100%' }}
-                                        onClick={() => this.onAcceptAgreement()}
-                                        isChecked={this.state.agreementAccepted}
-                                        rightText="I have read and agreed to the following"
-                                        rightTextStyle={{ color: '#666666' }}
-                                    />
-                                    <TouchableOpacity onPress={() => this.openLinks(this.state.tosUrl)}><Text style={CreateProfileStyles.agreementTxt}>{'\u2022'} &nbsp; Terms of Service</Text></TouchableOpacity>
-                                    <TouchableOpacity onPress={() => this.openLinks(this.state.privacyUrl)}><Text style={CreateProfileStyles.agreementTxt}>{'\u2022'} &nbsp; Privacy Policy</Text></TouchableOpacity>
-                                    <TouchableOpacity onPress={() => this.openLinks(this.state.cookiesUrl)}><Text style={CreateProfileStyles.agreementTxt}>{'\u2022'} &nbsp; Use of Cookies</Text></TouchableOpacity>
-                                </View>
-                            </View>
-                        </Content> : null}
-                    {Platform.OS === 'ios' ?    
-                    <Footer style={CreateProfileStyles.bottomView_ios}>
-                        <Left>
-                            <TouchableOpacity
-                                onPress={() => this.onCancel()}
-                                style={CreateProfileStyles.fabLeftWrapperStyles}
-                            >
-                                {Platform.OS === 'ios' ?
-                                    <Image source={IconsMap.icon_close_gray} style={CreateProfileStyles.fabStyles} /> :
-                                    <Image source={{
-                                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                    <TextInput
+                      multiline={false}
+                      style={CreateProfileStyles.socialTextInput}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      onChangeText={text =>
+                        this.updateState("mapmyfitness", text)
+                      }
+                      value={mapmyfitness}
+                      underlineColorAndroid="transparent"
+                    />
+                  </View>
+                  <View style={CreateProfileStyles.socialLine} />
+                </View>
+                <View style={{ paddingTop: 40, width: "100%" }}>
+                  <CheckBox
+                    style={{ paddingRight: 10, width: "100%" }}
+                    onClick={() => this.onAcceptAgreement()}
+                    isChecked={this.state.agreementAccepted}
+                    rightText="I have read and agreed to the following"
+                    rightTextStyle={{ color: "#666666" }}
+                  />
+                  <TouchableOpacity
+                    onPress={() => this.openLinks(this.state.tosUrl)}
+                  >
+                    <Text style={CreateProfileStyles.agreementTxt}>
+                      {"\u2022"} &nbsp; Terms of Service
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => this.openLinks(this.state.privacyUrl)}
+                  >
+                    <Text style={CreateProfileStyles.agreementTxt}>
+                      {"\u2022"} &nbsp; Privacy Policy
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => this.openLinks(this.state.cookiesUrl)}
+                  >
+                    <Text style={CreateProfileStyles.agreementTxt}>
+                      {"\u2022"} &nbsp; Use of Cookies
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Content>
+          ) : null}
+          {Platform.OS === "ios" ? (
+            <Footer style={CreateProfileStyles.bottomView_ios}>
+              <Left>
+                <TouchableOpacity
+                  onPress={() => this.onCancel()}
+                  style={CreateProfileStyles.fabLeftWrapperStyles}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_close_gray}
+                      style={CreateProfileStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                                     <defs>
                                       <style>
                                         .cls-1 {
@@ -666,19 +852,27 @@ class UserCreateProfileContainer extends Component {
                                       </g>
                                     </g>
                                   </svg>
-                                  ` }} style={CreateProfileStyles.fabStyles} />
-                                }
-                            </TouchableOpacity>
-                        </Left>
-                        <Body>
-                            <TouchableOpacity
-                                style={{ position: 'absolute', left: 30 }}
-                                onPress={() => this.onConfirm()}
-                            >
-                                {Platform.OS === 'ios' ?
-                                    <Image source={IconsMap.icon_success} style={CreateProfileStyles.fabStyles} /> :
-                                    <Image source={{
-                                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                                  `
+                      }}
+                      style={CreateProfileStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Left>
+              <Body>
+                <TouchableOpacity
+                  style={{ position: "absolute", left: 30 }}
+                  onPress={() => this.onConfirm()}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_success}
+                      style={CreateProfileStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                 <defs>
                   <style>
                     .cls-1 {
@@ -715,22 +909,31 @@ class UserCreateProfileContainer extends Component {
                   </g>
                 </g>
               </svg>
-              ` }} style={CreateProfileStyles.fabStyles} />
-                                }
-                            </TouchableOpacity>
-                        </Body>
-                        <Right></Right>
-                    </Footer>:
-                    <View style={CreateProfileStyles.bottomView_android}>
-                    <Left>
-                        <TouchableOpacity
-                            onPress={() => this.onCancel()}
-                            style={CreateProfileStyles.fabLeftWrapperStyles}
-                        >
-                            {Platform.OS === 'ios' ?
-                                <Image source={IconsMap.icon_close_gray} style={CreateProfileStyles.fabStyles} /> :
-                                <Image source={{
-                                    uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+              `
+                      }}
+                      style={CreateProfileStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Body>
+              <Right />
+            </Footer>
+          ) : (
+            <View style={CreateProfileStyles.bottomView_android}>
+              <Left>
+                <TouchableOpacity
+                  onPress={() => this.onCancel()}
+                  style={CreateProfileStyles.fabLeftWrapperStyles}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_close_gray}
+                      style={CreateProfileStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                             <defs>
                               <style>
                                 .cls-1 {
@@ -774,19 +977,27 @@ class UserCreateProfileContainer extends Component {
                               </g>
                             </g>
                           </svg>
-                          ` }} style={CreateProfileStyles.fabStyles} />
-                            }
-                        </TouchableOpacity>
-                    </Left>
-                    <Body style={{ position: 'relative', top: -25 }}>
-                        <TouchableOpacity
-                            style={{ position: 'absolute', left: 30 }}
-                            onPress={() => this.onConfirm()}
-                        >
-                            {Platform.OS === 'ios' ?
-                                <Image source={IconsMap.icon_success} style={CreateProfileStyles.fabStyles} /> :
-                                <Image source={{
-                                    uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                          `
+                      }}
+                      style={CreateProfileStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Left>
+              <Body style={{ position: "relative", top: -25 }}>
+                <TouchableOpacity
+                  style={{ position: "absolute", left: 30 }}
+                  onPress={() => this.onConfirm()}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_success}
+                      style={CreateProfileStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
         <defs>
           <style>
             .cls-1 {
@@ -823,32 +1034,50 @@ class UserCreateProfileContainer extends Component {
           </g>
         </g>
       </svg>
-      ` }} style={CreateProfileStyles.fabStyles} />
-                            }
-                        </TouchableOpacity>
-                    </Body>
-                    <Right></Right>
-                </View>}
-                    {this.state.isCameraActive ?
-                        <View style={CreateProfileStyles.camContainer}>
-                            <RNCamera
-                                ref={ref => {
-                                    this.camera = ref;
-                                }}
-                                style={CreateProfileStyles.preview}
-                                type={RNCamera.Constants.Type.front}
-                                flashMode={RNCamera.Constants.FlashMode.on}
-                                permissionDialogTitle={'Permission to use camera'}
-                                permissionDialogMessage={'We need your permission to use your camera phone'}
-                            />
-                            <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center', position: 'absolute', bottom: 0, left: '18%' }}>
-                                <TouchableOpacity
-                                    onPress={() => this.setState({ isCameraActive: false })}
-                                    style={{ marginRight: 30 }}
-                                >
-                                    {Platform.OS === 'ios'?
-                                        <Image source={IconsMap.icon_chevron_left} />:
-                                        <Image source={{ uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+      `
+                      }}
+                      style={CreateProfileStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Body>
+              <Right />
+            </View>
+          )}
+          {this.state.isCameraActive ? (
+            <View style={CreateProfileStyles.camContainer}>
+              <RNCamera
+                ref={ref => {
+                  this.camera = ref;
+                }}
+                style={CreateProfileStyles.preview}
+                type={RNCamera.Constants.Type.front}
+                flashMode={RNCamera.Constants.FlashMode.on}
+                permissionDialogTitle={"Permission to use camera"}
+                permissionDialogMessage={
+                  "We need your permission to use your camera phone"
+                }
+              />
+              <View
+                style={{
+                  flex: 0,
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  position: "absolute",
+                  bottom: 0,
+                  left: "18%"
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => this.setState({ isCameraActive: false })}
+                  style={{ marginRight: 30 }}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image source={IconsMap.icon_chevron_left} />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                                         <defs>
                                           <style>
                                             .cls-1 {
@@ -883,15 +1112,20 @@ class UserCreateProfileContainer extends Component {
                                           </g>
                                         </g>
                                       </svg>
-                                      ` }} />
-                                    }
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={this.takeUserProfilePicture.bind(this)}
-                                >
-                                    {Platform.OS === 'ios'?
-                                        <Image source={IconsMap.icon_camera} />:
-                                        <Image source={{ uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                                      `
+                      }}
+                    />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={this.takeUserProfilePicture.bind(this)}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image source={IconsMap.icon_camera} />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                                         <defs>
                                           <style>
                                             .cls-1 {
@@ -956,50 +1190,99 @@ class UserCreateProfileContainer extends Component {
                                           </g>
                                         </g>
                                       </svg>
-                                      ` }} />
-                                    }
-                                </TouchableOpacity>
-                            </View>
-                        </View> : null}
-                </Container>
-                {animating &&
-                    <View style={CreateProfileStyles.overlay}>
-                        <Spinner color={'lightgoldenrodyellow'} style={CreateProfileStyles.spinner} />
-                    </View>
-                }
-            </React.Fragment>
-        );
-    }
+                                      `
+                      }}
+                    />
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : null}
+        </Container>
+        {animating && (
+          <View style={CreateProfileStyles.overlay}>
+            <Spinner
+              color={"lightgoldenrodyellow"}
+              style={CreateProfileStyles.spinner}
+            />
+          </View>
+        )}
+      </React.Fragment>
+    );
+  }
 }
 
 const images = {
-    img_about_infocus: require('assets/icon/btn_About_infocus.png'),
-    img_btn_about: require('assets/icon/btn_About.png'),
-    img_btn_friends_infocus: require('assets/icon/btn_Friends_infocus.png'),
-    img_btn_friends: require('assets/icon/btn_Friends.png'),
-    img_btn_profile_infocus: require('assets/icon/btn_Profile_infocus.png'),
-    img_btn_profile: require('assets/icon/btn_Profile.png')
-}
+  img_about_infocus: require("assets/icon/btn_About_infocus.png"),
+  img_btn_about: require("assets/icon/btn_About.png"),
+  img_btn_friends_infocus: require("assets/icon/btn_Friends_infocus.png"),
+  img_btn_friends: require("assets/icon/btn_Friends.png"),
+  img_btn_profile_infocus: require("assets/icon/btn_Profile_infocus.png"),
+  img_btn_profile: require("assets/icon/btn_Profile.png")
+};
 
 const mapStateToProps = (state, ownProps) => {
-    return {
-        result: state.auth.profileStatus,
-        exitStatus: state.auth.exitStatus,
-        user: state.auth.user,
-        indicatorShow: state.auth.indicatorShow,
-    };
-}
+  return {
+    result: state.auth.profileStatus,
+    exitStatus: state.auth.exitStatus,
+    user: state.auth.user,
+    indicatorShow: state.auth.indicatorShow
+  };
+};
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        onCreate: (name, email, password, phone, address, facebook, instagram,
-            linkedin, twitter, snapchat, strava, mapmyfitness, accountType, socialUID, countryCode, profileImgUrl, userLocation) => {
-            dispatch(createUserAction(name, email, password, phone, address, facebook, instagram,
-                linkedin, twitter, snapchat, strava, mapmyfitness, accountType, socialUID, countryCode, profileImgUrl, userLocation))
-        },
-        onClearCreate: () => { dispatch(clearCreateStatusAction()) },
-        onShowIndicator: (bShow) => { dispatch(setVisibleIndicatorAction(bShow)) },
-    };
-}
+const mapDispatchToProps = dispatch => {
+  return {
+    onCreate: (
+      name,
+      email,
+      password,
+      phone,
+      address,
+      facebook,
+      instagram,
+      linkedin,
+      twitter,
+      snapchat,
+      strava,
+      mapmyfitness,
+      accountType,
+      socialUID,
+      countryCode,
+      profileImgUrl,
+      userLocation
+    ) => {
+      dispatch(
+        createUserAction(
+          name,
+          email,
+          password,
+          phone,
+          address,
+          facebook,
+          instagram,
+          linkedin,
+          twitter,
+          snapchat,
+          strava,
+          mapmyfitness,
+          accountType,
+          socialUID,
+          countryCode,
+          profileImgUrl,
+          userLocation
+        )
+      );
+    },
+    onClearCreate: () => {
+      dispatch(clearCreateStatusAction());
+    },
+    onShowIndicator: bShow => {
+      dispatch(setVisibleIndicatorAction(bShow));
+    }
+  };
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserCreateProfileContainer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UserCreateProfileContainer);
