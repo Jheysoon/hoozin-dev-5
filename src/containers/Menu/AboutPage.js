@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, AsyncStorage } from "react-native";
 import Image from "react-native-remote-svg";
 import {
   Container,
@@ -13,7 +13,6 @@ import {
   Icon
 } from "native-base";
 import { Col, Row, Grid } from "react-native-easy-grid";
-import { IconsMap } from "assets/assetMap";
 import AppBarComponent from "../../components/AppBar/appbar.index";
 
 import ShowProfile from "./../Profile/view-profile/view-profile.index";
@@ -141,11 +140,26 @@ class About extends Component {
       key: "About"
     });
   }
+
   onProfile() {
-    this.props.navigation.navigate({
-      routeName: "ShowProfile",
-      key: "ShowProfile"
+    const { navigate } = this.props.navigation;
+
+    AsyncStorage.getItem("userId", (err, result) => {
+      if (err) {
+        navigate("Profile", { shouldClearAutofill: true });
+      }
+
+      if (result) {
+        navigate({
+          routeName: "ShowProfile",
+          key: "ShowProfile"
+        });
+      } else {
+        navigate("Profile", { shouldClearAutofill: true });
+      }
     });
+
+    
   }
   onFriends() {}
 }
