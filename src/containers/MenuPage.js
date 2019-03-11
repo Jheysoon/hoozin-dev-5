@@ -4,7 +4,8 @@ import {
   View,
   TouchableOpacity,
   Linking,
-  Platform
+  Platform,
+  AsyncStorage
 } from "react-native";
 import Image from "react-native-remote-svg";
 import {
@@ -359,10 +360,15 @@ class MenuPage extends Component {
     this.props.onLogout(this.props.user.socialUID);
     const { navigate } = this.props.navigation;
     //this.props.navigation.popToTop();
-    navigate({
-      routeName: "Login",
-      key: "Login"
+
+    AsyncStorage.removeItem('userId').then(() => {
+      navigate({
+        routeName: "Login",
+        key: "Login"
+      });
     });
+    
+    
   }
 }
 
