@@ -158,7 +158,6 @@ class CreateOrEditEventContainer extends Component {
 
     const isSameDateTime = startDateTimeInUTC.isSame(endDateTimeInUTC);
     const isValidFutureDateTime =
-      startDateTimeInUTC.isSameOrAfter(currentDateTimeInUTC) &&
       endDateTimeInUTC.isAfter(startDateTimeInUTC) &&
       endDateTimeInUTC.isAfter(currentDateTimeInUTC);
 
@@ -733,7 +732,20 @@ class CreateOrEditEventContainer extends Component {
                       dateInput: { borderWidth: 0, alignItems: "flex-start" }
                     }}
                     onDateChange={time => {
-                      this.setState({ startTime: time });
+                      this.setState({ startTime: time }, () => {
+                        let p = this.state.startDate + " " + time;
+
+                        if (this.state.startDate != "") {
+                          this.setState({
+                            endTime: moment(p, "YYYY-MM-DD h:mm A")
+                              .add(1, "hours")
+                              .format("hh:mm A"),
+                            endDate: moment(p, "YYYY-MM-DD").format(
+                              "YYYY-MM-DD"
+                            )
+                          });
+                        }
+                      });
                     }}
                     onCloseModal={() =>
                       setTimeout(
