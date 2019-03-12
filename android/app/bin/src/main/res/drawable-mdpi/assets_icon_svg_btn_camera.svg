@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2699fb;
+      }
+
+      .cls-2, .cls-3, .cls-4, .cls-5 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        stroke: #bcbcbc;
+      }
+
+      .cls-4 {
+        stroke: #707070;
+      }
+
+      .cls-5 {
+        stroke: #fff;
+      }
+
+      .cls-6 {
+        stroke: none;
+      }
+
+      .cls-7 {
+        fill: none;
+      }
+
+      .cls-8 {
+        filter: url(#Search_Field);
+      }
+    </style>
+    <filter id="Search_Field" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
+      <feOffset dy="6" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="btn_Camera" transform="translate(-1331 -432)">
+    <g class="cls-8" transform="matrix(1, 0, 0, 1, 1331, 432)">
+      <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="42" height="42" rx="21" transform="translate(9 3)"/>
+    </g>
+    <g id="Group_435" data-name="Group 435" transform="translate(1337 285)">
+      <rect id="Rectangle_57" data-name="Rectangle 57" class="cls-2" width="31" height="21" rx="7" transform="translate(9 162)"/>
+      <g id="Rectangle_58" data-name="Rectangle 58" class="cls-3" transform="translate(17 165)">
+        <rect class="cls-6" width="16" height="16" rx="8"/>
+        <rect class="cls-7" x="0.5" y="0.5" width="15" height="15" rx="7.5"/>
+      </g>
+      <path id="Rectangle_59" data-name="Rectangle 59" class="cls-2" d="M5,0H9a5,5,0,0,1,5,5V8a0,0,0,0,1,0,0H0A0,0,0,0,1,0,8V5A5,5,0,0,1,5,0Z" transform="translate(18 156)"/>
+      <g id="Ellipse_21" data-name="Ellipse 21" class="cls-4" transform="translate(14 165)">
+        <circle class="cls-6" cx="1" cy="1" r="1"/>
+        <circle class="cls-7" cx="1" cy="1" r="0.5"/>
+      </g>
+      <g id="Ellipse_22" data-name="Ellipse 22" class="cls-5" transform="translate(14 161)">
+        <circle class="cls-6" cx="1" cy="1" r="1"/>
+        <circle class="cls-7" cx="1" cy="1" r="0.5"/>
+      </g>
+    </g>
+  </g>
+</svg>

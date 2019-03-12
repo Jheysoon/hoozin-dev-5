@@ -1,0 +1,133 @@
+{
+  "project_info": {
+    "project_number": "377447420217",
+    "firebase_url": "https://hoozin-65750.firebaseio.com",
+    "project_id": "hoozin-65750",
+    "storage_bucket": "hoozin-65750.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:377447420217:android:a6d25b011cca0265",
+        "android_client_info": {
+          "package_name": "com.app.notification"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "377447420217-tqv5jhoi9smfrun2hi5vb0lfvb5k0cnp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPaMe52EH0BtdODtc4678UcRH7HJHLs6I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:377447420217:android:343cac762078a81e",
+        "android_client_info": {
+          "package_name": "org.app.hoozin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "377447420217-b1j651hn7ii1jrf2vhj7pfqb87be2fp1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.app.hoozin",
+            "certificate_hash": "6fe71745d471c676fced30d68486fe1823e993a2"
+          }
+        },
+        {
+          "client_id": "377447420217-1u4ngutggaia983i8jt5ljujuq4q1q83.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.app.hoozin",
+            "certificate_hash": "dc4f4c3aba8a8000d549a64b1fecfe6ad597c253"
+          }
+        },
+        {
+          "client_id": "377447420217-jocf28uitl65njavsg9oj6r4u5t227m6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.app.hoozin",
+            "certificate_hash": "05f91d0c3da241400c4d48ec15f3a76e6a8a9702"
+          }
+        },
+        {
+          "client_id": "377447420217-a2kbrlfqc3mdor8b5cp9kl0o80ng0qlo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.app.hoozin",
+            "certificate_hash": "6dab15bab9e03fa01d08eaaff2577d74fea29b27"
+          }
+        },
+        {
+          "client_id": "377447420217-2j1171nctu8aif51hdgom06ggbhdk4ng.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.app.hoozin",
+            "certificate_hash": "5d09440a0f21bdffe54ae075f14832e530fdb08f"
+          }
+        },
+        {
+          "client_id": "377447420217-oe8mrjihb9c0sanq6antc80o9c253ebl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.app.hoozin",
+            "certificate_hash": "f81263bdfc21784c080621769ccc43e3431ae9ef"
+          }
+        },
+        {
+          "client_id": "377447420217-tqv5jhoi9smfrun2hi5vb0lfvb5k0cnp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPaMe52EH0BtdODtc4678UcRH7HJHLs6I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "377447420217-tqv5jhoi9smfrun2hi5vb0lfvb5k0cnp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "377447420217-dbhi0p1stcgfb1v8r6t988dp40i6esnc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.app.hoozin"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

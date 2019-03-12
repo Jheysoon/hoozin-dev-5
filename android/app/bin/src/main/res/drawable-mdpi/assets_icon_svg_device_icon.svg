@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 28.649">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        stroke: #7fc4fd;
+        stroke-width: 0.5px;
+      }
+
+      .cls-2 {
+        fill: #7fc4fd;
+      }
+
+      .cls-3 {
+        fill: #1d6cbc;
+      }
+
+      .cls-4 {
+        stroke: none;
+      }
+
+      .cls-5 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <g id="Group_1111" data-name="Group 1111" transform="translate(-53 -89.351)">
+    <g id="Group_1110" data-name="Group 1110">
+      <g id="Rectangle_31" data-name="Rectangle 31" class="cls-1" transform="translate(53 89.351)">
+        <rect class="cls-4" width="19" height="28.649" rx="2"/>
+        <rect class="cls-5" x="0.25" y="0.25" width="18.5" height="28.149" rx="1.75"/>
+      </g>
+      <rect id="Rectangle_39" data-name="Rectangle 39" class="cls-2" width="17" height="24" rx="2" transform="translate(54 90.351)"/>
+    </g>
+    <circle id="Ellipse_14" data-name="Ellipse 14" class="cls-3" cx="1" cy="1" r="1" transform="translate(62 115)"/>
+  </g>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2699fb;
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        filter: url(#Search_Field);
+      }
+    </style>
+    <filter id="Search_Field" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
+      <feOffset dy="6" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="btn_EventActive_Photo" transform="translate(-93 -564)">
+    <g class="cls-3" transform="matrix(1, 0, 0, 1, 93, 564)">
+      <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="42" height="42" rx="21" transform="translate(9 3)"/>
+    </g>
+    <path id="Path_148" data-name="Path 148" class="cls-2" d="M23.765,0a1.621,1.621,0,0,1,1.061.424A1.512,1.512,0,0,1,25.462,1.7V17.611a1.621,1.621,0,0,1-.424,1.061,2.275,2.275,0,0,1-1.273.424H1.7a2.275,2.275,0,0,1-1.273-.424A2.275,2.275,0,0,1,0,17.4V1.7A1.621,1.621,0,0,1,.424.637,1.512,1.512,0,0,1,1.7,0ZM7.214,3.819a2.409,2.409,0,0,0-1.7-.637,2.409,2.409,0,0,0-1.7.637,2.409,2.409,0,0,0-.637,1.7,2.409,2.409,0,0,0,.637,1.7,2.409,2.409,0,0,0,1.7.637,2.409,2.409,0,0,0,1.7-.637,2.409,2.409,0,0,0,.637-1.7A2.409,2.409,0,0,0,7.214,3.819ZM22.28,15.914,15.914,6.366l-5.729,7.427L6.366,11.034l-3.183,4.88Z" transform="translate(110 578)"/>
+  </g>
+</svg>

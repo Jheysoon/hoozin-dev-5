@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #bce0fd;
+        opacity: 0.656;
+      }
+
+      .cls-2 {
+        fill: none;
+        stroke: #fff;
+        stroke-width: 4px;
+      }
+
+      .cls-3 {
+        filter: url(#Search_Field);
+      }
+    </style>
+    <filter id="Search_Field" x="0" y="0" width="48" height="48" filterUnits="userSpaceOnUse">
+      <feOffset dy="6" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_419" data-name="Group 419" transform="translate(-329 -292)">
+    <g class="cls-3" transform="matrix(1, 0, 0, 1, 329, 292)">
+      <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="30" height="30" rx="15" transform="translate(39 33) rotate(180)"/>
+    </g>
+    <g id="Group_328" data-name="Group 328" transform="translate(349.538 303.077)">
+      <line id="Line_3" data-name="Line 3" class="cls-2" x1="8.077" y2="9.231" transform="translate(8.077 15) rotate(180)"/>
+      <line id="Line_4" data-name="Line 4" class="cls-2" x1="8.077" y1="7.5" transform="translate(8.077 7.5) rotate(180)"/>
+    </g>
+  </g>
+</svg>

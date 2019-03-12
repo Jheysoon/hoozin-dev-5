@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #2699fb;
+      }
+    </style>
+  </defs>
+  <g id="Group_371" data-name="Group 371" transform="translate(-80 -1803)">
+    <g id="Group_333" data-name="Group 333" transform="translate(80 1803)">
+      <path id="Rectangle_31" data-name="Rectangle 31" class="cls-1" d="M10.119,0h5.762A10.119,10.119,0,0,1,26,10.119v0a2.53,2.53,0,0,1-2.53,2.53H2.53A2.53,2.53,0,0,1,0,10.119v0A10.119,10.119,0,0,1,10.119,0Z" transform="translate(0 13.351)"/>
+      <ellipse id="Ellipse_14" data-name="Ellipse 14" class="cls-1" cx="6.842" cy="7.027" rx="6.842" ry="7.027" transform="translate(6.158)"/>
+    </g>
+  </g>
+</svg>
