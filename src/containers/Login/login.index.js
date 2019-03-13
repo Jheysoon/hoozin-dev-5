@@ -21,7 +21,6 @@ import {
   setVisibleIndicatorAction
 } from "../../actions/auth";
 import { IconsMap, ImageMap } from "assets/assetMap";
-import { GoogleSignin, GoogleSigninButton } from "react-native-google-signin";
 //devtac plugin
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -44,17 +43,31 @@ class LoginContainer extends Component {
   }
 
   componentDidMount() {
+    const { replace, popToTop } = this.props.navigation;
+
     AsyncStorage.getItem("userId", (err, result) => {
       if (err) {
         console.error(err.message);
       }
       if (result) {
-        const storageData = JSON.parse(result);
-        if (storageData.accountType == "custom") {
-          this.setState({
-            email: storageData.email,
-            password: storageData.password
-          });
+        const { accountType, email, password } = JSON.parse(result);
+
+        // HOOZ-23 - Maintaining logged in state
+        if (accountType == "custom") {
+          this.setState(
+            {
+              email: email,
+              password: password,
+              animating: true
+            },
+            () => {
+              popToTop();
+              replace("NearbyEvents", { account: accountType });
+            }
+          );
+        } else {
+          popToTop();
+          replace("NearbyEvents", { account: accountType });
         }
       }
     });
@@ -66,6 +79,7 @@ class LoginContainer extends Component {
         this.accountType = JSON.parse(result)["accountType"];
       }
     });
+
     if (!this.mount) return;
 
     // **** modified because of forever loading issue
