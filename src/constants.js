@@ -55,3 +55,7 @@ export const FIREBASE_CONF = {
     projectId: "hoozin-65750",
     storageBucket: "hoozin-65750.appspot.com",
 };
+
+export const NET_STATUS = {
+	NET_CHANGED: 'NET_CHANGED',
+};

@@ -14,6 +14,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url 'https://maven.google.com' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
@@ -64,6 +65,20 @@ allprojects {
                 force "com.google.android.gms:play-services-basement:$googlePlayServicesVersion"
                 force "com.google.android.gms:play-services-tasks:$googlePlayServicesVersion"
                 force 'com.facebook.android:facebook-android-sdk:4.34.0'
+            }
+        }
+    }
+}
+
+subprojects {
+    afterEvaluate {
+        if (getPlugins().hasPlugin('android') ||
+            getPlugins().hasPlugin('android-library')) {
+
+           // println name // for debugging
+
+            configure(android.lintOptions) {
+                abortOnError false
             }
         }
     }
