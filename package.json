@@ -10,7 +10,7 @@
     "open-ios": "cd ios && open ./*.xcworkspace",
     "bundle-android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/",
     "bundle-ios": "react-native bundle --dev false --entry-file index.js --bundle-output ios/main.jsbundle --platform ios",
-    "release-android": "cd android && ./gradlew assembleRelease"
+    "release-android": "cd android && gradlew assembleRelease && cd .."
   },
   "dependencies": {
     "@types/moment": "2.13.0",
