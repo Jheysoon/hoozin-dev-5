@@ -255,7 +255,7 @@ class EventActiveAttendeesContainer extends Component {
                           </g>
                         </g>
                       </svg>
-                      ` }} style={{ position: 'absolute', right: 10, top: -13, zIndex: 999999 }} />
+                      ` }} style={{ position: 'absolute', top: -45, right: 5, width: 70, zIndex: 999999 }} />
                     }
                 </View>
                 <View style={{ width: '90%', height: 1, backgroundColor: '#BCE0FD', zIndex: 9999, position: 'relative', left: 14 }}></View>
