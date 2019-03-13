@@ -13,7 +13,7 @@ import { withNavigation } from "react-navigation";
 import { IconsMap, ImageMap } from "assets/assetMap";
 import { Header, Left, Right, Icon, Body, Button } from "native-base";
 import GeoFire from "geofire";
-//import BackgroundGeolocation from "react-native-mauron85-background-geolocation";
+import BackgroundGeolocation from "react-native-mauron85-background-geolocation";
 import {
   extractHostAndInvitedEventsInfo,
   filterEventsByRSVP,
@@ -54,7 +54,7 @@ class AppBarComponent extends Component {
 
   componentDidMount() {
     // ------------------------------------Background Tracker------------------------------------
-    /* BackgroundGeolocation.configure({
+    BackgroundGeolocation.configure({
       desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
       stationaryRadius: 50,
       distanceFilter: 50,
@@ -177,7 +177,7 @@ class AppBarComponent extends Component {
       if (!status.isRunning) {
         BackgroundGeolocation.start(); //triggers start on start event
       }
-    }); */
+    });
     // ------------------------------------Background Tracker------------------------------------
 
     if (this.props.isRibbonVisible) {
