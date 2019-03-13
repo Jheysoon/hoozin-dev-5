@@ -86,5 +86,7 @@ export const ImageMap = {
     /* brand */
     brand_splash: require('assets/img/splash.png'),
     brand_logo: require('assets/img/hoozin_title.png'),
-    brand_auth_bg: require('assets/img/login_background.png')
+    brand_auth_bg: require('assets/img/login_background.png'),
+    disconnect: require('assets/img/failed.png'),
+    
 }

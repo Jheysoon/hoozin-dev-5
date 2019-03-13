@@ -1,12 +1,9 @@
 import React, { Component } from "react";
 import {
-  StyleSheet,
   Text,
   View,
   TouchableOpacity,
   TextInput,
-  Alert,
-  AsyncStorage,
   Platform
 } from "react-native";
 import Image from "react-native-remote-svg";
@@ -19,7 +16,7 @@ import {
   Right,
   Spinner,
   List,
-  ListItem
+  Button
 } from "native-base";
 import { connect } from "react-redux";
 import moment from "moment";
@@ -29,12 +26,10 @@ import {
   extractHostAndInvitedEventsInfo,
   filterEventsByRSVP
 } from "../../utils/eventListFilter";
-import { IconsMap } from "assets/assetMap";
-const eventStatusColor = {
-  goingOrHost: "#6EB25A",
-  invitedOrMaybe: "#EF9A12",
-  declined: "#FF003B"
-};
+import { IconsMap, ImageMap } from "../../../assets/assetMap";
+
+import styles from "../../components/EventList/style";
+import HoozinList from "../../components/EventList/HoozinList";
 
 class EventList extends Component {
   static navigationOptions = {
@@ -79,6 +74,7 @@ class EventList extends Component {
    * @description fetches all the hosted and invited events
    */
   getHostAndInvitedEvents(type, cacheReload) {
+    console.log('goes here ##########################');
     extractHostAndInvitedEventsInfo(this.props.user.socialUID, type).then(
       hostedAndInvitedEventsList => {
         hostedAndInvitedEventsList = hostedAndInvitedEventsList.filter(event =>
@@ -107,73 +103,6 @@ class EventList extends Component {
   }
 
   /**
-   * @description Show an event information depending upon user role (i.e. Host or Attendee) and event status (e.g. Active)
-   * @param {Object<any>} eventData
-   */
-  showEventInfo(eventData) {
-    const {
-      eventResponse,
-      isHostEvent,
-      keyNode,
-      hostId,
-      isActive,
-      isPastEvent
-    } = eventData;
-    console.log("[EventList] whether host event", isHostEvent);
-    console.log("[EventList] event id", keyNode);
-
-    if (isHostEvent && !isActive && !isPastEvent) {
-      this.props.navigation.navigate({
-        routeName: "EventOverview",
-        key: "EventOverview",
-        params: {
-          eventId: keyNode
-        }
-      });
-      return;
-    } else if (
-      (isHostEvent || (!isHostEvent && eventResponse != "invited")) &&
-      isActive &&
-      !isPastEvent
-    ) {
-      this.props.navigation.navigate({
-        routeName: "TabScreen",
-        key: "TabScreen",
-        params: {
-          eventId: keyNode,
-          hostId: hostId,
-          isHostUser: isHostEvent,
-          withEvent: eventData
-        }
-      });
-      return;
-    } else if (
-      !isHostEvent &&
-      (eventResponse == "invited" ||
-        eventResponse == "maybe" ||
-        eventResponse == "going" ||
-        eventResponse == "declined") &&
-      !isPastEvent
-    ) {
-      this.props.navigation.navigate({
-        routeName: "EventDetail",
-        key: "EventDetail",
-        params: {
-          eventId: keyNode,
-          hostId: hostId,
-          reloadEventsFunc: this.reloadEvents.bind(this)
-        }
-      });
-      return;
-    } else if (isPastEvent) {
-      Alert.alert("Notification!", "This event has expired!", [
-        { text: "OK", style: "default" }
-      ]);
-      return;
-    }
-  }
-
-  /**
    * @description capture event information back from App bar component (Hacky approach for React)
    */
   captureEventListFromAppBar(data, type) {
@@ -188,12 +117,16 @@ class EventList extends Component {
           moment(b.startTime, "HH:mm A") - moment(a.startTime, "HH:mm A")
       );
     console.log("[EventList] from app bar event data", data, type);
-    this.setState({
-      eventList: data,
-      unfilteredEventList: data,
-      activeFilterType: type,
-      animating: false
-    });
+
+    if (this.props.isConnected) {
+      this.setState({
+        eventList: data,
+        unfilteredEventList: data,
+        activeFilterType: type,
+        animating: false
+      });
+    }
+    
   }
 
   displayEventsFilterView() {
@@ -242,6 +175,9 @@ class EventList extends Component {
   }
 
   render() {
+
+    const {status} = this.props;
+
     return (
       <React.Fragment>
         <Container style={{ backgroundColor: "#ffffff" }}>
@@ -384,251 +320,13 @@ class EventList extends Component {
           <Content>
             {this.state.eventList.length ? (
               this.state.eventList.map((eventData, keyE) => {
-                // destructure event attributes for ease
-                const {
-                  eventResponse,
-                  eventTitle,
-                  eventType,
-                  startDateTimeInUTC,
-                  endDateTimeInUTC,
-                  location,
-                  invitee,
-                  isHostEvent,
-                  keyNode,
-                  hostId,
-                  isActive,
-                  isPastEvent
-                } = eventData;
                 return (
-                  <TouchableOpacity
+                  <HoozinList
+                    eventData={eventData}
                     key={keyE}
-                    onPress={() => this.showEventInfo(eventData)}
-                  >
-                    <View style={styles.eventDetailCard}>
-                      <View style={styles.eventDetail}>
-                        <View style={styles.cardAvatarWrapper}>
-                          <View>
-                            {eventData.hostProfileImgUrl ? (
-                              <View style={styles.cardAvatar}>
-                                <Image
-                                  source={{ uri: eventData.hostProfileImgUrl }}
-                                  style={{
-                                    alignSelf: "center",
-                                    width: 85,
-                                    height: 85,
-                                    borderRadius: 85 / 2
-                                  }}
-                                  onLoadEnd={() => this.loadImagesComplete()}
-                                  onLoadStart={() => this.loadImagesStart()}
-                                />
-                              </View>
-                            ) : (
-                              <View style={styles.cardAvatar}>
-                                <Image
-                                  source={IconsMap.icon_contact_avatar}
-                                  style={{
-                                    alignSelf: "center",
-                                    width: 85,
-                                    height: 85,
-                                    borderRadius: 85 / 2
-                                  }}
-                                />
-                              </View>
-                            )}
-                          </View>
-                          <View style={{ paddingTop: 1 }}>
-                            <Text style={styles.eventHostName}>
-                              {eventData.hostName}
-                            </Text>
-                          </View>
-                        </View>
-                        <View style={styles.cardDetail}>
-                          <View>
-                            <Text style={styles.eventTitle}>{eventTitle}</Text>
-                          </View>
-                          <View style={styles.eventMetaWrapper}>
-                            <View style={{ flex: 1 }}>
-                              <Text
-                                style={{
-                                  color: "#FC3764",
-                                  fontSize: 12,
-                                  fontFamily: "Lato",
-                                  marginTop: -10
-                                }}
-                              >
-                                {moment
-                                  .utc(startDateTimeInUTC)
-                                  .local()
-                                  .format("MMM")}
-                              </Text>
-                              <Text
-                                style={{
-                                  fontSize: 18,
-                                  fontWeight: "bold",
-                                  fontFamily: "Lato",
-                                  color: "#1D6CBC"
-                                }}
-                              >
-                                {moment
-                                  .utc(startDateTimeInUTC)
-                                  .local()
-                                  .format("DD")}
-                              </Text>
-                            </View>
-                            <View style={{ flex: 4 }}>
-                              <Text
-                                style={{
-                                  fontSize: 12,
-                                  fontFamily: "Lato",
-                                  color: "#000000"
-                                }}
-                              >
-                                {moment
-                                  .utc(startDateTimeInUTC)
-                                  .local()
-                                  .format("hh:mm A")}{" "}
-                                -{" "}
-                                {moment
-                                  .utc(endDateTimeInUTC)
-                                  .local()
-                                  .format("hh:mm A")}
-                              </Text>
-                              <Text
-                                style={{
-                                  fontFamily: "Lato",
-                                  fontSize: 12,
-                                  fontWeight: "700",
-                                  color: "#000000",
-                                  marginTop: 10
-                                }}
-                              >
-                                {location}
-                              </Text>
-                            </View>
-                            <View style={{ flex: 1.8, marginLeft: 15 }}>
-                              {eventResponse == "host" ||
-                              eventResponse == "going" ? (
-                                <Text
-                                  style={{
-                                    fontSize: 13,
-                                    fontFamily: "Lato",
-                                    color: eventStatusColor.goingOrHost,
-                                    textAlign: "center"
-                                  }}
-                                >{`${eventResponse
-                                  .slice(0, 1)
-                                  .toUpperCase()}${eventResponse.slice(
-                                  1,
-                                  eventResponse.length
-                                )}`}</Text>
-                              ) : eventResponse == "invited" ||
-                                eventResponse == "maybe" ? (
-                                <Text
-                                  style={{
-                                    fontSize: 13,
-                                    fontFamily: "Lato",
-                                    color: eventStatusColor.invitedOrMaybe,
-                                    textAlign: "center"
-                                  }}
-                                >{`${eventResponse
-                                  .slice(0, 1)
-                                  .toUpperCase()}${eventResponse.slice(
-                                  1,
-                                  eventResponse.length
-                                )}`}</Text>
-                              ) : (
-                                <Text
-                                  style={{
-                                    fontSize: 13,
-                                    fontFamily: "Lato",
-                                    color: eventStatusColor.declined,
-                                    textAlign: "center"
-                                  }}
-                                >{`${eventResponse
-                                  .slice(0, 1)
-                                  .toUpperCase()}${eventResponse.slice(
-                                  1,
-                                  eventResponse.length
-                                )}`}</Text>
-                              )}
-                              {isActive ? (
-                                <Text
-                                  style={{
-                                    fontSize: 13,
-                                    fontFamily: "Lato",
-                                    color: "white",
-                                    padding: 4,
-                                    backgroundColor: "#FF003B",
-                                    textAlign: "center",
-                                    position: "relative",
-                                    left: -5
-                                  }}
-                                >
-                                  Active!
-                                </Text>
-                              ) : null}
-                              <Text
-                                style={{
-                                  fontSize: 12,
-                                  fontFamily: "Lato",
-                                  color: "#004D9B",
-                                  textAlign: "center",
-                                  position: "relative",
-                                  left: 0,
-                                  top: 40
-                                }}
-                              >
-                                {eventType}
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.invitees}>
-                        {invitee ? (
-                          <List
-                            dataArray={invitee}
-                            horizontal={true}
-                            style={{ marginTop: 20 }}
-                            renderRow={item => (
-                              <ListItem
-                                style={{
-                                  paddingRight: 0,
-                                  paddingLeft: 0,
-                                  paddingTop: 0,
-                                  paddingBottom: 0,
-                                  marginLeft: 5,
-                                  borderBottomWidth: 0
-                                }}
-                              >
-                                {item.profileImgUrl ? (
-                                  <Image
-                                    source={{ uri: item.profileImgUrl }}
-                                    style={{
-                                      width: 48,
-                                      height: 48,
-                                      borderRadius: 24
-                                    }}
-                                    onLoadEnd={() => this.loadImagesComplete()}
-                                    onLoadStart={() => this.loadImagesStart()}
-                                  />
-                                ) : (
-                                  <Image
-                                    source={IconsMap.icon_contact_avatar}
-                                    style={{
-                                      width: 48,
-                                      height: 48,
-                                      borderRadius: 24
-                                    }}
-                                  />
-                                )}
-                              </ListItem>
-                            )}
-                          />
-                        ) : null}
-                      </View>
-                    </View>
-                  </TouchableOpacity>
+                    loadImagesStart={this.loadImagesStart}
+                    loadImagesComplete={this.loadImagesComplete}
+                  />
                 );
               })
             ) : (
@@ -639,11 +337,18 @@ class EventList extends Component {
                   alignItems: "center"
                 }}
               >
-                <Text
+                {/* <Text
                   style={{ textAlign: "center", textAlignVertical: "center" }}
                 >
                   No events to show right now
-                </Text>
+                </Text> */}
+                <Image source={ImageMap.disconnect} style={{marginTop: 30}} />
+                <View style={{width: '50%', justifyContent: 'center', alignItems: 'center'}}>
+                  <Button full rounded>
+                    <Text style={{color: '#fff'}}>Try Again</Text>
+                  </Button>
+                </View>
+                
               </View>
             )}
           </Content>
@@ -983,116 +688,12 @@ class EventList extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  eventDetailCard: {
-    borderBottomWidth: 2,
-    borderBottomColor: "#D8D8D8"
-  },
-  eventDetail: {
-    flexDirection: "row",
-    flex: 1,
-    paddingTop: 1,
-    paddingBottom: 1,
-    paddingLeft: 2,
-    paddingRight: 12
-  },
-  eventInvitee: {
-    flexDirection: "row",
-    flex: 1,
-    paddingTop: 1,
-    paddingBottom: 1,
-    paddingLeft: 2,
-    paddingRight: 12
-  },
-  cardAvatarWrapper: {
-    flex: 1,
-    justifyContent: "flex-start"
-  },
-  cardDetail: {
-    flex: 3,
-    justifyContent: "flex-start",
-    marginLeft: 20
-  },
-  invitees: {
-    marginTop: 20,
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  cardAvatar: {
-    shadowOffset: { width: 5, height: 5 },
-    shadowColor: "#000000",
-    shadowOpacity: 0.125,
-    shadowRadius: 8
-  },
-  eventHostName: {
-    alignSelf: "center",
-    textAlign: "center",
-    fontSize: 14,
-    fontFamily: "Lato",
-    color: "#000000"
-  },
-  eventTitle: {
-    fontSize: 16,
-    fontFamily: "Lato",
-    fontWeight: "bold",
-    color: "#004D9B",
-    marginTop: 5
-  },
-  eventMetaWrapper: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    paddingTop: 20
-  },
-  bottomView_ios: {
-    height: 50,
-    backgroundColor: "transparent",
-    borderTopWidth: 0,
-    justifyContent: "center",
-    flexDirection: "row"
-  },
-  bottomView_android: {
-    width: "100%",
-    height: 70,
-    backgroundColor: "transparent",
-    borderTopWidth: 0,
-    justifyContent: "center",
-    flexDirection: "row"
-  },
-  fabLeftWrapperStyles: {
-    position: "absolute",
-    bottom: -27,
-    left: 20
-  },
-  fabRightWrapperStyles: {
-    position: "absolute",
-    bottom: -30,
-    right: 20
-  },
-  fabStyles: {
-    width: 60,
-    height: 60
-  },
-  overlay: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.45)"
-  },
-  spinner: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  }
-});
-
 const mapStateToProps = (state, ownProps) => {
   return {
     user: state.auth.user,
     event: state.event.details,
-    indicatorShow: state.auth.indicatorShow
+    indicatorShow: state.auth.indicatorShow,
+    isConnected: state.connection.isConnected
   };
 };
 

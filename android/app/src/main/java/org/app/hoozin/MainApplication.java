@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
-//import com.marianhello.bgloc.react.BackgroundGeolocationPackage;
+import com.marianhello.bgloc.react.BackgroundGeolocationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.RNTextInputMask.RNTextInputMaskPackage;
 import io.rumors.reactnativesettings.RNSettingsPackage;
@@ -63,7 +63,7 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
             new RNGoogleSigninPackage(),
-            //new BackgroundGeolocationPackage(),          
+            new BackgroundGeolocationPackage(),          
             new VectorIconsPackage(),
             new RNTextInputMaskPackage(),
             new RNSettingsPackage(),

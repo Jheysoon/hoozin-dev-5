@@ -282,6 +282,14 @@ class CreateOrEditEventContainer extends Component {
     let evtStatus = this.state.isEditMode ? "Editing" : this.state.status;
     let eventId = this.state.eventId ? this.state.eventId : "";
 
+    /* Alert.alert("Error", "No Internet Connection you want to try again ?",
+      [{
+        text: 'Cancel'
+      }, {
+        text: 'Try Again'
+      }] 
+    ); */
+
     if (
       !!eventTitle &&
       !!eventType &&
