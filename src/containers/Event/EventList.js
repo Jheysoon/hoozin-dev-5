@@ -118,14 +118,12 @@ class EventList extends Component {
       );
     console.log("[EventList] from app bar event data", data, type);
 
-    if (this.props.isConnected) {
-      this.setState({
-        eventList: data,
-        unfilteredEventList: data,
-        activeFilterType: type,
-        animating: false
-      });
-    }
+    this.setState({
+      eventList: data,
+      unfilteredEventList: data,
+      activeFilterType: type,
+      animating: false
+    });
     
   }
 
@@ -337,17 +335,17 @@ class EventList extends Component {
                   alignItems: "center"
                 }}
               >
-                {/* <Text
+                <Text
                   style={{ textAlign: "center", textAlignVertical: "center" }}
                 >
                   No events to show right now
-                </Text> */}
-                <Image source={ImageMap.disconnect} style={{marginTop: 30}} />
+                </Text>
+                {/* <Image source={ImageMap.disconnect} style={{marginTop: 30}} />
                 <View style={{width: '50%', justifyContent: 'center', alignItems: 'center'}}>
                   <Button full rounded>
                     <Text style={{color: '#fff'}}>Try Again</Text>
                   </Button>
-                </View>
+                </View> */}
                 
               </View>
             )}
