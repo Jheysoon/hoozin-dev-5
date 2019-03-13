@@ -204,7 +204,7 @@ class EventActiveChatContainer extends Component {
                               </g>
                             </g>
                           </svg>
-                          ` }} style={{ position: 'absolute', right: 10, top: -13, zIndex: 999 }} />
+                          ` }} style={{ position: 'absolute', zIndex: 999, top: -50, right: 5, width: 40 }} />
                         }
                     </View>
                     <View style={{ width: '90%', height: 1, backgroundColor: '#BCE0FD', zIndex: 9999, position: 'relative', left: 14, top: 10, marginBottom: 20 }}></View>
