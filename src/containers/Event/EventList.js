@@ -49,6 +49,8 @@ class EventList extends Component {
       animating: false
     };
     this.mount = true;
+
+    this.showEventInfo = this.showEventInfo.bind(this);
   }
 
   componentDidMount() {
@@ -127,16 +129,75 @@ class EventList extends Component {
     
   }
 
+  /**
+   * @description Show an event information depending upon user role (i.e. Host or Attendee) and event status (e.g. Active)
+   * @param {Object<any>} eventData
+   */
+  showEventInfo(eventData) {
+    const {
+      eventResponse,
+      isHostEvent,
+      keyNode,
+      hostId,
+      isActive,
+      isPastEvent
+    } = eventData;
+    console.log("[EventList] whether host event", isHostEvent);
+    console.log("[EventList] event id", keyNode);
+
+    if (isHostEvent && !isActive && !isPastEvent) {
+      this.props.navigation.navigate({
+        routeName: "EventOverview",
+        key: "EventOverview",
+        params: {
+          eventId: keyNode
+        }
+      });
+      return;
+    } else if (
+      (isHostEvent || (!isHostEvent && eventResponse != "invited")) &&
+      isActive &&
+      !isPastEvent
+    ) {
+      this.props.navigation.navigate({
+        routeName: "TabScreen",
+        key: "TabScreen",
+        params: {
+          eventId: keyNode,
+          hostId: hostId,
+          isHostUser: isHostEvent,
+          withEvent: eventData
+        }
+      });
+      return;
+    } else if (
+      !isHostEvent &&
+      (eventResponse == "invited" ||
+        eventResponse == "maybe" ||
+        eventResponse == "going" ||
+        eventResponse == "declined") &&
+      !isPastEvent
+    ) {
+      this.props.navigation.navigate({
+        routeName: "EventDetail",
+        key: "EventDetail",
+        params: {
+          eventId: keyNode,
+          hostId: hostId,
+          reloadEventsFunc: this.reloadEvents.bind(this)
+        }
+      });
+      return;
+    } else if (isPastEvent) {
+      Alert.alert("Notification!", "This event has expired!", [
+        { text: "OK", style: "default" }
+      ]);
+      return;
+    }
+  }
+
   displayEventsFilterView() {
     this.setState({ isSearchViewActive: true });
-  }
-
-  loadImagesStart() {
-    this.setState({ animating: true });
-  }
-
-  loadImagesComplete() {
-    this.setState({ animating: false });
   }
 
   filterEvents(searchText) {
@@ -322,8 +383,13 @@ class EventList extends Component {
                   <HoozinList
                     eventData={eventData}
                     key={keyE}
-                    loadImagesStart={this.loadImagesStart}
-                    loadImagesComplete={this.loadImagesComplete}
+                    loadImagesStart={() => {
+                      this.setState({ animating: true });
+                    }}
+                    showEventInfo={this.showEventInfo}
+                    loadImagesComplete={() => {
+                      this.setState({ animating: false });
+                    }}
                   />
                 );
               })

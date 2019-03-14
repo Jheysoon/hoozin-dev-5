@@ -37,7 +37,10 @@ export class AuthServiceAPI {
                 uid: currentUser.user.uid,
                 email: email,
                 password: password,
-                accountType: "custom"
+                accountType: "custom",
+                socialUID: currentUser.user._user.uid,
+                name: currentUser.user._user.displayName,
+                profileImageUrl: currentUser.user._user.photoURL || ''
               })
             ).then(result => {
               // check whether its existing user
@@ -142,7 +145,12 @@ export class AuthServiceAPI {
 
         return AsyncStorage.setItem(
           "userId",
-          JSON.stringify({ uid: currentUser.user.uid, accountType: "google" })
+          JSON.stringify({
+            uid: currentUser.user.uid, 
+            accountType: "google" ,
+            socialUID: currentUser.user.uid,
+            profileImageUrl: currentUser.user._user.photoURL || ''
+          })
         ).then(() => {
           return firebase
             .database()

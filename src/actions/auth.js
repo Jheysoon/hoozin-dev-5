@@ -316,3 +316,21 @@ export const clearCreateStatusAction = () => {
         })
     }
 }
+
+export const fetchProfileForLogin = (socialUID, asyncData) => {
+    return (dispatch, getStore) => {
+        const authSvc = new AuthServiceAPI();
+        authSvc.fetchUserData(socialUID).then(data => {
+            dispatch({
+                type: USER.DTATFETCH,
+                data: { socialUID, ...data.val(), ...asyncData },
+            })
+        }).catch(err => {
+            console.log(err);
+            dispatch({
+                type: USER.ERROR,
+                data: false
+            });
+        })
+    }
+}

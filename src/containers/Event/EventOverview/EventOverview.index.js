@@ -119,7 +119,7 @@ class EventOverviewContainer extends Component {
                         text: 'Retry again',
                         onPress: () => {
                             this.setState({ animating: true });
-                            return this.getEventInformation(eventKey, hostId);
+                            return this.getEventInformation(eventKey, userId);
                         }
                     }
                 ]
