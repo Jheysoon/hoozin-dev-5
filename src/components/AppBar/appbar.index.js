@@ -268,13 +268,19 @@ class AppBarComponent extends Component {
     notifySvc.listenForNotification();
     notifySvc.listenForNotificationDisplayed();
     notifySvc.listenForNotificationDidOpen().then(notification => {
+
+    let { event_id } = notification._data;
       if (this.state.userId) {
         this.props.navigation.navigate({
-          routeName: "EventList",
-          key: "EventList"
+          routeName: "EventOverview",
+          key: "EventOverview",
+          params: {
+            eventId: event_id
+          }
         });
       }
     });
+    
     notifySvc.listenForBackgroundNotification().then(notification => {
       if (this.state.userId) {
         this.props.navigation.navigate({

@@ -68,6 +68,15 @@ export default class NotificationService {
 
   listenForNotification() {
     return firebase.notifications().onNotification(notification => {
+
+      const thisNotification = new firebase.notifications.Notification()
+        .setNotificationId(notification._notificationId)
+        .setTitle(notification._title)
+        .setData(notification._data)
+        .android.setLargeIcon('ic_launcher')
+        .android.setChannelId('channel');
+
+      firebase.notifications().displayNotification(thisNotification);
       //console.log("++ Notification msg ++", notification);
       //const { event_id, host_id, type } = notification._data;
     });
