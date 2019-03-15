@@ -18,7 +18,8 @@ import {
   facebookLoginAction,
   googleLoginAction,
   initLoginAction,
-  setVisibleIndicatorAction
+  setVisibleIndicatorAction,
+  fetchProfileForLogin
 } from "../../actions/auth";
 import { IconsMap, ImageMap } from "assets/assetMap";
 //devtac plugin
@@ -50,25 +51,15 @@ class LoginContainer extends Component {
         console.error(err.message);
       }
       if (result) {
-        const { accountType, email, password } = JSON.parse(result);
+
+        let parseResult = JSON.parse(result);
+        const { accountType, uid } = parseResult;
 
         // HOOZ-23 - Maintaining logged in state
-        if (accountType == "custom") {
-          this.setState(
-            {
-              email: email,
-              password: password,
-              animating: true
-            },
-            () => {
-              popToTop();
-              replace("NearbyEvents", { account: accountType });
-            }
-          );
-        } else {
-          popToTop();
-          replace("NearbyEvents", { account: accountType });
-        }
+        this.props.fetchProfileForLogin(uid, parseResult);
+
+        popToTop();
+        replace("NearbyEvents", { account: accountType });
       }
     });
   }
@@ -331,6 +322,9 @@ const mapDispatchToProps = dispatch => {
     },
     onShowIndicator: bShow => {
       dispatch(setVisibleIndicatorAction(bShow));
+    },
+    fetchProfileForLogin: uid => {
+      dispatch(fetchProfileForLogin(uid));
     }
   };
 };

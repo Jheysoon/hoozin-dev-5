@@ -20,75 +20,8 @@ class HoozinList extends React.Component {
     super(props);
   }
 
-  /**
-   * @description Show an event information depending upon user role (i.e. Host or Attendee) and event status (e.g. Active)
-   * @param {Object<any>} eventData
-   */
-  showEventInfo(eventData) {
-    const {
-      eventResponse,
-      isHostEvent,
-      keyNode,
-      hostId,
-      isActive,
-      isPastEvent
-    } = eventData;
-    console.log("[EventList] whether host event", isHostEvent);
-    console.log("[EventList] event id", keyNode);
-
-    if (isHostEvent && !isActive && !isPastEvent) {
-      this.props.navigation.navigate({
-        routeName: "EventOverview",
-        key: "EventOverview",
-        params: {
-          eventId: keyNode
-        }
-      });
-      return;
-    } else if (
-      (isHostEvent || (!isHostEvent && eventResponse != "invited")) &&
-      isActive &&
-      !isPastEvent
-    ) {
-      this.props.navigation.navigate({
-        routeName: "TabScreen",
-        key: "TabScreen",
-        params: {
-          eventId: keyNode,
-          hostId: hostId,
-          isHostUser: isHostEvent,
-          withEvent: eventData
-        }
-      });
-      return;
-    } else if (
-      !isHostEvent &&
-      (eventResponse == "invited" ||
-        eventResponse == "maybe" ||
-        eventResponse == "going" ||
-        eventResponse == "declined") &&
-      !isPastEvent
-    ) {
-      this.props.navigation.navigate({
-        routeName: "EventDetail",
-        key: "EventDetail",
-        params: {
-          eventId: keyNode,
-          hostId: hostId,
-          reloadEventsFunc: this.reloadEvents.bind(this)
-        }
-      });
-      return;
-    } else if (isPastEvent) {
-      Alert.alert("Notification!", "This event has expired!", [
-        { text: "OK", style: "default" }
-      ]);
-      return;
-    }
-  }
-
   render() {
-    const { eventData, key, loadImagesStart } = this.props;
+    const { eventData, key, loadImagesStart, loadImagesComplete } = this.props;
 
     // destructure event attributes for ease
     const {
@@ -108,7 +41,7 @@ class HoozinList extends React.Component {
 
     return (
       <TouchableOpacity
-        onPress={() => this.showEventInfo(eventData)}
+        onPress={() => this.props.showEventInfo(eventData)}
         key={key}
       >
         <View style={styles.eventDetailCard}>
