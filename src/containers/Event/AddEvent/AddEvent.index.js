@@ -59,6 +59,8 @@ class CreateOrEditEventContainer extends Component {
       isEditMode: false,
       isEventFormEmpty: false
     };
+
+    this.assignDateEnd = this.assignDateEnd.bind(this);
   }
 
   /**
@@ -471,6 +473,34 @@ class CreateOrEditEventContainer extends Component {
       .then(result => this.props.navigation.goBack());
   }
 
+  assignDateEnd(time) {
+    this.setState({ startTime: time }, () => {
+      let p = this.state.startDate + " " + time;
+
+      let m = moment(p, "YYYY-MM-DD h:mm A").valueOf();
+      let hour = moment(p, "YYYY-MM-DD h:mm A").format('h');
+      let amPm = moment(p, "YYYY-MM-DD h:mm A").format('A');
+      let ampm = amPm;
+
+      if (hour == 12 && amPm == 'AM') {
+        ampm = "PM";
+      } else if (hour == 12 && amPm == 'PM') {
+        ampm = "AM";
+      }
+
+      if (this.state.startDate != "") {
+        this.setState({
+          endTime: moment(m)
+            .add(1, "h")
+            .format("hh:mm") + ampm,
+          endDate: moment(p, "YYYY-MM-DD").format(
+            "YYYY-MM-DD"
+          )
+        });
+      }
+    });
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -739,22 +769,7 @@ class CreateOrEditEventContainer extends Component {
                     customStyles={{
                       dateInput: { borderWidth: 0, alignItems: "flex-start" }
                     }}
-                    onDateChange={time => {
-                      this.setState({ startTime: time }, () => {
-                        let p = this.state.startDate + " " + time;
-
-                        if (this.state.startDate != "") {
-                          this.setState({
-                            endTime: moment(p, "YYYY-MM-DD h:mm A")
-                              .add(1, "hours")
-                              .format("hh:mm A"),
-                            endDate: moment(p, "YYYY-MM-DD").format(
-                              "YYYY-MM-DD"
-                            )
-                          });
-                        }
-                      });
-                    }}
+                    onDateChange={this.assignDateEnd}
                     onCloseModal={() =>
                       setTimeout(
                         () =>
