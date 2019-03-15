@@ -132,7 +132,7 @@ export default class ActiveMapFooter extends Component {
     }
 
     captureEventPhoto() {
-        if (!this.props.isHostUser) {
+        /* if (!this.props.isHostUser) {
             return this.feedbackToUser();
         }
         //this.props.callbackTo();
@@ -170,21 +170,21 @@ export default class ActiveMapFooter extends Component {
                   currentUserId: this.props.currentUserId, 
                   resetMsgCounterCallbackTo: this.props.resetMsgCounterCallbackTo.bind(this) 
               }})
-        }
-        else if (this.props.currentScreen == 'eventGallery' && this.props.isHostUser) {
-            return this.props.navInstance.replace('EventActiveGallery', { 
-                isHostUser: this.props.isHostUser,
-                eventAndHostData: this.props.eventAndHostData,
-                eventPhotos: this.props.eventPhotos,
-                callbackFn: this.props.callbackTo.bind(this),
-                mapCallbackFn: this.props.mapcallback.bind(this),
-                switchToCamera: true,
-                currentScreen: this.props.currentScreen,
-                navStackDepth: this.props.navStackDepth,
-                currentUserId: this.props.currentUserId,
-                resetMsgCounterCallbackTo: this.props.resetMsgCounterCallbackTo.bind(this)
-             })
-        }
+        } */
+      if (this.props.currentScreen == 'eventGallery') {
+        return this.props.navInstance.replace('EventActiveGallery', {
+          isHostUser: this.props.isHostUser,
+          eventAndHostData: this.props.eventAndHostData,
+          eventPhotos: this.props.eventPhotos,
+          callbackFn: this.props.callbackTo.bind(this),
+          mapCallbackFn: this.props.mapcallback.bind(this),
+          switchToCamera: true,
+          currentScreen: this.props.currentScreen,
+          navStackDepth: this.props.navStackDepth,
+          currentUserId: this.props.currentUserId,
+          resetMsgCounterCallbackTo: this.props.resetMsgCounterCallbackTo.bind(this)
+        })
+      }
 
     }
 

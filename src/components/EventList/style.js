@@ -102,6 +102,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
+  },
+  img_16: {
+    width: 16,
+    height: 16,
+    position: "absolute",
+    right: 5,
+    top: 3,
+    zIndex: 9999
   }
 });
 

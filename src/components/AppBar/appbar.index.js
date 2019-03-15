@@ -83,13 +83,13 @@ class AppBarComponent extends Component {
     });
 
     BackgroundGeolocation.on("location", location => {
-      console.log("+------------------------------+");
+      /* console.log("+------------------------------+");
       console.log("|                              |");
       console.log("|                              |");
       console.log("|      Location Changed        |");
       console.log("|                              |");
       console.log("|                              |");
-      console.log("+------------------------------+");
+      console.log("+------------------------------+"); */
       // handle your locations here
       // to perform long running operation on iOS
       // you need to create background task
