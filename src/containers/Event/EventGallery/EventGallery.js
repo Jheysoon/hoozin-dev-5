@@ -92,13 +92,15 @@ export default class EventGallery extends Component {
         const photos = await eventInstance.getEventDetailsByFieldAPI(hostId, eventId, 'photos');
         console.log('photos-->'+ JSON.stringify(photos));
 
+        // @TODO Update condition
+
         if (photos && isHostUser) {
             const pinCounter = photos && photos.filter(item => item.pinned).length;
             this.setState({ eventPhotos: photos, animating: false, eventImagePinCounter: pinCounter, currentNavStackDepth: navStackDepth + 1 });
         }
         else if (photos && !isHostUser) {
             const eventOnlyPhotos = photos && photos.filter(item => item.pinned);
-            this.setState({ eventPhotos: eventOnlyPhotos, animating: false, eventImagePinCounter: eventOnlyPhotos.length, currentNavStackDepth: navStackDepth + 1 });
+            this.setState({ eventPhotos: photos, animating: false, eventImagePinCounter: photos.length, currentNavStackDepth: navStackDepth + 1 });
         }
     }
 

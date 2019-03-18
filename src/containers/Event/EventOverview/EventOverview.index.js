@@ -1,384 +1,741 @@
-import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert, Platform } from 'react-native';
-import Image from 'react-native-remote-svg';
-import { Container, Content, Footer, Left, Body, Right, Fab, Icon, Button, Spinner } from 'native-base';
-import MapView from 'react-native-maps';
-import { connect } from 'react-redux';
-import moment from 'moment';
+import React, { Component } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  Platform
+} from "react-native";
+import Image from "react-native-remote-svg";
+import {
+  Container,
+  Content,
+  Footer,
+  Left,
+  Body,
+  Right,
+  Fab,
+  Icon,
+  Button,
+  Spinner
+} from "native-base";
+import MapView from "react-native-maps";
+import { connect } from "react-redux";
+import moment from "moment";
 import firebase from "react-native-firebase";
-import AppBarComponent from '../../../components/AppBar/appbar.index';
-import { IconsMap } from 'assets/assetMap';
-import { filterInviteeByRSVP } from '../../../utils/eventListFilter';
-import { EventServiceAPI, UserManagementServiceAPI } from '../../../api';
+import AppBarComponent from "../../../components/AppBar/appbar.index";
+import { IconsMap } from "assets/assetMap";
+import { filterInviteeByRSVP } from "../../../utils/eventListFilter";
+import { EventServiceAPI, UserManagementServiceAPI } from "../../../api";
 
 // stylesheet
-import { EventOverviewStyles } from './eventoverview.style';
+import { EventOverviewStyles } from "./eventoverview.style";
 
-const inviteeStatusMarker = { going: 'rgba(110, 178, 90, 0.55)', invited: 'rgba(239, 154, 18, 0.55)', declined: 'rgba(255, 0, 59, 0.55)' };
+const inviteeStatusMarker = {
+  going: "rgba(110, 178, 90, 0.55)",
+  invited: "rgba(239, 154, 18, 0.55)",
+  declined: "rgba(255, 0, 59, 0.55)"
+};
 /* Redux container component to present an overview of the created event */
 class EventOverviewContainer extends Component {
-    static navigationOptions = {
-        header: null
+  static navigationOptions = {
+    header: null
+  };
+  constructor() {
+    super();
+    this.state = {
+      filteredInvitedList: [],
+      unfilteredInviteeList: [],
+      eventData: {},
+      animating: true,
+      eventInviteeFiltered: [],
+      currentUserName: "",
+      currentUserProfileImgUrl: "",
+      prevTextElemRef: null,
+      prevBarElemRef: null,
+      prevBarElemColor: null,
+      defaultOrEventLocation: {
+        latitude: 37.78825,
+        longitude: -122.4324,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421
+      }
     };
-    constructor() {
-        super()
-        this.state = {
-            filteredInvitedList: [],
-            unfilteredInviteeList: [],
-            eventData: {},
-            animating: true,
-            eventInviteeFiltered: [],
-            currentUserName: '',
-            currentUserProfileImgUrl: '',
-            prevTextElemRef: null,
-            prevBarElemRef: null,
-            prevBarElemColor: null,
-            defaultOrEventLocation: {
-                latitude: 37.78825,
-                longitude: -122.4324,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421
-            }
+  }
+  componentWillMount() {
+    const { params } = this.props.navigation.state;
+
+    if (params.notification) {
+      this.getEventInformation(params.eventId, params.hostId);
+    } else if (!!params && !!params.eventId) {
+      this.getEventInformation(params.eventId, this.props.user.socialUID);
+      // eventSvc.getUserDetailsAPI2(this.props.user.socialUID)
+      //     .then(userData => this.setState({ currentUserName: userData.name }));
+    }
+  }
+
+  // getEventInformation(eventId) {
+  //     const eventSvc = new EventServiceAPI();
+  //     eventSvc.getEventDetailsAPI(eventId, this.props.user.socialUID)
+  //         .then(eventData => {
+  //             if(eventData) {
+  //                 let tempInvitees = [];
+  //                 for(let key in eventData.invitee) {
+  //                     tempInvitees.push(eventData.invitee[key])
+  //                 }
+  //                 eventData.invitee = tempInvitees;
+  //                 eventData['eventId'] = eventId;
+  //                 const coords = eventData.evtCoords?{latitude: eventData.evtCoords.lat, longitude: eventData.evtCoords.lng, latitudeDelta: 0.0922, longitudeDelta: 0.0421}:this.state.defaultOrEventLocation;
+  //                 this.setState({eventData: eventData, eventInviteeFiltered: eventData.invitee, defaultOrEventLocation: coords});
+  //             }
+  //         });
+  // }
+
+  /**
+   * @description Get details such as host, invitee and friends about requested event
+   * @param {string} eventKey
+   * @param {string} userId
+   */
+  async getEventInformation(eventKey, userId) {
+    const eventSvc = new EventServiceAPI();
+    const userSvc = new UserManagementServiceAPI();
+
+    console.log('eventKey here #######');
+    console.log(eventKey);
+    console.log('userId here #######');
+    console.log(userId);
+
+    const eventData = await eventSvc.getEventDetailsAPI2(eventKey, userId);
+    const currentUserData = await userSvc.getUserDetailsAPI(userId);
+    const currentUserFriends = await userSvc.getUsersFriendListAPI(userId);
+
+    console.log('eventData here #############');
+    console.log(eventData);
+
+    console.log('currentUserDate here #############');
+    console.log(currentUserData);
+
+    console.log('currentUserFriends here ##########');
+    console.log(currentUserFriends);
+
+    if (eventData && currentUserData && currentUserFriends) {
+      eventData.invitee = Object.keys(eventData.invitee).map(inviteeUserKey => {
+        eventData.invitee[inviteeUserKey]["inviteeId"] = inviteeUserKey;
+        return eventData.invitee[inviteeUserKey];
+      });
+
+      const currentUsrFrnds = currentUserFriends.filter(friend => {
+        if (friend.eventList) {
+          return (
+            friend.eventList.filter(event => {
+              if (event.eventId == eventKey) {
+                friend["status"] = "maybe";
+                return true;
+              }
+            }).length > 0
+          );
+        } else if (friend.event) {
+          if (Object.keys(friend.event).includes(eventKey)) {
+            friend["status"] = "going";
+            return true;
+          }
         }
-    }
-    componentWillMount() {
-        const { params } = this.props.navigation.state;
-        if (!!params && !!params.eventId) {
-            this.getEventInformation(params.eventId, this.props.user.socialUID);
-            // eventSvc.getUserDetailsAPI2(this.props.user.socialUID)
-            //     .then(userData => this.setState({ currentUserName: userData.name }));
-        }
-    }
+      });
 
-    // getEventInformation(eventId) {
-    //     const eventSvc = new EventServiceAPI();
-    //     eventSvc.getEventDetailsAPI(eventId, this.props.user.socialUID)
-    //         .then(eventData => {
-    //             if(eventData) {
-    //                 let tempInvitees = [];
-    //                 for(let key in eventData.invitee) {
-    //                     tempInvitees.push(eventData.invitee[key])
-    //                 }
-    //                 eventData.invitee = tempInvitees;
-    //                 eventData['eventId'] = eventId;
-    //                 const coords = eventData.evtCoords?{latitude: eventData.evtCoords.lat, longitude: eventData.evtCoords.lng, latitudeDelta: 0.0922, longitudeDelta: 0.0421}:this.state.defaultOrEventLocation;
-    //                 this.setState({eventData: eventData, eventInviteeFiltered: eventData.invitee, defaultOrEventLocation: coords});
-    //             }
-    //         });
-    // }
-
-    /**
-     * @description Get details such as host, invitee and friends about requested event
-     * @param {string} eventKey 
-     * @param {string} userId 
-     */
-    async getEventInformation(eventKey, userId) {
-        const eventSvc = new EventServiceAPI();
-        const userSvc = new UserManagementServiceAPI();
-
-        const eventData = await eventSvc.getEventDetailsAPI2(eventKey, userId);
-        const currentUserData = await userSvc.getUserDetailsAPI(userId);
-        const currentUserFriends = await userSvc.getUsersFriendListAPI(userId);
-
-        if (eventData && currentUserData && currentUserFriends) {
-            eventData.invitee = Object.keys(eventData.invitee).map(inviteeUserKey => {
-                eventData.invitee[inviteeUserKey]['inviteeId'] = inviteeUserKey;
-                return eventData.invitee[inviteeUserKey]
-            });
-
-            const currentUsrFrnds = currentUserFriends.filter(friend => {
-                if (friend.eventList) {
-                    return friend.eventList.filter(event => {
-                        if (event.eventId == eventKey) {
-                            friend['status'] = 'maybe';
-                            return true;
-                        }
-                    }).length > 0
-                }
-                else if (friend.event) {
-                    if (Object.keys(friend.event).includes(eventKey)) {
-                        friend['status'] = 'going';
-                        return true;
-                    }
-                }
-
-            });
-
-            eventData['eventId'] = eventKey;
-            const coords = eventData.evtCoords ? { latitude: eventData.evtCoords.lat, longitude: eventData.evtCoords.lng, latitudeDelta: 0.0922, longitudeDelta: 0.0421 } : this.state.defaultOrEventLocation;
-            this.filterEventInviteesByRSVP('all', this.refs.textForStatusAll, this.refs.activeBarForStatusAll, 'hsla(207, 97%, 75%, 1)');
-            this.setState({ eventData: eventData, unfilteredInviteeList: eventData.invitee, filteredInvitedList: eventData.invitee, currentUserFriends: currentUsrFrnds, defaultOrEventLocation: coords, currentUserName: currentUserData.name, currentUserProfileImgUrl: currentUserData.profileImgUrl || '', animating: false });
-        }
-        else {
-            this.setState({ animating: false });
-            Alert.alert(
-                'Content unavailable!',
-                'It seems we are having trouble getting requested information',
-                [
-                    {
-                        text: 'Retry again',
-                        onPress: () => {
-                            this.setState({ animating: true });
-                            return this.getEventInformation(eventKey, userId);
-                        }
-                    }
-                ]
-            );
-        }
-    }
-
-    loadImagesStart() {
-        this.setState({ animating: true });
-    }
-    
-    loadImagesComplete() {
-        this.setState({ animating: false });
-    }
-
-    onEditEvent() {
-        firebase.database().ref(`users/${this.props.user.socialUID}/event/${this.state.eventData.eventId}`)
-            .update({ status: "Editing" })
-            .then(() => {
-                this.props.navigation.navigate({
-                    routeName: 'AddEvent',
-                    key: 'AddEvent',
-                    params: { eventId: this.state.eventData.eventId, isEditMode: true }
-                });
-            });
-    }
-
-    filterInviteeByStatus(responseStatus) {
-        const filteredList = this.state.eventData.invitee.filter(invitee => {
-            if (responseStatus == 'all') {
-                return invitee.status == 'accepted' || invitee.status == 'going' || invitee.status == 'invited' || invitee.status == 'maybe';
+      eventData["eventId"] = eventKey;
+      const coords = eventData.evtCoords
+        ? {
+            latitude: eventData.evtCoords.lat,
+            longitude: eventData.evtCoords.lng,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421
+          }
+        : this.state.defaultOrEventLocation;
+      this.filterEventInviteesByRSVP(
+        "all",
+        this.refs.textForStatusAll,
+        this.refs.activeBarForStatusAll,
+        "hsla(207, 97%, 75%, 1)"
+      );
+      this.setState({
+        eventData: eventData,
+        unfilteredInviteeList: eventData.invitee,
+        filteredInvitedList: eventData.invitee,
+        currentUserFriends: currentUsrFrnds,
+        defaultOrEventLocation: coords,
+        currentUserName: currentUserData.name,
+        currentUserProfileImgUrl: currentUserData.profileImgUrl || "",
+        animating: false
+      });
+    } else {
+      this.setState({ animating: false });
+      Alert.alert(
+        "Content unavailable!",
+        "It seems we are having trouble getting requested information",
+        [
+          {
+            text: "Retry again",
+            onPress: () => {
+              this.setState({ animating: true });
+              return this.getEventInformation(eventKey, userId);
             }
-            else if (responseStatus == 'accepted') {
-                return invitee.status == 'accepted' || invitee.status == 'going';
-            }
-            else if (responseStatus == 'maybe') {
-                return invitee.status == 'invited' || invitee.status == 'maybe';
-            }
-            else if (responseStatus == 'declined') {
-                return invitee.status == 'declined';
-            }
-            else if (responseStatus == 'friends') {
+          }
+        ]
+      );
+    }
+  }
 
-            }
+  loadImagesStart() {
+    this.setState({ animating: true });
+  }
+
+  loadImagesComplete() {
+    this.setState({ animating: false });
+  }
+
+  onEditEvent() {
+    firebase
+      .database()
+      .ref(
+        `users/${this.props.user.socialUID}/event/${
+          this.state.eventData.eventId
+        }`
+      )
+      .update({ status: "Editing" })
+      .then(() => {
+        this.props.navigation.navigate({
+          routeName: "AddEvent",
+          key: "AddEvent",
+          params: { eventId: this.state.eventData.eventId, isEditMode: true }
         });
-        this.setState({ eventInviteeFiltered: filteredList });
-    }
+      });
+  }
 
-    /**
-     * @description calculate color value and return a darker shade of the color
-     * @param {string} color
-     */
-    calculateActiveColor(color) {
-        const colorComponents = color.split(',');
-        colorComponents[2] = `${parseInt(colorComponents[2]) - 20}%`;
-        return colorComponents.join(",");
-    }
-
-    /**
-     * @description filter event invitees by RSVP status
-     * @param {string} responseStatus 
-     */
-    filterEventInviteesByRSVP(responseStatus, textElemRef, barElemRef, currentColor) {
-        let filteredInvitee = [];
-        if (responseStatus != 'friends') {
-            filteredInvitee = this.state.unfilteredInviteeList.filter(invitee => filterInviteeByRSVP(invitee, responseStatus));
-        }
-        else {
-            filteredInvitee = this.state.currentUserFriends;
-        }
-        this.setState({ filteredInvitedList: filteredInvitee, prevTextElemRef: textElemRef, prevBarElemColor: currentColor, prevBarElemRef: barElemRef });
-        textElemRef.setNativeProps({
-            style: { fontWeight: '700' }
-        });
-        barElemRef.setNativeProps({
-            style: { backgroundColor: this.calculateActiveColor(currentColor) }
-        });
-        if (this.state.prevTextElemRef != this.state.textElemRef && this.state.prevBarElemRef != barElemRef && this.state.prevBarElemColor) {
-            this.state.prevTextElemRef.setNativeProps({
-                style: { fontWeight: '400' }
-            });
-
-            this.state.prevBarElemRef.setNativeProps({
-                style: { backgroundColor: this.state.prevBarElemColor }
-            });
-        }
-    }
-
-    render() {
+  filterInviteeByStatus(responseStatus) {
+    const filteredList = this.state.eventData.invitee.filter(invitee => {
+      if (responseStatus == "all") {
         return (
-            <React.Fragment>
-                <Container style={{ backgroundColor: '#ffffff' }}>
-                    <AppBarComponent headerTitle="Event Overview" />
-                    <View style={EventOverviewStyles.eventDetailCard}>
-                        <View style={EventOverviewStyles.eventDetail}>
-                            <View style={EventOverviewStyles.cardAvatarWrapper}>
-                                <View>
-                                    {
-                                        this.state.currentUserProfileImgUrl ?
-                                            <View style={EventOverviewStyles.cardAvatar}>
-                                                <Image
-                                                    source={{ uri: this.state.currentUserProfileImgUrl }}
-                                                    style={{ alignSelf: 'center', width: 85, height: 85, borderRadius: 85/2 }}
-                                                    onLoadEnd={() => this.loadImagesComplete()}
-                                                    onLoadStart={() => this.loadImagesStart()}
-                                                />
-                                            </View>
-                                            :
-                                            <View style={EventOverviewStyles.cardAvatar}>
-                                                <Image
-                                                    source={IconsMap.icon_contact_avatar}
-                                                    style={{ alignSelf: 'center', width: 85, height: 85, borderRadius: 85/2 }}
-                                                />
-                                            </View>
-                                    }
-                                </View>
-                                <View style={{ paddingTop: 5 }}>
-                                    <Text style={EventOverviewStyles.eventHostName}>{this.state.currentUserName || ''}</Text>
-                                </View>
-                            </View>
-                            <View style={EventOverviewStyles.cardDetail}>
-                                <View>
-                                    {/* <Text style={EventOverviewStyles.eventTitle}>
+          invitee.status == "accepted" ||
+          invitee.status == "going" ||
+          invitee.status == "invited" ||
+          invitee.status == "maybe"
+        );
+      } else if (responseStatus == "accepted") {
+        return invitee.status == "accepted" || invitee.status == "going";
+      } else if (responseStatus == "maybe") {
+        return invitee.status == "invited" || invitee.status == "maybe";
+      } else if (responseStatus == "declined") {
+        return invitee.status == "declined";
+      } else if (responseStatus == "friends") {
+      }
+    });
+    this.setState({ eventInviteeFiltered: filteredList });
+  }
+
+  /**
+   * @description calculate color value and return a darker shade of the color
+   * @param {string} color
+   */
+  calculateActiveColor(color) {
+    const colorComponents = color.split(",");
+    colorComponents[2] = `${parseInt(colorComponents[2]) - 20}%`;
+    return colorComponents.join(",");
+  }
+
+  /**
+   * @description filter event invitees by RSVP status
+   * @param {string} responseStatus
+   */
+  filterEventInviteesByRSVP(
+    responseStatus,
+    textElemRef,
+    barElemRef,
+    currentColor
+  ) {
+    let filteredInvitee = [];
+    if (responseStatus != "friends") {
+      filteredInvitee = this.state.unfilteredInviteeList.filter(invitee =>
+        filterInviteeByRSVP(invitee, responseStatus)
+      );
+    } else {
+      filteredInvitee = this.state.currentUserFriends;
+    }
+    this.setState({
+      filteredInvitedList: filteredInvitee,
+      prevTextElemRef: textElemRef,
+      prevBarElemColor: currentColor,
+      prevBarElemRef: barElemRef
+    });
+    textElemRef.setNativeProps({
+      style: { fontWeight: "700" }
+    });
+    barElemRef.setNativeProps({
+      style: { backgroundColor: this.calculateActiveColor(currentColor) }
+    });
+    if (
+      this.state.prevTextElemRef != this.state.textElemRef &&
+      this.state.prevBarElemRef != barElemRef &&
+      this.state.prevBarElemColor
+    ) {
+      this.state.prevTextElemRef.setNativeProps({
+        style: { fontWeight: "400" }
+      });
+
+      this.state.prevBarElemRef.setNativeProps({
+        style: { backgroundColor: this.state.prevBarElemColor }
+      });
+    }
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        <Container style={{ backgroundColor: "#ffffff" }}>
+          <AppBarComponent headerTitle="Event Overview" />
+          <View style={EventOverviewStyles.eventDetailCard}>
+            <View style={EventOverviewStyles.eventDetail}>
+              <View style={EventOverviewStyles.cardAvatarWrapper}>
+                <View>
+                  {this.state.currentUserProfileImgUrl ? (
+                    <View style={EventOverviewStyles.cardAvatar}>
+                      <Image
+                        source={{ uri: this.state.currentUserProfileImgUrl }}
+                        style={{
+                          alignSelf: "center",
+                          width: 85,
+                          height: 85,
+                          borderRadius: 85 / 2
+                        }}
+                        onLoadEnd={() => this.loadImagesComplete()}
+                        onLoadStart={() => this.loadImagesStart()}
+                      />
+                    </View>
+                  ) : (
+                    <View style={EventOverviewStyles.cardAvatar}>
+                      <Image
+                        source={IconsMap.icon_contact_avatar}
+                        style={{
+                          alignSelf: "center",
+                          width: 85,
+                          height: 85,
+                          borderRadius: 85 / 2
+                        }}
+                      />
+                    </View>
+                  )}
+                </View>
+                <View style={{ paddingTop: 5 }}>
+                  <Text style={EventOverviewStyles.eventHostName}>
+                    {this.state.currentUserName || ""}
+                  </Text>
+                </View>
+              </View>
+              <View style={EventOverviewStyles.cardDetail}>
+                <View>
+                  {/* <Text style={EventOverviewStyles.eventTitle}>
                                         {this.props.event.eventTitle || this.state.eventData.eventTitle}
                                     </Text> */}
-                                </View>
-                                <View style={EventOverviewStyles.eventMetaWrapper}>
-                                    <View style={{ flex: 1 }}>
-                                        <Text style={{ color: '#FC3764', fontSize: 12, fontFamily: 'Lato', marginTop: -10 }}>
-                                            {moment(this.state.eventData.startDate).format('MMM')}
-                                        </Text>
-                                        <Text style={{ fontSize: 18, fontWeight: 'bold', fontFamily: 'Lato', color: '#1D6CBC' }}>
-                                            {moment(this.state.eventData.startDate).format('DD')}
-                                        </Text>
-                                    </View>
-                                    <View style={{ flex: 4 }}>
-                                        <Text style={{ fontSize: 12, fontFamily: 'Lato', color: '#000000' }}>{this.props.event.startTime || this.state.eventData.startTime} - {this.props.event.endTime || this.state.eventData.endTime}</Text>
-                                        <Text style={{ fontFamily: 'Lato', fontSize: 12, fontWeight: '700', color: '#000000', marginTop: 10 }}>{this.props.event.location || this.state.eventData.location}</Text>
-                                        <Text style={{ fontSize: 16, fontFamily: 'Lato', color: '#004D9B', textAlign: 'left', marginTop: 30 }}>{this.props.event.eventType || this.state.eventData.eventType}</Text>
-                                    </View>
-                                    <View style={{ flex: 1.5, marginLeft: 10, marginTop: 0 }}>
-                                        <View style={{ width: 64, height: 64, borderRadius: 32, overflow: 'hidden', shadowColor: '#000000', shadowOpacity: 0.16, shadowOffset: { width: 6, height: 6 }, shadowRadius: 20 }}>
-                                            <MapView
-                                                style={{ width: '100%', height: '100%', borderRadius: 32 }}
-                                                region={this.state.defaultOrEventLocation}
-                                            />
-                                        </View>
-                                    </View>
-                                </View>
-                            </View>
-                        </View>
+                </View>
+                <View style={EventOverviewStyles.eventMetaWrapper}>
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        color: "#FC3764",
+                        fontSize: 12,
+                        fontFamily: "Lato",
+                        marginTop: -10
+                      }}
+                    >
+                      {moment(this.state.eventData.startDate).format("MMM")}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontWeight: "bold",
+                        fontFamily: "Lato",
+                        color: "#1D6CBC"
+                      }}
+                    >
+                      {moment(this.state.eventData.startDate).format("DD")}
+                    </Text>
+                  </View>
+                  <View style={{ flex: 4 }}>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontFamily: "Lato",
+                        color: "#000000"
+                      }}
+                    >
+                      {this.props.event.startTime ||
+                        this.state.eventData.startTime}{" "}
+                      -{" "}
+                      {this.props.event.endTime || this.state.eventData.endTime}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: 12,
+                        fontWeight: "700",
+                        color: "#000000",
+                        marginTop: 10
+                      }}
+                    >
+                      {this.props.event.location ||
+                        this.state.eventData.location}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontFamily: "Lato",
+                        color: "#004D9B",
+                        textAlign: "left",
+                        marginTop: 30
+                      }}
+                    >
+                      {this.props.event.eventType ||
+                        this.state.eventData.eventType}
+                    </Text>
+                  </View>
+                  <View style={{ flex: 1.5, marginLeft: 10, marginTop: 0 }}>
+                    <View
+                      style={{
+                        width: 64,
+                        height: 64,
+                        borderRadius: 32,
+                        overflow: "hidden",
+                        shadowColor: "#000000",
+                        shadowOpacity: 0.16,
+                        shadowOffset: { width: 6, height: 6 },
+                        shadowRadius: 20
+                      }}
+                    >
+                      <MapView
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          borderRadius: 32
+                        }}
+                        region={this.state.defaultOrEventLocation}
+                      />
                     </View>
-                    <View style={{ width: '95%', height: 1, backgroundColor: '#BCE0FD', marginBottom: 10, position: 'relative', left: 10, top: 10 }}></View>
-                    <View style={{ position: 'relative', left: 20 }}>
-                        <ScrollView horizontal={true}>
-                            <View>
-                                <TouchableOpacity style={EventOverviewStyles.btnGroups} onPress={() => this.filterEventInviteesByRSVP('all', this.refs.textForStatusAll, this.refs.activeBarForStatusAll, 'hsla(207, 97%, 75%, 1)')}>
-                                    <Text ref="textForStatusAll" style={EventOverviewStyles.btnGroupTxt}>All</Text>
-                                </TouchableOpacity>
-                                <View ref="activeBarForStatusAll" style={{ height: 3, width: '100%', backgroundColor: 'hsla(207, 97%, 75%, 1)' }}></View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View
+            style={{
+              width: "95%",
+              height: 1,
+              backgroundColor: "#BCE0FD",
+              marginBottom: 10,
+              position: "relative",
+              left: 10,
+              top: 10
+            }}
+          />
+          <View style={{ position: "relative", left: 20 }}>
+            <ScrollView horizontal={true}>
+              <View>
+                <TouchableOpacity
+                  style={EventOverviewStyles.btnGroups}
+                  onPress={() =>
+                    this.filterEventInviteesByRSVP(
+                      "all",
+                      this.refs.textForStatusAll,
+                      this.refs.activeBarForStatusAll,
+                      "hsla(207, 97%, 75%, 1)"
+                    )
+                  }
+                >
+                  <Text
+                    ref="textForStatusAll"
+                    style={EventOverviewStyles.btnGroupTxt}
+                  >
+                    All
+                  </Text>
+                </TouchableOpacity>
+                <View
+                  ref="activeBarForStatusAll"
+                  style={{
+                    height: 3,
+                    width: "100%",
+                    backgroundColor: "hsla(207, 97%, 75%, 1)"
+                  }}
+                />
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={EventOverviewStyles.btnGroups}
+                  onPress={() =>
+                    this.filterEventInviteesByRSVP(
+                      "accepted",
+                      this.refs.textForStatusAccepted,
+                      this.refs.activeBarForStatusAccepted,
+                      "hsla(106, 36%, 52%, 1)"
+                    )
+                  }
+                >
+                  <Text
+                    ref="textForStatusAccepted"
+                    style={EventOverviewStyles.btnGroupTxt}
+                  >
+                    Accepted
+                  </Text>
+                </TouchableOpacity>
+                <View
+                  ref="activeBarForStatusAccepted"
+                  style={{
+                    height: 3,
+                    width: "100%",
+                    backgroundColor: "hsla(106, 36%, 52%, 1)"
+                  }}
+                />
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={EventOverviewStyles.btnGroups}
+                  onPress={() =>
+                    this.filterEventInviteesByRSVP(
+                      "maybe",
+                      this.refs.textForStatusInvited,
+                      this.refs.activeBarForStatusInvited,
+                      "hsla(37, 87%, 50%, 1)"
+                    )
+                  }
+                >
+                  <Text
+                    ref="textForStatusInvited"
+                    style={EventOverviewStyles.btnGroupTxt}
+                  >
+                    Maybe
+                  </Text>
+                </TouchableOpacity>
+                <View
+                  ref="activeBarForStatusInvited"
+                  style={{
+                    height: 3,
+                    width: "100%",
+                    backgroundColor: "hsla(37, 87%, 50%, 1)"
+                  }}
+                />
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={EventOverviewStyles.btnGroups}
+                  onPress={() =>
+                    this.filterEventInviteesByRSVP(
+                      "declined",
+                      this.refs.textForStatusDeclined,
+                      this.refs.activeBarForStatusDeclined,
+                      "hsla(346, 100%, 50%, 1)"
+                    )
+                  }
+                >
+                  <Text
+                    ref="textForStatusDeclined"
+                    style={EventOverviewStyles.btnGroupTxt}
+                  >
+                    Declined
+                  </Text>
+                </TouchableOpacity>
+                <View
+                  ref="activeBarForStatusDeclined"
+                  style={{
+                    height: 3,
+                    width: "100%",
+                    backgroundColor: "hsla(346, 100%, 50%, 1)"
+                  }}
+                />
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={EventOverviewStyles.btnGroups}
+                  onPress={() =>
+                    this.filterEventInviteesByRSVP(
+                      "friends",
+                      this.refs.textForStatusFriends,
+                      this.refs.activeBarForStatusFriends,
+                      "hsla(208, 96%, 57%, 1)"
+                    )
+                  }
+                >
+                  <Text
+                    ref="textForStatusFriends"
+                    style={EventOverviewStyles.btnGroupTxt}
+                  >
+                    Friends
+                  </Text>
+                </TouchableOpacity>
+                <View
+                  ref="activeBarForStatusFriends"
+                  style={{
+                    height: 3,
+                    width: "100%",
+                    backgroundColor: "hsla(208, 96%, 57%, 1)"
+                  }}
+                />
+              </View>
+            </ScrollView>
+          </View>
+          <Content>
+            <View
+              style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 10 }}
+            >
+              <View style={{ flex: 18 }}>
+                {this.state.filteredInvitedList &&
+                this.state.filteredInvitedList.length > 0
+                  ? this.state.filteredInvitedList.map((data, key) => {
+                      return (
+                        <View
+                          style={{
+                            width: "95%",
+                            marginLeft: 5,
+                            paddingTop: 3,
+                            borderBottomWidth: 0,
+                            borderBottomColor: "#D8D8D8",
+                            borderWidth: 0,
+                            borderRadius: 2,
+                            borderColor: "#D8D8D8",
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.3,
+                            shadowRadius: 2,
+                            elevation: 1
+                          }}
+                          key={key}
+                        >
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "center",
+                              backgroundColor: "white",
+                              borderRadius: 40,
+                              marginLeft: 2
+                            }}
+                          >
+                            <View style={{ flex: 2 }}>
+                              {data.profileImgUrl ? (
+                                <Image
+                                  source={{ uri: data.profileImgUrl }}
+                                  style={{
+                                    alignSelf: "center",
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: 20,
+                                    left: -28,
+                                    top: 0
+                                  }}
+                                  onLoadStart={() => this.loadImagesStart()}
+                                  onLoadEnd={() => this.loadImagesComplete()}
+                                />
+                              ) : (
+                                <Image
+                                  source={IconsMap.icon_contact_avatar}
+                                  style={{
+                                    alignSelf: "center",
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: 20,
+                                    left: -28,
+                                    top: 0
+                                  }}
+                                />
+                              )}
                             </View>
-                            <View>
-                                <TouchableOpacity style={EventOverviewStyles.btnGroups} onPress={() => this.filterEventInviteesByRSVP('accepted', this.refs.textForStatusAccepted, this.refs.activeBarForStatusAccepted, 'hsla(106, 36%, 52%, 1)')}>
-                                    <Text ref="textForStatusAccepted" style={EventOverviewStyles.btnGroupTxt}>Accepted</Text>
-                                </TouchableOpacity>
-                                <View ref="activeBarForStatusAccepted" style={{ height: 3, width: '100%', backgroundColor: 'hsla(106, 36%, 52%, 1)' }}></View>
-                            </View>
-                            <View>
-                                <TouchableOpacity style={EventOverviewStyles.btnGroups} onPress={() => this.filterEventInviteesByRSVP('maybe', this.refs.textForStatusInvited, this.refs.activeBarForStatusInvited, 'hsla(37, 87%, 50%, 1)')}>
-                                    <Text ref="textForStatusInvited" style={EventOverviewStyles.btnGroupTxt}>Maybe</Text>
-                                </TouchableOpacity>
-                                <View ref="activeBarForStatusInvited" style={{ height: 3, width: '100%', backgroundColor: 'hsla(37, 87%, 50%, 1)' }}></View>
-                            </View>
-                            <View>
-                                <TouchableOpacity style={EventOverviewStyles.btnGroups} onPress={() => this.filterEventInviteesByRSVP('declined', this.refs.textForStatusDeclined, this.refs.activeBarForStatusDeclined, 'hsla(346, 100%, 50%, 1)')}>
-                                    <Text ref="textForStatusDeclined" style={EventOverviewStyles.btnGroupTxt}>Declined</Text>
-                                </TouchableOpacity>
-                                <View ref="activeBarForStatusDeclined" style={{ height: 3, width: '100%', backgroundColor: 'hsla(346, 100%, 50%, 1)' }}></View>
-                            </View>
-                            <View>
-                                <TouchableOpacity style={EventOverviewStyles.btnGroups} onPress={() => this.filterEventInviteesByRSVP('friends', this.refs.textForStatusFriends, this.refs.activeBarForStatusFriends, 'hsla(208, 96%, 57%, 1)')}>
-                                    <Text ref="textForStatusFriends" style={EventOverviewStyles.btnGroupTxt}>Friends</Text>
-                                </TouchableOpacity>
-                                <View ref="activeBarForStatusFriends" style={{ height: 3, width: '100%', backgroundColor: 'hsla(208, 96%, 57%, 1)' }}></View>
-                            </View>
-                        </ScrollView>
-                    </View>
-                    <Content>
-                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
-                            <View style={{ flex: 18 }}>
-                                {
-                                    this.state.filteredInvitedList && this.state.filteredInvitedList.length > 0 ?
-                                        this.state.filteredInvitedList.map((data, key) => {
-                                            return (
-                                                <View style={{
-                                                    width: '95%',
-                                                    marginLeft: 5,
-                                                    paddingTop: 3, borderBottomWidth: 0,
-                                                    borderBottomColor: '#D8D8D8',
-                                                    borderWidth: 0,
-                                                    borderRadius: 2,
-                                                    borderColor: '#D8D8D8',
-                                                    shadowColor: '#000',
-                                                    shadowOffset: { width: 0, height: 2 },
-                                                    shadowOpacity: 0.3,
-                                                    shadowRadius: 2,
-                                                    elevation: 1,
-                                                }} key={key}>
-                                                    <View style={{
-                                                        flexDirection: 'row',
-                                                        justifyContent: 'center', backgroundColor: 'white',
-                                                        borderRadius: 40, marginLeft: 2,
-                                                    }}>
-                                                        <View style={{ flex: 2 }}>
-                                                            {
-                                                                data.profileImgUrl ?
-                                                                    <Image
-                                                                        source={{ uri: data.profileImgUrl }}
-                                                                        style={{ alignSelf: 'center', width: 40, height: 40, borderRadius: 20, left: -28, top: 0 }}
-                                                                        onLoadStart={() => this.loadImagesStart()}
-                                                                        onLoadEnd={() => this.loadImagesComplete()}
-                                                                    />
-                                                                    :
-                                                                    <Image
-                                                                        source={IconsMap.icon_contact_avatar}
-                                                                        style={{ alignSelf: 'center', width: 40, height: 40, borderRadius: 20, left: -28, top: 0 }}
-                                                                    />
-                                                            }
-                                                        </View>
-                                                        <View style={{ flex: 4, justifyContent: 'center' }}>
-                                                            <Text style={data.colorChange ? { fontSize: 17, color: 'red' } : { fontSize: 17, position: 'relative', left: -50 }}>{data.name}</Text>
-                                                        </View>
-                                                        <View style={{ flex: 1, justifyContent: 'center' }}>
-                                                            {data.status == 'invited' || data.status == 'maybe' ?
-                                                                <View style={{ width: 25, height: 25, borderRadius: 12.5, backgroundColor: inviteeStatusMarker.invited, position: 'relative', left: 20 }}></View> :
-                                                                data.status == 'going' || data.status == 'accepted' ?
-                                                                    <View style={{ width: 25, height: 25, borderRadius: 12.5, backgroundColor: inviteeStatusMarker.going, position: 'relative', left: 20 }}></View> :
-                                                                    <View style={{ width: 25, height: 25, borderRadius: 12.5, backgroundColor: inviteeStatusMarker.declined, position: 'relative', left: 20 }}></View>
-                                                            }
-                                                        </View>
-                                                    </View>
-                                                </View>
-                                            )
-                                        }) : null
+                            <View style={{ flex: 4, justifyContent: "center" }}>
+                              <Text
+                                style={
+                                  data.colorChange
+                                    ? { fontSize: 17, color: "red" }
+                                    : {
+                                        fontSize: 17,
+                                        position: "relative",
+                                        left: -50
+                                      }
                                 }
+                              >
+                                {data.name}
+                              </Text>
                             </View>
+                            <View style={{ flex: 1, justifyContent: "center" }}>
+                              {data.status == "invited" ||
+                              data.status == "maybe" ? (
+                                <View
+                                  style={{
+                                    width: 25,
+                                    height: 25,
+                                    borderRadius: 12.5,
+                                    backgroundColor:
+                                      inviteeStatusMarker.invited,
+                                    position: "relative",
+                                    left: 20
+                                  }}
+                                />
+                              ) : data.status == "going" ||
+                                data.status == "accepted" ? (
+                                <View
+                                  style={{
+                                    width: 25,
+                                    height: 25,
+                                    borderRadius: 12.5,
+                                    backgroundColor: inviteeStatusMarker.going,
+                                    position: "relative",
+                                    left: 20
+                                  }}
+                                />
+                              ) : (
+                                <View
+                                  style={{
+                                    width: 25,
+                                    height: 25,
+                                    borderRadius: 12.5,
+                                    backgroundColor:
+                                      inviteeStatusMarker.declined,
+                                    position: "relative",
+                                    left: 20
+                                  }}
+                                />
+                              )}
+                            </View>
+                          </View>
                         </View>
-                    </Content>
-                    <View style={{ width: '90%', height: 1, backgroundColor: '#BCE0FD', marginBottom: 10, position: 'relative', left: 10, top: -20 }}></View>
-                    {Platform.OS === 'ios'?
-                    <Footer style={EventOverviewStyles.bottomView_ios}>
-                        <Left>
-                            <TouchableOpacity
-                                onPress={() => this.onEditEvent()}
-                                style={EventOverviewStyles.fabLeftWrapperStyles}
-                            >
-                                {Platform.OS === 'ios'?
-                                    <Image source={IconsMap.icon_edit} style={EventOverviewStyles.fabStyles} />:
-                                    <Image source={{ uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                      );
+                    })
+                  : null}
+              </View>
+            </View>
+          </Content>
+          <View
+            style={{
+              width: "90%",
+              height: 1,
+              backgroundColor: "#BCE0FD",
+              marginBottom: 10,
+              position: "relative",
+              left: 10,
+              top: -20
+            }}
+          />
+          {Platform.OS === "ios" ? (
+            <Footer style={EventOverviewStyles.bottomView_ios}>
+              <Left>
+                <TouchableOpacity
+                  onPress={() => this.onEditEvent()}
+                  style={EventOverviewStyles.fabLeftWrapperStyles}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_edit}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                                     <defs>
                                       <style>
                                         .cls-1 {
@@ -415,24 +772,33 @@ class EventOverviewContainer extends Component {
                                       </g>
                                     </g>
                                   </svg>
-                                  ` }} style={EventOverviewStyles.fabStyles} />
-                                }
-                            </TouchableOpacity>
-                        </Left>
-                        <Body>
-
-                        </Body>
-                        <Right>
-                            <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate({
-                                    routeName: 'NearbyEvents',
-                                    key: 'NearbyEvents',
-                                })}
-                                style={{ position: 'absolute', right: 80, bottom: -30 }}
-                            >
-                                {Platform.OS === 'ios'?
-                                    <Image source={IconsMap.icon_map} style={EventOverviewStyles.fabStyles} />:
-                                    <Image source={{ uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                                  `
+                      }}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Left>
+              <Body />
+              <Right>
+                <TouchableOpacity
+                  onPress={() =>
+                    this.props.navigation.navigate({
+                      routeName: "NearbyEvents",
+                      key: "NearbyEvents"
+                    })
+                  }
+                  style={{ position: "absolute", right: 80, bottom: -30 }}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_map}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                                     <defs>
                                       <style>
                                         .cls-1 {
@@ -462,16 +828,25 @@ class EventOverviewContainer extends Component {
                                       <path id="Path_760" data-name="Path 760" class="cls-2" d="M6.3,6.3A19.064,19.064,0,0,1,21,0,19.064,19.064,0,0,1,35.7,6.3,19.064,19.064,0,0,1,42,21a19.064,19.064,0,0,1-6.3,14.7A19.064,19.064,0,0,1,21,42,19.064,19.064,0,0,1,6.3,35.7C2.45,31.5,0,26.95,0,21A19.064,19.064,0,0,1,6.3,6.3ZM23.8,37.8q2.1,0,5.25-3.15A15.287,15.287,0,0,0,31.5,27.3a5.8,5.8,0,0,0-1.75-4.2A6.161,6.161,0,0,0,25.2,21H21.7a10.22,10.22,0,0,1-3.15-.7,3.177,3.177,0,0,1-1.05-2.45,1.818,1.818,0,0,1,.7-1.4,2.653,2.653,0,0,1,1.4-.7,2.389,2.389,0,0,1,1.75,1.05c.7.35,1.05.7,1.4.7a2.1,2.1,0,0,0,1.4-.35,2.1,2.1,0,0,0,.35-1.4,5.57,5.57,0,0,0-1.75-3.5A14.477,14.477,0,0,0,24.5,5.6a.753.753,0,0,0-.7-.7A10.82,10.82,0,0,0,21,4.2c-3.85.35-6.65,1.05-9.1,2.8a8.812,8.812,0,0,0-3.15,7,8.962,8.962,0,0,0,2.8,6.65,9.562,9.562,0,0,0,6.65,2.8h0v1.4a4.494,4.494,0,0,0,1.4,3.5,5.1,5.1,0,0,0,3.15,2.1v6.3c0,.35,0,.35.35.7S23.45,37.8,23.8,37.8Z" transform="translate(874 531)"/>
                                     </g>
                                   </svg>
-                                  ` }} style={EventOverviewStyles.fabStyles} />
-                                }
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('EventList')}
-                                style={EventOverviewStyles.fabRightWrapperStyles}
-                            >
-                                {Platform.OS === 'ios'?
-                                    <Image source={IconsMap.icon_list_circle} style={EventOverviewStyles.fabStyles} />:
-                                    <Image source={{ uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                                  `
+                      }}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.navigate("EventList")}
+                  style={EventOverviewStyles.fabRightWrapperStyles}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_list_circle}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                                     <defs>
                                       <style>
                                         .cls-1 {
@@ -520,20 +895,30 @@ class EventOverviewContainer extends Component {
                                       </g>
                                     </g>
                                   </svg>
-                                  ` }} style={EventOverviewStyles.fabStyles} />
-                                }
-                            </TouchableOpacity>
-                        </Right>
-                    </Footer>:
-                    <View style={EventOverviewStyles.bottomView_android}>
-                    <Left>
-                        <TouchableOpacity
-                            onPress={() => this.onEditEvent()}
-                            style={EventOverviewStyles.fabLeftWrapperStyles}
-                        >
-                            {Platform.OS === 'ios'?
-                                <Image source={IconsMap.icon_edit} style={EventOverviewStyles.fabStyles} />:
-                                <Image source={{ uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                                  `
+                      }}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Right>
+            </Footer>
+          ) : (
+            <View style={EventOverviewStyles.bottomView_android}>
+              <Left>
+                <TouchableOpacity
+                  onPress={() => this.onEditEvent()}
+                  style={EventOverviewStyles.fabLeftWrapperStyles}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_edit}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                                 <defs>
                                   <style>
                                     .cls-1 {
@@ -570,20 +955,28 @@ class EventOverviewContainer extends Component {
                                   </g>
                                 </g>
                               </svg>
-                              ` }} style={EventOverviewStyles.fabStyles} />
-                            }
-                        </TouchableOpacity>
-                    </Left>
-                    <Body>
-                     </Body>
-                    <Right>
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('NearbyEvents')}
-                            style={{ position: 'absolute', right: 80, bottom: -30 }}
-                        >
-                            {Platform.OS === 'ios'?
-                                <Image source={IconsMap.icon_map} style={EventOverviewStyles.fabStyles} />:
-                                <Image source={{ uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                              `
+                      }}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Left>
+              <Body />
+              <Right>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.navigate("NearbyEvents")}
+                  style={{ position: "absolute", right: 80, bottom: -30 }}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_map}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                                 <defs>
                                   <style>
                                     .cls-1 {
@@ -613,16 +1006,25 @@ class EventOverviewContainer extends Component {
                                   <path id="Path_760" data-name="Path 760" class="cls-2" d="M6.3,6.3A19.064,19.064,0,0,1,21,0,19.064,19.064,0,0,1,35.7,6.3,19.064,19.064,0,0,1,42,21a19.064,19.064,0,0,1-6.3,14.7A19.064,19.064,0,0,1,21,42,19.064,19.064,0,0,1,6.3,35.7C2.45,31.5,0,26.95,0,21A19.064,19.064,0,0,1,6.3,6.3ZM23.8,37.8q2.1,0,5.25-3.15A15.287,15.287,0,0,0,31.5,27.3a5.8,5.8,0,0,0-1.75-4.2A6.161,6.161,0,0,0,25.2,21H21.7a10.22,10.22,0,0,1-3.15-.7,3.177,3.177,0,0,1-1.05-2.45,1.818,1.818,0,0,1,.7-1.4,2.653,2.653,0,0,1,1.4-.7,2.389,2.389,0,0,1,1.75,1.05c.7.35,1.05.7,1.4.7a2.1,2.1,0,0,0,1.4-.35,2.1,2.1,0,0,0,.35-1.4,5.57,5.57,0,0,0-1.75-3.5A14.477,14.477,0,0,0,24.5,5.6a.753.753,0,0,0-.7-.7A10.82,10.82,0,0,0,21,4.2c-3.85.35-6.65,1.05-9.1,2.8a8.812,8.812,0,0,0-3.15,7,8.962,8.962,0,0,0,2.8,6.65,9.562,9.562,0,0,0,6.65,2.8h0v1.4a4.494,4.494,0,0,0,1.4,3.5,5.1,5.1,0,0,0,3.15,2.1v6.3c0,.35,0,.35.35.7S23.45,37.8,23.8,37.8Z" transform="translate(874 531)"/>
                                 </g>
                               </svg>
-                              ` }} style={EventOverviewStyles.fabStyles} />
-                            }
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('EventList')}
-                            style={EventOverviewStyles.fabRightWrapperStyles}
-                        >
-                            {Platform.OS === 'ios'?
-                                <Image source={IconsMap.icon_list_circle} style={EventOverviewStyles.fabStyles} />:
-                                <Image source={{ uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
+                              `
+                      }}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.navigate("EventList")}
+                  style={EventOverviewStyles.fabRightWrapperStyles}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_list_circle}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
                                 <defs>
                                   <style>
                                     .cls-1 {
@@ -671,51 +1073,61 @@ class EventOverviewContainer extends Component {
                                   </g>
                                 </g>
                               </svg>
-                              ` }} style={EventOverviewStyles.fabStyles} />
-                            }
-                        </TouchableOpacity>
-                    </Right>
-                </View>}
-                </Container>
-                {this.state.animating &&
-                    <View style={EventOverviewStyles.overlay}>
-                        <Spinner
-                            color={'lightgoldenrodyellow'}
-                            style={EventOverviewStyles.spinner} />
-                    </View>
-                }
-            </React.Fragment>
-        )
-    }
+                              `
+                      }}
+                      style={EventOverviewStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              </Right>
+            </View>
+          )}
+        </Container>
+        {this.state.animating && (
+          <View style={EventOverviewStyles.overlay}>
+            <Spinner
+              color={"lightgoldenrodyellow"}
+              style={EventOverviewStyles.spinner}
+            />
+          </View>
+        )}
+      </React.Fragment>
+    );
+  }
 }
 
 // removeFriend(data) {
 
 // }
 const styles = StyleSheet.create({
-    btnGroups: {
-        paddingTop: 6,
-        paddingLeft: 10,
-        paddingRight: 10,
-        backgroundColor: '#ffffff'
-    },
-    btnGroupTxt: {
-        color: '#004D9B'
-    }
+  btnGroups: {
+    paddingTop: 6,
+    paddingLeft: 10,
+    paddingRight: 10,
+    backgroundColor: "#ffffff"
+  },
+  btnGroupTxt: {
+    color: "#004D9B"
+  }
 });
 
 const mapStateToProps = (state, ownProps) => {
-    return {
-        user: state.auth.user,
-        event: state.event.details,
-        indicatorShow: state.auth.indicatorShow,
-        contactList: state.contactList
-    };
-}
-const mapDispatchToProps = (dispatch) => {
-    return {
-        onShowIndicator: (bShow) => { dispatch(setVisibleIndicator(bShow)) }
-    };
-}
+  return {
+    user: state.auth.user,
+    event: state.event.details,
+    indicatorShow: state.auth.indicatorShow,
+    contactList: state.contactList
+  };
+};
+const mapDispatchToProps = dispatch => {
+  return {
+    onShowIndicator: bShow => {
+      dispatch(setVisibleIndicator(bShow));
+    }
+  };
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(EventOverviewContainer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EventOverviewContainer);
