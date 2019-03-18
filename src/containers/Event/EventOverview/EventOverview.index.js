@@ -66,7 +66,10 @@ class EventOverviewContainer extends Component {
   }
   componentWillMount() {
     const { params } = this.props.navigation.state;
-    if (!!params && !!params.eventId) {
+
+    if (params.notification) {
+      this.getEventInformation(params.eventId, params.hostId);
+    } else if (!!params && !!params.eventId) {
       this.getEventInformation(params.eventId, this.props.user.socialUID);
       // eventSvc.getUserDetailsAPI2(this.props.user.socialUID)
       //     .then(userData => this.setState({ currentUserName: userData.name }));
@@ -99,9 +102,23 @@ class EventOverviewContainer extends Component {
     const eventSvc = new EventServiceAPI();
     const userSvc = new UserManagementServiceAPI();
 
+    console.log('eventKey here #######');
+    console.log(eventKey);
+    console.log('userId here #######');
+    console.log(userId);
+
     const eventData = await eventSvc.getEventDetailsAPI2(eventKey, userId);
     const currentUserData = await userSvc.getUserDetailsAPI(userId);
     const currentUserFriends = await userSvc.getUsersFriendListAPI(userId);
+
+    console.log('eventData here #############');
+    console.log(eventData);
+
+    console.log('currentUserDate here #############');
+    console.log(currentUserData);
+
+    console.log('currentUserFriends here ##########');
+    console.log(currentUserFriends);
 
     if (eventData && currentUserData && currentUserFriends) {
       eventData.invitee = Object.keys(eventData.invitee).map(inviteeUserKey => {

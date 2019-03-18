@@ -31,6 +31,7 @@ import { IconsMap, ImageMap } from "../../../assets/assetMap";
 import styles from "../../components/EventList/style";
 import HoozinList from "../../components/EventList/HoozinList";
 import EventListSvg from "./../../svgs/EventList";
+import EventsLib from "./../../lib/EventsLib";
 
 class EventList extends Component {
   static navigationOptions = {
@@ -78,31 +79,24 @@ class EventList extends Component {
    */
   getHostAndInvitedEvents(type, cacheReload) {
     //console.log("goes here ##########################");
-    extractHostAndInvitedEventsInfo(this.props.user.socialUID, type).then(
-      hostedAndInvitedEventsList => {
-        hostedAndInvitedEventsList = hostedAndInvitedEventsList.filter(event =>
-          filterEventsByRSVP(event, type)
-        );
-        hostedAndInvitedEventsList.length &&
-          hostedAndInvitedEventsList.sort(
-            (a, b) => a.startDateTimeInUTC - b.startDateTimeInUTC
-          );
-        //hostedAndInvitedEventsList.length && hostedAndInvitedEventsList.sort((a, b) => a.startTime - b.startTime);
-        console.log("[EventList] all events list", hostedAndInvitedEventsList);
-        if (cacheReload) {
-          this.setState({
-            forceReloadCache: true,
-            eventList: hostedAndInvitedEventsList,
-            unfilteredEventList: hostedAndInvitedEventsList
-          });
-        } else {
-          this.setState({
-            eventList: hostedAndInvitedEventsList,
-            unfilteredEventList: hostedAndInvitedEventsList
-          });
-        }
+
+    let eventsLib = new EventsLib();
+
+    let param = {
+      socialUID: this.props.user.socialUID,
+      type
+    };
+
+    eventsLib.getHostAndInvitedEvents(param).then(val => {
+      if (cacheReload) {
+        this.setState({
+          forceReloadCache: true,
+          ...val
+        });
+      } else {
+        this.setState(val);
       }
-    );
+    });
   }
 
   /**
@@ -234,7 +228,6 @@ class EventList extends Component {
   }
 
   render() {
-
     return (
       <React.Fragment>
         <Container style={{ backgroundColor: "#ffffff" }}>
