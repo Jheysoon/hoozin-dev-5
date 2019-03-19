@@ -67,6 +67,8 @@ target 'hoozin' do
 
       pod 'RNGoogleSignin', :path => '../node_modules/react-native-google-signin'
 
+      pod 'BugsnagReactNative', :path => '../node_modules/bugsnag-react-native'
+
     end
 
     post_install do |installer|
