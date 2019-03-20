@@ -112,6 +112,8 @@ export class EventServiceAPI {
             });
           if (ref) {
             let retData = { userData: snapshot._value, key: ref.key };
+
+
             return retData;
           } else {
             return Promise.reject(new Error(error));
@@ -612,4 +614,35 @@ export class EventServiceAPI {
   watchForEventDataByAPI(hostUserId, eventId) {
     return firebase.database().ref(`users/${hostUserId}/event/${eventId}`);
   }
+
+  async whetherAteendeeNearby(eventList, userId) {
+    const userSvc = new UserManagementServiceAPI();
+
+    const userLocation = await userSvc.getUserDetailsByFieldAPI(
+      userId,
+      "userLocation"
+    );
+    console.log("++ user location data ++", userLocation);
+    if (userLocation) {
+      eventList
+        .filter(item => item.isActive && !item.isHostEvent)
+        .forEach(item => {
+          const isAttendeeNearby = this.determineLocationDifference(
+            [Number(userLocation.lat), Number(userLocation.lng)],
+            [item.evtCoords.lat, item.evtCoords.lng]
+          );
+
+          if (isAttendeeNearby) {
+            this.updateInviteeAPI(
+              item.hostId,
+              userId,
+              item.keyNode,
+              { withinOneMile: true }
+            );
+          }
+        });
+    }
+  }
 }
+
+

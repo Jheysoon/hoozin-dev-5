@@ -1,6 +1,7 @@
 import { EventServiceAPI } from "../api";
 import { EVENT } from "../constants";
 import userDefaults from "../lib/userDefaults";
+import { getEventList } from './events/list';
 
 /**
  * @description Action creator to handle new event creation
@@ -65,6 +66,8 @@ export const upsertEventDataAction = (
           data: data,
           eventDetails: eventDetails
         });
+        
+        dispatch(getEventList(socialUID));
       })
       .catch(err => {
         console.log(err);

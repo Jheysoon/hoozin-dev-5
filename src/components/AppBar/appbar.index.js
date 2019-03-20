@@ -51,6 +51,8 @@ class AppBarComponent extends Component {
       currentFilterType: "all",
       existingInvitedEvents: []
     };
+
+    this.handleEventStatusFilter = this.handleEventStatusFilter.bind(this);
   }
   static navigationOptions = {
     header: null
@@ -208,7 +210,7 @@ class AppBarComponent extends Component {
                     (routeName == "EventList" || routeName == "NearbyEvents")
                   ) {
                     console.log("++ SUCCESS!! ++");
-                    this.getHostAndInvitedEventsInfo(userId);
+                    this.props.getEventList(userId);
                   }
                 });
             } else {
@@ -506,57 +508,10 @@ class AppBarComponent extends Component {
    * @param {Object} textElemRef
    */
   async handleEventStatusFilter(type, textElemRef, barElemRef, currentColor) {
-    if (type == "history") {
-      const hostAndInvitedEventLists = await extractHostAndInvitedEventsInfo(
-        this.state.userId,
-        "history"
-      );
-      const filteredEventLists = hostAndInvitedEventLists.filter(event =>
-        filterEventsByRSVP(event, type)
-      );
-      /* console.log(
-        "[AppBar] Past Events List After Filter by Status",
-        type,
-        filteredEventLists
-      ); */
-      this.highlightTabToFilter(textElemRef, barElemRef, currentColor);
-      this.setState({
-        eventList: [{ touched: true }],
-        eventListFiltered: filteredEventLists,
-        currentFilterType: type,
-        prevTextElemRef: textElemRef,
-        prevBarElemColor: currentColor,
-        prevBarElemRef: barElemRef
-      });
-      return;
-    }
-    if (hostAndInvitedEvents && type != "history") {
-      /* console.log("[AppBar] Cached Events List", hostAndInvitedEvents); */
-      const recalculatedEvents = await recalculateFutureEvents(
-        hostAndInvitedEvents,
-        type
-      );
-      const filteredEventList = recalculatedEvents.filter(event =>
-        filterEventsByRSVP(event, type)
-      );
-      this.whetherAteendeeNearby(filteredEventList);
 
-      /* console.log(
-        "[AppBar] Events List After Filter by Status",
-        type,
-        filteredEventList
-      ); */
-      this.highlightTabToFilter(textElemRef, barElemRef, currentColor);
-      this.setState({
-        eventList: [{ touched: true }],
-        eventListFiltered: filteredEventList,
-        currentFilterType: type,
-        prevTextElemRef: textElemRef,
-        prevBarElemColor: currentColor,
-        prevBarElemRef: barElemRef
-      });
-      return;
-    }
+    this.props.getEventList(this.state.userId, type);
+
+    this.highlightTabToFilter(textElemRef, barElemRef, currentColor);
   }
 
   render() {
@@ -877,8 +832,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    getEventList: userId => {
-      dispatch(getEventList(userId));
+    getEventList: (userId, type = undefined) => {
+      dispatch(getEventList(userId, type));
     }
   };
 };
