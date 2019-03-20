@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from 'react-redux';
 import {
   View,
   ScrollView,
@@ -27,6 +28,7 @@ import NotificationService from "../../utils/notification.service";
 import { AppBarStyles } from "./appbar.style";
 import AppBar from '../../svgs/AppBar';
 import OfflineNotice from '../../components/OfflineNotice';
+import { getEventList } from '../../actions/events/list';
 
 let hostAndInvitedEvents = [];
 /**
@@ -215,7 +217,9 @@ class AppBarComponent extends Component {
           });
 
         // initiate onmount handler
-        this.getHostAndInvitedEventsInfo(userId);
+        //this.getHostAndInvitedEventsInfo(userId);
+
+        this.props.getEventList(userId);
 
         // get device token
         this.watchFCMDeviceToken(userId);
@@ -225,10 +229,13 @@ class AppBarComponent extends Component {
   }
 
   componentDidUpdate(prevProps) {
+
     if (prevProps.invalidateCache != this.props.invalidateCache) {
-      this.getHostAndInvitedEventsInfo(this.state.userId);
+      //this.getHostAndInvitedEventsInfo(this.state.userId);
+      //this.props.eventList(userId, this.state.eventListFiltered);
     }
-    if (this.state.eventList.length) {
+
+    /* if (this.state.eventList.length) {
       this.props.fetchEventListFor == "list"
         ? this.props.eventListForAttendee(
             this.state.eventListFiltered,
@@ -240,7 +247,7 @@ class AppBarComponent extends Component {
           );
       this.setState({ eventList: [] });
       return;
-    }
+    } */
   }
 
   handleAppStateChange = nextAppState => {
@@ -507,11 +514,11 @@ class AppBarComponent extends Component {
       const filteredEventLists = hostAndInvitedEventLists.filter(event =>
         filterEventsByRSVP(event, type)
       );
-      console.log(
+      /* console.log(
         "[AppBar] Past Events List After Filter by Status",
         type,
         filteredEventLists
-      );
+      ); */
       this.highlightTabToFilter(textElemRef, barElemRef, currentColor);
       this.setState({
         eventList: [{ touched: true }],
@@ -524,7 +531,7 @@ class AppBarComponent extends Component {
       return;
     }
     if (hostAndInvitedEvents && type != "history") {
-      console.log("[AppBar] Cached Events List", hostAndInvitedEvents);
+      /* console.log("[AppBar] Cached Events List", hostAndInvitedEvents); */
       const recalculatedEvents = await recalculateFutureEvents(
         hostAndInvitedEvents,
         type
@@ -534,11 +541,11 @@ class AppBarComponent extends Component {
       );
       this.whetherAteendeeNearby(filteredEventList);
 
-      console.log(
+      /* console.log(
         "[AppBar] Events List After Filter by Status",
         type,
         filteredEventList
-      );
+      ); */
       this.highlightTabToFilter(textElemRef, barElemRef, currentColor);
       this.setState({
         eventList: [{ touched: true }],
@@ -861,4 +868,22 @@ class AppBarComponent extends Component {
   }
 }
 
-export default withNavigation(AppBarComponent);
+const mapStateToProps = state => {
+  return {
+    user: state.auth.user,
+    events: state.eventList.events
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getEventList: userId => {
+      dispatch(getEventList(userId));
+    }
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withNavigation(AppBarComponent));

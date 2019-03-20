@@ -228,6 +228,9 @@ class EventList extends Component {
   }
 
   render() {
+
+    let { eventList } = this.props;
+
     return (
       <React.Fragment>
         <Container style={{ backgroundColor: "#ffffff" }}>
@@ -313,8 +316,8 @@ class EventList extends Component {
             />
           )}
           <Content>
-            {this.state.eventList.length ? (
-              this.state.eventList.map((eventData, keyE) => {
+            {eventList.length ? (
+              eventList.map((eventData, keyE) => {
                 return (
                   <HoozinList
                     eventData={eventData}
@@ -492,7 +495,8 @@ const mapStateToProps = (state, ownProps) => {
     user: state.auth.user,
     event: state.event.details,
     indicatorShow: state.auth.indicatorShow,
-    isConnected: state.connection.isConnected
+    isConnected: state.connection.isConnected,
+    eventList: state.eventList.events
   };
 };
 

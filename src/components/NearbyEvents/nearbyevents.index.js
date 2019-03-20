@@ -14,6 +14,9 @@ import AppBarComponent from '../AppBar/appbar.index';
 import { Footer, Left, Right, Body, Icon, Fab, Spinner } from 'native-base';
 import OpenAppSettings from 'react-native-app-settings';
 import { IconsMap } from 'assets/assetMap';
+import { connect } from 'react-redux';
+import { getEventList } from '../../actions/events/list';
+import { mapStyle } from './config';
 
 /**
  * Presentational component to display nearby events
@@ -37,226 +40,13 @@ const markerMap = {
   maybe: IconsMap.icon_marker_invited, 
   active: IconsMap.icon_marker_active
 };
-const mapStyle = [
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#ebe3cd"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#523735"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#f5f1e6"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#c9b2a6"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#dcd2be"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#ae9e90"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.natural",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#dfd2ae"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#dfd2ae"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#93817c"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "color": "#a5b076"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#447530"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#f5f1e6"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#fdfcf8"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#f8c967"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#e9bc62"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway.controlled_access",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#e98d58"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway.controlled_access",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#db8555"
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#806b63"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.line",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#dfd2ae"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.line",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#8f7d77"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.line",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#ebe3cd"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#dfd2ae"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "color": "#b9d3c2"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#92998d"
-      }
-    ]
-  }
-];
 
-export default class NearbyEventsComponent extends Component {
+
+class NearbyEventsComponent extends Component {
   static navigationOptions = {
     header: null
   };
+  
   constructor(props, context) {
     super(props, context)
     this.state = {
@@ -359,7 +149,7 @@ export default class NearbyEventsComponent extends Component {
    * @param {*} data 
    */
   captureEventList(data) {
-      console.log("[NearByEvents] Events List Captured From AppBar", data);
+      //console.log("[NearByEvents] Events List Captured From AppBar", data);
       this.setState({ eventListArrived: true, eventList: data, animating: false, GPSLocationPointer: { color: '#2699FB' } });
       return;
   }
@@ -400,6 +190,8 @@ export default class NearbyEventsComponent extends Component {
 
   render() {
 
+    let { events } = this.props;
+
     return (
       <React.Fragment>
         <AppBarComponent isRibbonVisible={true} fetchEventListFor={this.state.eventListFetchMode} eventList={this.captureEventList.bind(this)} />
@@ -416,7 +208,7 @@ export default class NearbyEventsComponent extends Component {
             loadingEnabled={true}
             loadingBackgroundColor="#F0F2EF"
           >
-            {this.state.eventList.length > 0 && this.state.eventList.map((event, key) => (
+          {events.length > 0 && events.map((event, key) => (
             <Marker
               coordinate={{ latitude: event.evtCoords?event.evtCoords.lat:this.state.defaultMapRegion.latitude, longitude: event.evtCoords?event.evtCoords.lng:this.state.defaultMapRegion.longitude }}
               title={event.eventTitle}
@@ -431,7 +223,7 @@ export default class NearbyEventsComponent extends Component {
                 <Image source={markerMap.maybe} />
               }
             </Marker>
-            ))}
+          ))}
           </MapView>:null}
         <Fab style={{ position: 'absolute', top: -450, right: 5, width: 42, height: 42, borderRadius: 21, backgroundColor: '#ffffff' }} onPress={() => this.getUserLocation()}>
             <Icon type="MaterialIcons" name="room" style={this.state.GPSLocationPointer}/>
@@ -662,6 +454,25 @@ export default class NearbyEventsComponent extends Component {
     );
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    events: state.eventList.events
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getEventList: userId => {
+      dispatch(getEventList(userId));
+    }
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(NearbyEventsComponent);
 
 
 const styles = StyleSheet.create({
