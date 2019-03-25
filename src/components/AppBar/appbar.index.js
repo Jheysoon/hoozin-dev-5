@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import {
   View,
   ScrollView,
@@ -26,9 +26,9 @@ import NotificationService from "../../utils/notification.service";
 
 // styles
 import { AppBarStyles } from "./appbar.style";
-import AppBar from '../../svgs/AppBar';
-import OfflineNotice from '../../components/OfflineNotice';
-import { getEventList } from '../../actions/events/list';
+import AppBar from "../../svgs/AppBar";
+import OfflineNotice from "../../components/OfflineNotice";
+import { getEventList } from "../../actions/events/list";
 
 let hostAndInvitedEvents = [];
 /**
@@ -231,7 +231,6 @@ class AppBarComponent extends Component {
   }
 
   componentDidUpdate(prevProps) {
-
     if (prevProps.invalidateCache != this.props.invalidateCache) {
       //this.getHostAndInvitedEventsInfo(this.state.userId);
       //this.props.eventList(userId, this.state.eventListFiltered);
@@ -277,7 +276,6 @@ class AppBarComponent extends Component {
     notifySvc.listenForNotification();
     notifySvc.listenForNotificationDisplayed();
     notifySvc.listenForNotificationDidOpen().then(notification => {
-
       let { event_id, host_id } = notification._data;
       if (this.state.userId != host_id) {
         this.props.navigation.navigate({
@@ -290,7 +288,7 @@ class AppBarComponent extends Component {
         });
       }
     });
-    
+
     notifySvc.listenForBackgroundNotification().then(notification => {
       if (this.state.userId) {
         this.props.navigation.navigate({
@@ -508,8 +506,7 @@ class AppBarComponent extends Component {
    * @param {Object} textElemRef
    */
   async handleEventStatusFilter(type, textElemRef, barElemRef, currentColor) {
-
-    this.props.getEventList(this.state.userId, type);
+    this.props.getEventList(this.props.user.socialUID, type);
 
     this.highlightTabToFilter(textElemRef, barElemRef, currentColor);
   }
@@ -517,307 +514,310 @@ class AppBarComponent extends Component {
   render() {
     return (
       <React.Fragment>
-      <OfflineNotice />
-      <View style={{ position: "relative", zIndex: 99 }}>
-      
-        <Header style={AppBarStyles.header}>
-        
-          <Left>
-            {this.props.showBackBtn ? (
-              <Button
-                transparent
-                style={{ marginTop: -16 }}
-                onPress={() => this.handleBackNavigation()}
-              >
-                <Icon name="arrow-back" style={{ color: "#ffffff" }} />
-              </Button>
-            ) : null}
-            {this.props.showBackBtnCircle ? (
-              <TouchableOpacity
-                style={
-                  Platform.OS === "ios"
-                    ? AppBarStyles.backBtnIos
-                    : AppBarStyles.backBtnAndroid
-                }
-                onPress={() => this.handleBackNavigation()}
-              >
+        <OfflineNotice />
+        <View style={{ position: "relative", zIndex: 99 }}>
+          <Header style={AppBarStyles.header}>
+            <Left>
+              {this.props.showBackBtn ? (
+                <Button
+                  transparent
+                  style={{ marginTop: -16 }}
+                  onPress={() => this.handleBackNavigation()}
+                >
+                  <Icon name="arrow-back" style={{ color: "#ffffff" }} />
+                </Button>
+              ) : null}
+              {this.props.showBackBtnCircle ? (
+                <TouchableOpacity
+                  style={
+                    Platform.OS === "ios"
+                      ? AppBarStyles.backBtnIos
+                      : AppBarStyles.backBtnAndroid
+                  }
+                  onPress={() => this.handleBackNavigation()}
+                >
                   {Platform.OS === "ios" ? (
                     <Image source={IconsMap.icon_back_circle} />
                   ) : (
-                      <Image
-                        source={{
-                          uri: AppBar.Search_Field
-                        }}
-                      />
-                    )}
-              </TouchableOpacity>
-            ) : null}
-          </Left>
-          <Body>
-            <Image
-              source={ImageMap.brand_logo}
-              resizeMode="contain"
-              style={
-                Platform.OS === "ios"
-                  ? AppBarStyles.title_ios
-                  : AppBarStyles.title_android
-              }
-            />
-          </Body>
-          <Right>
-            {this.props.isMenuHidden ? null : (
-              <Button
-                transparent
-                onPress={() => this.toggleDrawer(this.props.openState)}
-              >
-                {Platform.OS === "ios" ? (
-                  <Image
-                    source={IconsMap.icon_menu}
-                    style={AppBarStyles.sideMenu}
+                    <Image
+                      source={{
+                        uri: AppBar.Search_Field
+                      }}
+                    />
+                  )}
+                </TouchableOpacity>
+              ) : null}
+            </Left>
+            <Body>
+              <Image
+                source={ImageMap.brand_logo}
+                resizeMode="contain"
+                style={
+                  Platform.OS === "ios"
+                    ? AppBarStyles.title_ios
+                    : AppBarStyles.title_android
+                }
+              />
+            </Body>
+            <Right>
+              {this.props.isMenuHidden ? null : (
+                <Button
+                  transparent
+                  onPress={() => this.toggleDrawer(this.props.openState)}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_menu}
+                      style={AppBarStyles.sideMenu}
+                    />
+                  ) : (
+                    <Image
+                      source={{ uri: AppBar.Symbol_99_2 }}
+                      style={AppBarStyles.sideMenu}
+                    />
+                  )}
+                </Button>
+              )}
+            </Right>
+          </Header>
+          {this.props.headerTitle ? (
+            <View style={{ paddingTop: 10, backgroundColor: "#ffffff" }}>
+              <Text style={AppBarStyles.textStyle}>
+                {this.props.headerTitle}
+              </Text>
+            </View>
+          ) : null}
+          {this.props.isRibbonVisible ? (
+            <View>
+              <ScrollView horizontal={true}>
+                <View>
+                  <TouchableOpacity
+                    style={AppBarStyles.btnGroups}
+                    onPress={() =>
+                      this.handleEventStatusFilter(
+                        "all",
+                        this.refs.textForStatusAll,
+                        this.refs.activeBarForStatusAll,
+                        "hsla(207, 97%, 75%, 1)"
+                      )
+                    }
+                  >
+                    <Text
+                      ref="textForStatusAll"
+                      style={AppBarStyles.btnGroupTxt}
+                    >
+                      All
+                    </Text>
+                  </TouchableOpacity>
+                  <View
+                    ref="activeBarForStatusAll"
+                    style={{
+                      height: 3,
+                      width: "100%",
+                      backgroundColor: "hsla(207, 97%, 75%, 1)"
+                    }}
                   />
-                ) : (
-                      <Image
-                        source={{ uri: AppBar.Symbol_99_2 }}
-                        style={AppBarStyles.sideMenu}
-                      />
-                )}
-              </Button>
-            )}
-          </Right>
-        </Header>
-        {this.props.headerTitle ? (
-          <View style={{ paddingTop: 10, backgroundColor: "#ffffff" }}>
-            <Text style={AppBarStyles.textStyle}>{this.props.headerTitle}</Text>
-          </View>
-        ) : null}
-        {this.props.isRibbonVisible ? (
-          <View>
-            <ScrollView horizontal={true}>
-              <View>
-                <TouchableOpacity
-                  style={AppBarStyles.btnGroups}
-                  onPress={() =>
-                    this.handleEventStatusFilter(
-                      "all",
-                      this.refs.textForStatusAll,
-                      this.refs.activeBarForStatusAll,
-                      "hsla(207, 97%, 75%, 1)"
-                    )
-                  }
-                >
-                  <Text ref="textForStatusAll" style={AppBarStyles.btnGroupTxt}>
-                    All
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusAll"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(207, 97%, 75%, 1)"
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={AppBarStyles.btnGroups}
-                  onPress={() =>
-                    this.handleEventStatusFilter(
-                      "active",
-                      this.refs.textForStatusActive,
-                      this.refs.activeBarForStatusActive,
-                      "hsla(346, 96%, 60%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusActive"
-                    style={AppBarStyles.btnGroupTxt}
+                </View>
+                <View>
+                  <TouchableOpacity
+                    style={AppBarStyles.btnGroups}
+                    onPress={() =>
+                      this.handleEventStatusFilter(
+                        "active",
+                        this.refs.textForStatusActive,
+                        this.refs.activeBarForStatusActive,
+                        "hsla(346, 96%, 60%, 1)"
+                      )
+                    }
                   >
-                    Active
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusActive"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(346, 96%, 60%, 1)"
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={AppBarStyles.btnGroups}
-                  onPress={() =>
-                    this.handleEventStatusFilter(
-                      "accepted",
-                      this.refs.textForStatusAccepted,
-                      this.refs.activeBarForStatusAccepted,
-                      "hsla(106, 36%, 52%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusAccepted"
-                    style={AppBarStyles.btnGroupTxt}
+                    <Text
+                      ref="textForStatusActive"
+                      style={AppBarStyles.btnGroupTxt}
+                    >
+                      Active
+                    </Text>
+                  </TouchableOpacity>
+                  <View
+                    ref="activeBarForStatusActive"
+                    style={{
+                      height: 3,
+                      width: "100%",
+                      backgroundColor: "hsla(346, 96%, 60%, 1)"
+                    }}
+                  />
+                </View>
+                <View>
+                  <TouchableOpacity
+                    style={AppBarStyles.btnGroups}
+                    onPress={() =>
+                      this.handleEventStatusFilter(
+                        "accepted",
+                        this.refs.textForStatusAccepted,
+                        this.refs.activeBarForStatusAccepted,
+                        "hsla(106, 36%, 52%, 1)"
+                      )
+                    }
                   >
-                    Accepted
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusAccepted"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(106, 36%, 52%, 1)"
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={AppBarStyles.btnGroups}
-                  onPress={() =>
-                    this.handleEventStatusFilter(
-                      "invited",
-                      this.refs.textForStatusInvited,
-                      this.refs.activeBarForStatusInvited,
-                      "hsla(37, 87%, 50%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusInvited"
-                    style={AppBarStyles.btnGroupTxt}
+                    <Text
+                      ref="textForStatusAccepted"
+                      style={AppBarStyles.btnGroupTxt}
+                    >
+                      Accepted
+                    </Text>
+                  </TouchableOpacity>
+                  <View
+                    ref="activeBarForStatusAccepted"
+                    style={{
+                      height: 3,
+                      width: "100%",
+                      backgroundColor: "hsla(106, 36%, 52%, 1)"
+                    }}
+                  />
+                </View>
+                <View>
+                  <TouchableOpacity
+                    style={AppBarStyles.btnGroups}
+                    onPress={() =>
+                      this.handleEventStatusFilter(
+                        "invited",
+                        this.refs.textForStatusInvited,
+                        this.refs.activeBarForStatusInvited,
+                        "hsla(37, 87%, 50%, 1)"
+                      )
+                    }
                   >
-                    Invited
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusInvited"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(37, 87%, 50%, 1)"
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={AppBarStyles.btnGroups}
-                  onPress={() =>
-                    this.handleEventStatusFilter(
-                      "public",
-                      this.refs.textForStatusPublic,
-                      this.refs.activeBarForStatusPublic,
-                      "hsla(208, 96%, 57%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusPublic"
-                    style={AppBarStyles.btnGroupTxt}
+                    <Text
+                      ref="textForStatusInvited"
+                      style={AppBarStyles.btnGroupTxt}
+                    >
+                      Invited
+                    </Text>
+                  </TouchableOpacity>
+                  <View
+                    ref="activeBarForStatusInvited"
+                    style={{
+                      height: 3,
+                      width: "100%",
+                      backgroundColor: "hsla(37, 87%, 50%, 1)"
+                    }}
+                  />
+                </View>
+                <View>
+                  <TouchableOpacity
+                    style={AppBarStyles.btnGroups}
+                    onPress={() =>
+                      this.handleEventStatusFilter(
+                        "public",
+                        this.refs.textForStatusPublic,
+                        this.refs.activeBarForStatusPublic,
+                        "hsla(208, 96%, 57%, 1)"
+                      )
+                    }
                   >
-                    Public
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusPublic"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(208, 96%, 57%, 1)"
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={AppBarStyles.btnGroups}
-                  onPress={() =>
-                    this.handleEventStatusFilter(
-                      "myevents",
-                      this.refs.textForStatusMyevents,
-                      this.refs.activeBarForStatusMyevents,
-                      "hsla(266, 74%, 42%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusMyevents"
-                    style={AppBarStyles.btnGroupTxt}
+                    <Text
+                      ref="textForStatusPublic"
+                      style={AppBarStyles.btnGroupTxt}
+                    >
+                      Public
+                    </Text>
+                  </TouchableOpacity>
+                  <View
+                    ref="activeBarForStatusPublic"
+                    style={{
+                      height: 3,
+                      width: "100%",
+                      backgroundColor: "hsla(208, 96%, 57%, 1)"
+                    }}
+                  />
+                </View>
+                <View>
+                  <TouchableOpacity
+                    style={AppBarStyles.btnGroups}
+                    onPress={() =>
+                      this.handleEventStatusFilter(
+                        "myevents",
+                        this.refs.textForStatusMyevents,
+                        this.refs.activeBarForStatusMyevents,
+                        "hsla(266, 74%, 42%, 1)"
+                      )
+                    }
                   >
-                    My Events
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusMyevents"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(266, 74%, 42%, 1)"
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={AppBarStyles.btnGroups}
-                  onPress={() =>
-                    this.handleEventStatusFilter(
-                      "declined",
-                      this.refs.textForStatusDeclined,
-                      this.refs.activeBarForStatusDeclined,
-                      "hsla(208, 96%, 57%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusDeclined"
-                    style={AppBarStyles.btnGroupTxt}
+                    <Text
+                      ref="textForStatusMyevents"
+                      style={AppBarStyles.btnGroupTxt}
+                    >
+                      My Events
+                    </Text>
+                  </TouchableOpacity>
+                  <View
+                    ref="activeBarForStatusMyevents"
+                    style={{
+                      height: 3,
+                      width: "100%",
+                      backgroundColor: "hsla(266, 74%, 42%, 1)"
+                    }}
+                  />
+                </View>
+                <View>
+                  <TouchableOpacity
+                    style={AppBarStyles.btnGroups}
+                    onPress={() =>
+                      this.handleEventStatusFilter(
+                        "declined",
+                        this.refs.textForStatusDeclined,
+                        this.refs.activeBarForStatusDeclined,
+                        "hsla(208, 96%, 57%, 1)"
+                      )
+                    }
                   >
-                    Declined
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusDeclined"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(208, 96%, 57%, 1)"
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={AppBarStyles.btnGroups}
-                  onPress={() =>
-                    this.handleEventStatusFilter(
-                      "history",
-                      this.refs.textForStatusHistory,
-                      this.refs.activeBarForStatusHistory,
-                      "hsla(0, 0%, 44%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusHistory"
-                    style={AppBarStyles.btnGroupTxt}
+                    <Text
+                      ref="textForStatusDeclined"
+                      style={AppBarStyles.btnGroupTxt}
+                    >
+                      Declined
+                    </Text>
+                  </TouchableOpacity>
+                  <View
+                    ref="activeBarForStatusDeclined"
+                    style={{
+                      height: 3,
+                      width: "100%",
+                      backgroundColor: "hsla(208, 96%, 57%, 1)"
+                    }}
+                  />
+                </View>
+                <View>
+                  <TouchableOpacity
+                    style={AppBarStyles.btnGroups}
+                    onPress={() =>
+                      this.handleEventStatusFilter(
+                        "history",
+                        this.refs.textForStatusHistory,
+                        this.refs.activeBarForStatusHistory,
+                        "hsla(0, 0%, 44%, 1)"
+                      )
+                    }
                   >
-                    History
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusHistory"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(0, 0%, 44%, 1)"
-                  }}
-                />
-              </View>
-            </ScrollView>
-          </View>
-        ) : null}
-      </View>
+                    <Text
+                      ref="textForStatusHistory"
+                      style={AppBarStyles.btnGroupTxt}
+                    >
+                      History
+                    </Text>
+                  </TouchableOpacity>
+                  <View
+                    ref="activeBarForStatusHistory"
+                    style={{
+                      height: 3,
+                      width: "100%",
+                      backgroundColor: "hsla(0, 0%, 44%, 1)"
+                    }}
+                  />
+                </View>
+              </ScrollView>
+            </View>
+          ) : null}
+        </View>
       </React.Fragment>
     );
   }

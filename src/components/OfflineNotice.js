@@ -13,7 +13,9 @@ class OfflineNotice extends React.Component {
 
   componentDidMount() {
     NetInfo.getConnectionInfo().then(({ type }) => {
-      this.changeConnection(type);
+      this.props.connectionChanged({
+        status: type != "none"
+      });
     });
 
     NetInfo.addEventListener("connectionChange", ({ type }) => {
@@ -24,16 +26,26 @@ class OfflineNotice extends React.Component {
   changeConnection(type) {
     let { connectionChanged } = this.props;
 
-    connectionChanged(type != "none");
+    connectionChanged({
+      status: type != "none"
+    });
   }
 
   render() {
     const { status } = this.props;
 
-    if (!status) {
+    if (!status.isConnected && status.trying == false) {
       return (
         <View style={styles.offlineContainer}>
           <Text style={styles.offlineText}>No Internet Connection</Text>
+        </View>
+      );
+    }
+
+    if (!status.isConnected && status.trying) {
+      return (
+        <View style={styles.offlineContainer}>
+          <Text style={styles.offlineText}>Trying To Reconnect</Text>
         </View>
       );
     }
@@ -60,18 +72,16 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    status: state.connection.isConnected
+    status: state.connection
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    connectionChanged: status => {
+    connectionChanged: payload => {
       dispatch({
         type: NET_STATUS.NET_CHANGED,
-        payload: {
-          status: status
-        }
+        payload: payload
       });
     }
   };

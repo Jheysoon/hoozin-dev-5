@@ -80,7 +80,7 @@ class CreateOrEditEventContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("@@@ Add event nextprops", nextProps);
+    //console.log("@@@ Add event nextprops", nextProps);
     const { eventAdded, eventId, indicatorShow, profileUpdate } = nextProps;
     const { replace, navigate, getParam } = this.props.navigation;
 

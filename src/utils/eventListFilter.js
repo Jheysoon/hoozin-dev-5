@@ -110,6 +110,7 @@ export const mergeToHostedEvents = async (
     hostedEventsPushKeyList,
     userId
   );
+
   //console.log("[EventListFilter] Events as Host", hostedEventsList);
   //console.log("[EventListFilter] Events as Attendee", invitedList);
   invitedList = invitedList.filter(item => item);
@@ -122,8 +123,7 @@ export const mergeToHostedEvents = async (
     );
   //.filter(event => filterType != 'history'?validateEvent(event):true);
 
-  console.log('filter Type ehre ########');
-  console.log(filterType);
+  
 
   if (filterType != "history") {
     hostedAndInvitedEventsList = hostedAndInvitedEventsList.map(event => {
