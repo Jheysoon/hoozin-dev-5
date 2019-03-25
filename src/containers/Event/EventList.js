@@ -4,7 +4,8 @@ import {
   View,
   TouchableOpacity,
   TextInput,
-  Platform
+  Platform,
+  ActivityIndicator
 } from "react-native";
 import Image from "react-native-remote-svg";
 import {
@@ -15,23 +16,19 @@ import {
   Body,
   Right,
   Spinner,
-  List,
-  Button
+  Button,
 } from "native-base";
 import { connect } from "react-redux";
 import moment from "moment";
 import AppBarComponent from "../../components/AppBar/appbar.index";
-import { EventServiceAPI, AuthServiceAPI } from "../../api/index";
-import {
-  extractHostAndInvitedEventsInfo,
-  filterEventsByRSVP
-} from "../../utils/eventListFilter";
 import { IconsMap, ImageMap } from "../../../assets/assetMap";
 
 import styles from "../../components/EventList/style";
 import HoozinList from "../../components/EventList/HoozinList";
 import EventListSvg from "./../../svgs/EventList";
 import EventsLib from "./../../lib/EventsLib";
+import { getEventList } from './../../actions/events/list';
+import * as Theme from '../../theme/hoozin-theme';
 
 class EventList extends Component {
   static navigationOptions = {
@@ -53,6 +50,7 @@ class EventList extends Component {
     this.mount = true;
 
     this.showEventInfo = this.showEventInfo.bind(this);
+    this.onTryAgain = this.onTryAgain.bind(this);
   }
 
   componentDidMount() {
@@ -227,7 +225,13 @@ class EventList extends Component {
     });
   }
 
+  onTryAgain() {
+    this.props.getEventList(this.props.user.socialUID);
+  }
+
   render() {
+    let { eventList } = this.props;
+
     return (
       <React.Fragment>
         <Container style={{ backgroundColor: "#ffffff" }}>
@@ -289,7 +293,9 @@ class EventList extends Component {
                       onChangeText={text => this.filterEvents(text)}
                     />
                   </View>
-                  <TouchableOpacity onPress={() => this.clearEventsFilter()}>
+                  <TouchableOpacity
+                    onPress={() => this.clearEventsFilter()}
+                  >
                     <Text
                       style={{
                         alignSelf: "center",
@@ -309,22 +315,24 @@ class EventList extends Component {
               isRibbonVisible={true}
               invalidateCache={this.state.forceReloadCache}
               fetchEventListFor={this.state.eventListFetchMode}
-              eventListForAttendee={this.captureEventListFromAppBar.bind(this)}
+              eventListForAttendee={this.captureEventListFromAppBar.bind(
+                this
+              )}
             />
           )}
           <Content>
-            {this.state.eventList.length ? (
-              this.state.eventList.map((eventData, keyE) => {
+            {eventList.length ? (
+              eventList.map((eventData, keyE) => {
                 return (
                   <HoozinList
                     eventData={eventData}
                     key={keyE}
                     loadImagesStart={() => {
-                      this.setState({ animating: true });
+                      //this.setState({ animating: true });
                     }}
                     showEventInfo={this.showEventInfo}
                     loadImagesComplete={() => {
-                      this.setState({ animating: false });
+                      //this.setState({ animating: false });
                     }}
                   />
                 );
@@ -338,16 +346,50 @@ class EventList extends Component {
                 }}
               >
                 <Text
-                  style={{ textAlign: "center", textAlignVertical: "center" }}
+                  style={{
+                    textAlign: "center",
+                    textAlignVertical: "center"
+                  }}
                 >
                   No events to show right now
                 </Text>
-                {/* <Image source={ImageMap.disconnect} style={{marginTop: 30}} />
-                <View style={{width: '50%', justifyContent: 'center', alignItems: 'center'}}>
-                  <Button full rounded>
-                    <Text style={{color: '#fff'}}>Try Again</Text>
+              </View>
+            )}
+
+            {this.props.isConnected == false && (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                {this.props.fetching == true && (
+                  <ActivityIndicator
+                    size="large"
+                    color={Theme.BRAND_COLOR.PRIMARY}
+                  />
+                )}
+                <Image
+                  source={ImageMap.disconnect}
+                  style={{ marginTop: 30 }}
+                />
+                <View
+                  style={{
+                    width: "50%",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <Button
+                    full
+                    rounded
+                    style={{ height: 30 }}
+                    onPress={this.onTryAgain}
+                  >
+                    <Text style={{ color: "#fff" }}>Try Again</Text>
                   </Button>
-                </View> */}
+                </View>
               </View>
             )}
           </Content>
@@ -422,7 +464,9 @@ class EventList extends Component {
             <View style={styles.bottomView_android}>
               <Left>
                 <TouchableOpacity
-                  onPress={() => this.props.navigation.navigate("NearbyEvents")}
+                  onPress={() =>
+                    this.props.navigation.navigate("NearbyEvents")
+                  }
                   style={styles.fabLeftWrapperStyles}
                 >
                   {Platform.OS === "ios" ? (
@@ -479,7 +523,10 @@ class EventList extends Component {
         </Container>
         {this.state.animating && (
           <View style={styles.overlay}>
-            <Spinner color={"lightgoldenrodyellow"} style={styles.spinner} />
+            <Spinner
+              color={"lightgoldenrodyellow"}
+              style={styles.spinner}
+            />
           </View>
         )}
       </React.Fragment>
@@ -492,12 +539,18 @@ const mapStateToProps = (state, ownProps) => {
     user: state.auth.user,
     event: state.event.details,
     indicatorShow: state.auth.indicatorShow,
-    isConnected: state.connection.isConnected
+    isConnected: state.connection.isConnected,
+    eventList: state.eventList.events,
+    fetching: state.connection.fetching
   };
 };
 
 const mapDispatchToProps = dispatch => {
-  return {};
+  return {
+    getEventList: (userId, type = undefined) => {
+      dispatch(getEventList(userId, type));
+    }
+  };
 };
 
 export default connect(

@@ -34,6 +34,7 @@ import AppBarComponent from "../../../components/AppBar/appbar.index";
 
 // stylesheet
 import { AddOrCreateEventStyles } from "./addevent.style";
+import { getEventList } from "../../../actions/events/list";
 
 /* Redux container component to create a new event or edit a particular event */
 class CreateOrEditEventContainer extends Component {
@@ -79,7 +80,7 @@ class CreateOrEditEventContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("@@@ Add event nextprops", nextProps);
+    //console.log("@@@ Add event nextprops", nextProps);
     const { eventAdded, eventId, indicatorShow, profileUpdate } = nextProps;
     const { replace, navigate, getParam } = this.props.navigation;
 
@@ -478,24 +479,23 @@ class CreateOrEditEventContainer extends Component {
       let p = this.state.startDate + " " + time;
 
       let m = moment(p, "YYYY-MM-DD h:mm A").valueOf();
-      let hour = moment(p, "YYYY-MM-DD h:mm A").format('h');
-      let amPm = moment(p, "YYYY-MM-DD h:mm A").format('A');
+      let hour = moment(p, "YYYY-MM-DD h:mm A").format("h");
+      let amPm = moment(p, "YYYY-MM-DD h:mm A").format("A");
       let ampm = amPm;
 
-      if (hour == 12 && amPm == 'AM') {
+      if (hour == 12 && amPm == "AM") {
         ampm = "PM";
-      } else if (hour == 12 && amPm == 'PM') {
+      } else if (hour == 12 && amPm == "PM") {
         ampm = "AM";
       }
 
       if (this.state.startDate != "") {
         this.setState({
-          endTime: moment(m)
-            .add(1, "h")
-            .format("hh:mm") + ampm,
-          endDate: moment(p, "YYYY-MM-DD").format(
-            "YYYY-MM-DD"
-          )
+          endTime:
+            moment(m)
+              .add(1, "h")
+              .format("hh:mm") + ampm,
+          endDate: moment(p, "YYYY-MM-DD").format("YYYY-MM-DD")
         });
       }
     });
