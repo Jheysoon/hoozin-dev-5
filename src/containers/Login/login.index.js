@@ -10,7 +10,7 @@ import {
   AsyncStorage,
   Platform
 } from "react-native";
-import { Container, Button, Spinner, Form } from "native-base";
+import { Container, Button, Spinner } from "native-base";
 import { connect } from "react-redux";
 import { strings } from "../../locales/i18n";
 import {
@@ -27,6 +27,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 // Stylesheet
 import { LoginStyles } from "./login.style";
+import { LocationServiceAPI } from '../../api/location.api';
 
 /**
  * Redux Container component to host Login functionalities
@@ -54,6 +55,10 @@ class LoginContainer extends Component {
 
         let parseResult = JSON.parse(result);
         const { accountType, uid } = parseResult;
+
+        const locationService = new LocationServiceAPI();
+        // start tracking of user
+        locationService.watchUserLocation(uid);
 
         // HOOZ-23 - Maintaining logged in state
         this.props.fetchProfileForLogin(uid, parseResult);

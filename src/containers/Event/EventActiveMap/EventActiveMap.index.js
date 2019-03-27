@@ -5,10 +5,10 @@ import {
   StyleSheet,
   View,
   Text,
-  ScrollView,
   Alert,
   Platform
 } from "react-native";
+import _ from "lodash";
 
 /* Third-party non UI modules */
 import Image from "react-native-remote-svg";
@@ -25,232 +25,20 @@ import AppBarComponent from "../../../components/AppBar/appbar.index";
 import { EventServiceAPI, UserManagementServiceAPI } from "../../../api";
 
 /* Icons map */
-import { IconsMap } from "assets/assetMap";
-import ActiveMapHeader from "../../../components/ActiveMapHeader/ActiveMapHeader";
-import ActiveMapFooter from "../../../components/ActiveMapFooter/ActiveMapFooter";
+import { IconsMap } from "../../../../assets/assetMap";
+
+import { mapStyle } from "../../../components/NearbyEvents/config";
+
+import InviteeMarker from "./InviteeMarker";
 
 let hostUserLocationWatcher;
 let attendeeLocationWatcher;
+
 const inviteeStatusMarker = {
   going: "rgba(110, 178, 90, 0.55)",
   invited: "rgba(239, 154, 18, 0.55)",
   declined: "rgba(255, 0, 59, 0.55)"
 };
-const mapStyle = [
-  {
-    elementType: "geometry",
-    stylers: [
-      {
-        color: "#ebe3cd"
-      }
-    ]
-  },
-  {
-    elementType: "labels.text.fill",
-    stylers: [
-      {
-        color: "#523735"
-      }
-    ]
-  },
-  {
-    elementType: "labels.text.stroke",
-    stylers: [
-      {
-        color: "#f5f1e6"
-      }
-    ]
-  },
-  {
-    featureType: "administrative",
-    elementType: "geometry.stroke",
-    stylers: [
-      {
-        color: "#c9b2a6"
-      }
-    ]
-  },
-  {
-    featureType: "administrative.land_parcel",
-    elementType: "geometry.stroke",
-    stylers: [
-      {
-        color: "#dcd2be"
-      }
-    ]
-  },
-  {
-    featureType: "administrative.land_parcel",
-    elementType: "labels.text.fill",
-    stylers: [
-      {
-        color: "#ae9e90"
-      }
-    ]
-  },
-  {
-    featureType: "landscape.natural",
-    elementType: "geometry",
-    stylers: [
-      {
-        color: "#dfd2ae"
-      }
-    ]
-  },
-  {
-    featureType: "poi",
-    elementType: "geometry",
-    stylers: [
-      {
-        color: "#dfd2ae"
-      }
-    ]
-  },
-  {
-    featureType: "poi",
-    elementType: "labels.text.fill",
-    stylers: [
-      {
-        color: "#93817c"
-      }
-    ]
-  },
-  {
-    featureType: "poi.park",
-    elementType: "geometry.fill",
-    stylers: [
-      {
-        color: "#a5b076"
-      }
-    ]
-  },
-  {
-    featureType: "poi.park",
-    elementType: "labels.text.fill",
-    stylers: [
-      {
-        color: "#447530"
-      }
-    ]
-  },
-  {
-    featureType: "road",
-    elementType: "geometry",
-    stylers: [
-      {
-        color: "#f5f1e6"
-      }
-    ]
-  },
-  {
-    featureType: "road.arterial",
-    elementType: "geometry",
-    stylers: [
-      {
-        color: "#fdfcf8"
-      }
-    ]
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry",
-    stylers: [
-      {
-        color: "#f8c967"
-      }
-    ]
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry.stroke",
-    stylers: [
-      {
-        color: "#e9bc62"
-      }
-    ]
-  },
-  {
-    featureType: "road.highway.controlled_access",
-    elementType: "geometry",
-    stylers: [
-      {
-        color: "#e98d58"
-      }
-    ]
-  },
-  {
-    featureType: "road.highway.controlled_access",
-    elementType: "geometry.stroke",
-    stylers: [
-      {
-        color: "#db8555"
-      }
-    ]
-  },
-  {
-    featureType: "road.local",
-    elementType: "labels.text.fill",
-    stylers: [
-      {
-        color: "#806b63"
-      }
-    ]
-  },
-  {
-    featureType: "transit.line",
-    elementType: "geometry",
-    stylers: [
-      {
-        color: "#dfd2ae"
-      }
-    ]
-  },
-  {
-    featureType: "transit.line",
-    elementType: "labels.text.fill",
-    stylers: [
-      {
-        color: "#8f7d77"
-      }
-    ]
-  },
-  {
-    featureType: "transit.line",
-    elementType: "labels.text.stroke",
-    stylers: [
-      {
-        color: "#ebe3cd"
-      }
-    ]
-  },
-  {
-    featureType: "transit.station",
-    elementType: "geometry",
-    stylers: [
-      {
-        color: "#dfd2ae"
-      }
-    ]
-  },
-  {
-    featureType: "water",
-    elementType: "geometry.fill",
-    stylers: [
-      {
-        color: "#b9d3c2"
-      }
-    ]
-  },
-  {
-    featureType: "water",
-    elementType: "labels.text.fill",
-    stylers: [
-      {
-        color: "#92998d"
-      }
-    ]
-  }
-];
 
 /* Redux container component to present a detailed view of the created event */
 class EventActiveMapContainer extends Component {
@@ -373,17 +161,19 @@ class EventActiveMapContainer extends Component {
     const eventSvc = new EventServiceAPI();
     const userSvc = new UserManagementServiceAPI();
 
+    let eventDetail = _.find(this.props.eventList, { keyNode: eventId });
+
     /**
      * NOTE - Chat counter got reset when we come from Event list. so uncommenting
      */
     //this.resetUnreadMsgCount(hostUserId, eventId, isHostUser);
     Promise.all([
-      eventSvc.getEventDetailsAPI2(eventId, hostUserId),
-      eventSvc.getUserDetailsAPI2(hostUserId),
+      //eventSvc.getEventDetailsAPI2(eventId, hostUserId),
+      //eventSvc.getUserDetailsAPI2(hostUserId),
       eventSvc.getEventInviteesDetailsAPI2(eventId, hostUserId),
       userSvc.getUsersFriendListAPI(this.props.user.socialUID)
     ]).then(eventAndHostResult => {
-      const currentUsrFrnds = eventAndHostResult[3].filter(friend => {
+      const currentUsrFrnds = eventAndHostResult[1].filter(friend => {
         if (friend.eventList) {
           return (
             friend.eventList.filter(event => {
@@ -404,115 +194,54 @@ class EventActiveMapContainer extends Component {
       const eventAndHostData = {
         eventId: eventId,
         hostId: hostUserId,
-        hostName: eventAndHostResult[1].name,
+        hostName: this.props.user.name,
         isHostUser: isHostUser || false,
-        hostProfileImgUrl: eventAndHostResult[1].profileImgUrl || "",
-        eventTitle: eventAndHostResult[0].eventTitle,
-        invitee: eventAndHostResult[2]
+        hostProfileImgUrl: eventDetail.profileImgUrl || "",
+        eventTitle: eventDetail.eventTitle,
+        invitee: eventAndHostResult[0]
       };
-      const pinCounter =
-        eventAndHostResult[0].photos &&
-        eventAndHostResult[0].photos.filter(item => item.pinned).length;
+      const pinCounter = eventDetail.photos && eventDetail.photos.length;
 
       //// CHANGED ON: 23rd October, 2018
       if (!scopeToinviteeOnly) {
         this.setState({
           animating: false,
           eventAndHostData: eventAndHostData,
-          eventPhotos: eventAndHostResult[0].photos || [],
           eventImagePinCounter: pinCounter,
-          eventPhotosStash: eventAndHostResult[0].photos || [],
           unfilteredInviteeList: eventAndHostData.invitee,
           filteredInvitedList: eventAndHostData.invitee,
           currentUserFriends: currentUsrFrnds,
           defaultOrEventLocation: {
-            latitude: eventAndHostResult[0].evtCoords
-              ? eventAndHostResult[0].evtCoords.lat
-              : this.state.defaultOrEventLocation.latitude,
-            longitude: eventAndHostResult[0].evtCoords
-              ? eventAndHostResult[0].evtCoords.lng
-              : this.state.defaultOrEventLocation.longitude,
+            latitude: eventDetail.evtCoords
+              ? eventDetail.evtCoords.lat
+              : this.state.defaultOrEventLocation.latitude, //
+            longitude: eventDetail.evtCoords
+              ? eventDetail.evtCoords.lng
+              : this.state.defaultOrEventLocation.longitude, //
             latitudeDelta: this.state.defaultOrEventLocation.latitudeDelta,
             longitudeDelta: this.state.defaultOrEventLocation.longitudeDelta
           },
           userDraggedRegion: {
-            latitude: eventAndHostResult[0].evtCoords
-              ? eventAndHostResult[0].evtCoords.lat
-              : this.state.defaultOrEventLocation.latitude,
-            longitude: eventAndHostResult[0].evtCoords
-              ? eventAndHostResult[0].evtCoords.lng
-              : this.state.defaultOrEventLocation.longitude,
+            latitude: eventDetail.evtCoords
+              ? eventDetail.evtCoords.lat
+              : this.state.defaultOrEventLocation.latitude, //
+            longitude: eventDetail.evtCoords
+              ? eventDetail.evtCoords.lng
+              : this.state.defaultOrEventLocation.longitude, //
             latitudeDelta: this.state.defaultOrEventLocation.latitudeDelta,
             longitudeDelta: this.state.defaultOrEventLocation.longitudeDelta
           }
         });
-
-        hostUserLocationWatcher = setInterval(
-          () => this.watchHostUserLocation(userSvc, hostUserId),
-          10000
-        );
-        attendeeLocationWatcher = setInterval(
-          () => this.watchInviteeLocation(userSvc, eventId, hostUserId),
-          10000
-        );
       } else {
         this.setState({
           animating: false,
           eventAndHostData: eventAndHostData,
-          eventPhotos: eventAndHostResult[0].photos || [],
           eventImagePinCounter: pinCounter,
-          eventPhotosStash: eventAndHostResult[0].photos || [],
           unfilteredInviteeList: eventAndHostData.invitee,
           filteredInvitedList: eventAndHostData.invitee,
           currentUserFriends: currentUsrFrnds
         });
       }
-    });
-  }
-
-  /**
-   * @description watch host user location
-   * @param {Object} userSvc
-   * @param {string} hostUserId
-   */
-  watchHostUserLocation(userSvc, hostUserId) {
-    userSvc
-      .getUserDetailsByMultipleFieldsAPI(hostUserId, ["userLocation"])
-      .then(userData => {
-        if (userData) {
-          this.setState({ hostUserLocation: userData.userLocation || null });
-        }
-      });
-  }
-
-  /**
-   * @description watch invited users' location
-   * @param {Object} userSvc
-   */
-  watchInviteeLocation(userSvc) {
-    Promise.all(
-      this.state.eventAndHostData.invitee.map(async invitee => {
-        return userSvc
-          .getUserDetailsByMultipleFieldsAPI(invitee.inviteeId, [
-            "userLocation",
-            "profileImgUrl"
-          ])
-          .then(userData => {
-            if (userData) {
-              return {
-                userLocation: userData.userLocation,
-                userProfileImg: userData.profileImgUrl || ""
-              };
-            }
-          });
-      })
-    ).then(inviteeData => {
-      inviteeMapData = inviteeData.filter(invitee =>
-        invitee.userLocation
-          ? invitee.userLocation.lat && invitee.userLocation.lat
-          : false
-      );
-      this.setState({ inviteeLocation: inviteeMapData || null });
     });
   }
 
@@ -560,11 +289,11 @@ class EventActiveMapContainer extends Component {
   }
 
   loadImagesStart() {
-    this.setState({ animating: true });
+    //this.setState({ animating: true });
   }
 
   loadImagesComplete() {
-    this.setState({ animating: false });
+    //this.setState({ animating: false });
   }
 
   async showInviteeLocation(inviteeId) {
@@ -742,6 +471,7 @@ class EventActiveMapContainer extends Component {
             ) : null}
           </View>
         </View>
+
         <MapView
           style={styles.map}
           initialRegion={this.state.defaultOrEventLocation}
@@ -750,7 +480,7 @@ class EventActiveMapContainer extends Component {
           customMapStyle={mapStyle}
           loadingEnabled={true}
         >
-          {!this.state.singleUserOnly ? (
+          {!this.state.singleUserOnly && (
             <Marker
               coordinate={{
                 latitude: this.state.defaultOrEventLocation.latitude,
@@ -769,64 +499,15 @@ class EventActiveMapContainer extends Component {
                 />
               )}
             </Marker>
-          ) : null}
-          {this.state.inviteeLocation && this.state.inviteeLocation.length
-            ? this.state.inviteeLocation.map((invitee, key) => (
-                <Marker
-                  coordinate={{
-                    latitude: invitee.userLocation.lat,
-                    longitude: invitee.userLocation.lng
-                  }}
-                  key={key}
-                >
-                  {invitee.userProfileImg ? (
-                    <Image
-                      source={{ uri: invitee.userProfileImg }}
-                      style={{ width: 47, height: 47, borderRadius: 47 / 2 }}
-                    />
-                  ) : (
-                    <Image
-                      source={IconsMap.icon_contact_avatar}
-                      style={{ width: 47, height: 47, borderRadius: 47 / 2 }}
-                    />
-                  )}
-                </Marker>
-              ))
-            : null}
-          {this.state.hostUserLocation && this.state.hostUserLocation.lat ? (
-            <Marker
-              coordinate={{
-                latitude: this.state.hostUserLocation.lat,
-                longitude: this.state.hostUserLocation.lng
-              }}
-            >
-              {this.state.eventAndHostData.hostProfileImgUrl ? (
-                <Image
-                  source={{
-                    uri: this.state.eventAndHostData.hostProfileImgUrl
-                  }}
-                  style={{
-                    width: 47,
-                    height: 47,
-                    borderRadius: 47 / 2,
-                    borderWidth: 1,
-                    borderColor: "red"
-                  }}
-                />
-              ) : (
-                <Image
-                  source={IconsMap.icon_contact_avatar}
-                  style={{
-                    width: 47,
-                    height: 47,
-                    borderRadius: 47 / 2,
-                    borderWidth: 1,
-                    borderColor: "red"
-                  }}
-                />
-              )}
-            </Marker>
-          ) : null}
+          )}
+
+          {this.state.animating == false && (
+            <InviteeMarker
+              invitee={this.state.eventAndHostData.invitee}
+              hostId={this.state.hostId}
+            />
+          )}
+
         </MapView>
       </Container>
     );
@@ -852,9 +533,11 @@ const mapStateToProps = (state, ownProps) => {
   return {
     user: state.auth.user,
     event: state.event.details,
-    indicatorShow: state.auth.indicatorShow
+    indicatorShow: state.auth.indicatorShow,
+    eventList: state.eventList.events
   };
 };
+
 const mapDispatchToProps = dispatch => {
   return {
     onShowIndicator: bShow => {

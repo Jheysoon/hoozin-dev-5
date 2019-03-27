@@ -17,6 +17,7 @@ import { IconsMap } from "assets/assetMap";
 import { connect } from "react-redux";
 import { getEventList } from "../../actions/events/list";
 import { mapStyle } from "./config";
+import { changeUserLocation, getUserLocation } from "../../actions/user";
 
 /**
  * Presentational component to display nearby events
@@ -97,6 +98,21 @@ class NearbyEventsComponent extends Component {
             longitude: position.coords.longitude
           })
         );
+
+        AsyncStorage.getItem("userId", (err, result) => {
+          if (err) {
+            console.error(err.message);
+          }
+
+          if (result) {
+            const { uid } = JSON.parse(result);
+            this.props.changeUserLocation(uid, {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            });
+          }
+        });
+
         this.setState({
           userGPSLocation: {
             latitude: position.coords.latitude,
@@ -115,6 +131,16 @@ class NearbyEventsComponent extends Component {
       },
       error => {
         console.log(error);
+        AsyncStorage.getItem("userId", (err, result) => {
+          if (err) {
+            console.error(err.message);
+          }
+
+          if (result) {
+            const { uid } = JSON.parse(result);
+            this.props.getUserLocation(uid);
+          }
+        });
         if (error.code == 1) {
           this.setState({
             isLocationDisabled: true,
@@ -149,7 +175,9 @@ class NearbyEventsComponent extends Component {
         }
       },
       {
-        enableHighAccuracy: true
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 10000
       }
     );
   }
@@ -583,6 +611,12 @@ const mapDispatchToProps = dispatch => {
   return {
     getEventList: userId => {
       dispatch(getEventList(userId));
+    },
+    changeUserLocation: (userId, location) => {
+      dispatch(changeUserLocation(userId, location));
+    },
+    getUserLocation: userId => {
+      dispatch(getUserLocation(userId));
     }
   };
 };

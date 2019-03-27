@@ -29,6 +29,7 @@ import { AppBarStyles } from "./appbar.style";
 import AppBar from "../../svgs/AppBar";
 import OfflineNotice from "../../components/OfflineNotice";
 import { getEventList } from "../../actions/events/list";
+import { changeUserLocation } from '../../actions/user';
 
 let hostAndInvitedEvents = [];
 /**
@@ -152,10 +153,26 @@ class AppBarComponent extends Component {
 
     BackgroundGeolocation.on("background", () => {
       console.log("[INFO] App is in background");
+
+      navigator.geolocation.watchPosition((data) => {
+        AsyncStorage.getItem("userId").then(userIdString => {
+          const { uid: userId } = JSON.parse(userIdString);
+
+          this.props.changeLocation(userId, data.coords);
+        });
+      });
     });
 
     BackgroundGeolocation.on("foreground", () => {
       console.log("[INFO] App is in foreground");
+      navigator.geolocation.watchPosition((data) => {
+        AsyncStorage.getItem("userId").then(userIdString => {
+          const { uid: userId } = JSON.parse(userIdString);
+
+          this.props.changeLocation(userId, data.coords);
+        });
+      });
+      //console.log(navigator.geolocation);
     });
 
     BackgroundGeolocation.on("abort_requested", () => {
@@ -834,6 +851,9 @@ const mapDispatchToProps = dispatch => {
   return {
     getEventList: (userId, type = undefined) => {
       dispatch(getEventList(userId, type));
+    },
+    changeLocation: (userId, location) => {
+      dispatch(changeUserLocation(userId, location));
     }
   };
 };
