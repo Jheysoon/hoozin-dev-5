@@ -98,20 +98,22 @@ class EventDetailContainer extends Component {
   async getEventInformation(eventKey, hostId) {
     const userSvc = new UserManagementServiceAPI();
 
-    const eventData = _.find(this.props.eventList, { keyNode: eventKey });
+    let eventData = _.find(this.props.eventList, { keyNode: eventKey });
 
-    if (eventData) {
-      eventData.invitee = Object.keys(eventData.invitee).map(inviteeUserKey => {
-        eventData.invitee[inviteeUserKey]["inviteeId"] = inviteeUserKey;
-        return eventData.invitee[inviteeUserKey];
-      });
-
-      eventData["eventId"] = eventKey;
-
-      this.setState({
-        eventData: eventData
-      });
+    if (!!eventData) {
+      eventData = await eventSvc.getEventDetailsAPI2(eventKey, hostId);
     }
+
+    eventData.invitee = Object.keys(eventData.invitee).map(inviteeUserKey => {
+      eventData.invitee[inviteeUserKey]["inviteeId"] = inviteeUserKey;
+      return eventData.invitee[inviteeUserKey];
+    });
+
+    eventData["eventId"] = eventKey;
+
+    this.setState({
+      eventData: eventData
+    });
 
     //const eventData = await eventSvc.getEventDetailsAPI2(eventKey, hostId);
     const hostUserData = await userSvc.getUserDetailsAPI(hostId);
