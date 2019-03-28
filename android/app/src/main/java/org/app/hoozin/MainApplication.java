@@ -3,7 +3,7 @@ package org.app.hoozin;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import com.bugsnag.BugsnagReactNative;
+//import com.bugsnag.BugsnagReactNative;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.marianhello.bgloc.react.BackgroundGeolocationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -39,7 +39,7 @@ import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.database.RNFirebaseDatabasePackage;
 import io.invertase.firebase.storage.RNFirebaseStoragePackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
-
+import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;
 
 
 import java.util.Arrays;
@@ -63,7 +63,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
-            BugsnagReactNative.getPackage(),
+            //BugsnagReactNative.getPackage(),
             new RNGoogleSigninPackage(),
             new BackgroundGeolocationPackage(),          
             new VectorIconsPackage(),
@@ -86,7 +86,8 @@ public class MainApplication extends Application implements ReactApplication {
             new RNFirebaseDatabasePackage(),
             new RNFirebaseStoragePackage(),
             new RNFirebaseNotificationsPackage(),
-            new RNGeocoderPackage()
+            new RNGeocoderPackage(),
+            new RNFirebaseCrashlyticsPackage() 
       );
     }
 
