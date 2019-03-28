@@ -60,11 +60,20 @@ export class UserManagementServiceAPI {
    * @param {string} userId
    */
   getUserDetailsAPI(userId) {
-    return firebase
-      .database()
-      .ref(`users/${userId}`)
-      .once("value")
-      .then(userDetailsSnapshot => userDetailsSnapshot._value || null);
+
+    return firebase.database().ref(".info/connected").once("value").then(val => {
+      if (val.val()) {
+        return firebase
+          .database()
+          .ref(`users/${userId}`)
+          .once("value")
+          .then(userDetailsSnapshot => userDetailsSnapshot._value || null);
+      } else {
+        return null;
+      }
+
+    })
+
   }
 
   /**
@@ -111,30 +120,39 @@ export class UserManagementServiceAPI {
    * @param {boolean=} shouldPreselect
    */
   getUsersFriendListAPI(userId, shouldPreselect) {
-    return firebase
-      .database()
-      .ref(`users/${userId}/friends`)
-      .once("value")
-      .then(friendSnapshot => {
-        if (friendSnapshot._value) {
-          return Promise.all(
-            friendSnapshot._value.map(async friendKey => {
-              const friendData = await this.getUserDetailsAPI(friendKey.userId);
-              return {
-                id: friendKey.userId,
-                name: friendData.name,
-                email: friendData.email,
-                phone: friendData.phone,
-                eventList: friendData.eventList,
-                event: friendData.event,
-                profileImgUrl: friendData.profileImgUrl || "",
-                preselect: shouldPreselect || false
-              };
-            })
-          );
-        }
+
+    return firebase.database().ref(".info/connected").once("value").then(val => {
+      if (val.val()) {
+        return firebase
+          .database()
+          .ref(`users/${userId}/friends`)
+          .once("value")
+          .then(friendSnapshot => {
+            if (friendSnapshot._value) {
+              return Promise.all(
+                friendSnapshot._value.map(async friendKey => {
+                  const friendData = await this.getUserDetailsAPI(friendKey.userId);
+                  return {
+                    id: friendKey.userId,
+                    name: friendData.name,
+                    email: friendData.email,
+                    phone: friendData.phone,
+                    eventList: friendData.eventList,
+                    event: friendData.event,
+                    profileImgUrl: friendData.profileImgUrl || "",
+                    preselect: shouldPreselect || false
+                  };
+                })
+              );
+            }
+            return null;
+          });
+      } else {
         return null;
-      });
+      }
+    })
+
+
   }
 
   /**

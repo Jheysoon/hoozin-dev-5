@@ -3,12 +3,11 @@ import _ from "lodash";
 import { connect } from "react-redux";
 import Image from "react-native-remote-svg";
 import { Marker } from "react-native-maps";
-import imageCacheHoc from "react-native-image-cache-hoc";
 
 import { IconsMap } from "../../../../assets/assetMap";
 import { getInviteeLocation } from "../../../actions/events/invitee";
 
-const CacheableImage = imageCacheHoc(Image);
+import { CachedImage } from "react-native-cached-image";
 
 class InviteeMarker extends React.Component {
   constructor(props) {
@@ -22,7 +21,9 @@ class InviteeMarker extends React.Component {
       invitees.push(invitee.inviteeId);
     });
 
-    invitees.push(this.props.hostId);
+    if (this.props.hostId) {
+      invitees.push(this.props.hostId);
+    }
 
     // watch for invitee and host location
     this.props.getInviteeLocation(invitees);
@@ -41,9 +42,8 @@ class InviteeMarker extends React.Component {
             key={key}
           >
             {invitee.userProfileImg ? (
-              <CacheableImage
+              <CachedImage
                 source={{ uri: invitee.userProfileImg }}
-                permanent={true}
                 style={{ width: 47, height: 47, borderRadius: 47 / 2 }}
               />
             ) : (

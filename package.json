@@ -27,6 +27,7 @@
     "react": "16.6.3",
     "react-native": "0.57.8",
     "react-native-app-settings": "2.0.0",
+    "react-native-cached-image": "1.4.3",
     "react-native-camera": "1.1.4",
     "react-native-check-box": "2.1.0",
     "react-native-contacts": "2.2.1",

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import _ from "lodash";
 import {
   View,
   Text,
@@ -15,7 +16,8 @@ import {
   Left,
   Body,
   Right,
-  Spinner
+  Spinner,
+  Toast
 } from "native-base";
 import MapView from "react-native-maps";
 import { connect } from "react-redux";
@@ -62,11 +64,29 @@ class EventDetailContainer extends Component {
         longitudeDelta: 0.0421
       }
     };
+
+    this.getEventInformation = this.getEventInformation.bind(this);
   }
   componentWillMount() {
     const { params } = this.props.navigation.state;
     if (!!params && !!params.eventId && !!params.hostId) {
       this.getEventInformation(params.eventId, params.hostId);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isConnected && this.state.animating == false) {
+      const { params } = this.props.navigation.state;
+      if (!!params && !!params.eventId && !!params.hostId) {
+        this.setState(
+          {
+            animating: true
+          },
+          () => {
+            this.getEventInformation(params.eventId, params.hostId);
+          }
+        );
+      }
     }
   }
 
@@ -76,21 +96,30 @@ class EventDetailContainer extends Component {
    * @param {string} hostId
    */
   async getEventInformation(eventKey, hostId) {
-    const eventSvc = new EventServiceAPI();
     const userSvc = new UserManagementServiceAPI();
 
-    const eventData = await eventSvc.getEventDetailsAPI2(eventKey, hostId);
-    const hostUserData = await userSvc.getUserDetailsAPI(hostId);
-    const currentUserFriends = await userSvc.getUsersFriendListAPI(
-      this.props.user.socialUID
-    );
+    const eventData = _.find(this.props.eventList, { keyNode: eventKey });
 
-    if (eventData && hostUserData && currentUserFriends) {
+    if (eventData) {
       eventData.invitee = Object.keys(eventData.invitee).map(inviteeUserKey => {
         eventData.invitee[inviteeUserKey]["inviteeId"] = inviteeUserKey;
         return eventData.invitee[inviteeUserKey];
       });
 
+      eventData["eventId"] = eventKey;
+
+      this.setState({
+        eventData: eventData
+      });
+    }
+
+    //const eventData = await eventSvc.getEventDetailsAPI2(eventKey, hostId);
+    const hostUserData = await userSvc.getUserDetailsAPI(hostId);
+    const currentUserFriends = await userSvc.getUsersFriendListAPI(
+      this.props.user.socialUID
+    );
+
+    if (hostUserData && currentUserFriends) {
       const currentUsrFrnds = currentUserFriends.filter(friend => {
         if (friend.eventList) {
           return (
@@ -109,7 +138,6 @@ class EventDetailContainer extends Component {
         }
       });
 
-      eventData["eventId"] = eventKey;
       const coords = eventData.evtCoords
         ? {
             latitude: eventData.evtCoords.lat,
@@ -125,7 +153,6 @@ class EventDetailContainer extends Component {
         "hsla(207, 97%, 75%, 1)"
       );
       this.setState({
-        eventData: eventData,
         unfilteredEventData: eventData.invitee,
         unfilteredInviteeList: eventData.invitee,
         filteredInvitedList: eventData.invitee,
@@ -138,7 +165,7 @@ class EventDetailContainer extends Component {
       });
     } else {
       this.setState({ animating: false });
-      Alert.alert(
+      /* Alert.alert(
         "Content unavailable!",
         "It seems we are having trouble getting requested information",
         [
@@ -150,7 +177,7 @@ class EventDetailContainer extends Component {
             }
           }
         ]
-      );
+      ); */
     }
   }
 
@@ -159,35 +186,46 @@ class EventDetailContainer extends Component {
    * @param {string} response
    */
   updateInviteeResponse(response) {
-    const eventSvc = new EventServiceAPI();
-    eventSvc
-      .updateEventInviteeResponse(
-        response,
-        this.state.hostId,
-        this.state.eventData.eventId,
-        this.props.user.socialUID
-      )
-      .then(() => {
-        Alert.alert(
-          "Event Response Changed!",
-          "Your response status for this event has been changed",
-          [
-            {
-              text: "OK, got it",
-              onPress: () => {}
-            }
-          ]
-        );
+    if (this.props.isConnected) {
+      const eventSvc = new EventServiceAPI();
 
-        const eventData = this.state.eventData;
-        console.log("++ event data ++", this.state.unfilteredEventData);
-        eventData.invitee = this.state.unfilteredEventData.map(inviteeUser => {
-          if (inviteeUser.inviteeId == this.props.user.socialUID) {
-            inviteeUser.status = response;
-          }
+      eventSvc
+        .updateEventInviteeResponse(
+          response,
+          this.state.hostId,
+          this.state.eventData.eventId,
+          this.props.user.socialUID
+        )
+        .then(() => {
+          Alert.alert(
+            "Event Response Changed!",
+            "Your response status for this event has been changed",
+            [
+              {
+                text: "OK, got it",
+                onPress: () => {}
+              }
+            ]
+          );
+
+          const eventData = this.state.eventData;
+          console.log("++ event data ++", this.state.unfilteredEventData);
+          eventData.invitee = this.state.unfilteredEventData.map(
+            inviteeUser => {
+              if (inviteeUser.inviteeId == this.props.user.socialUID) {
+                inviteeUser.status = response;
+              }
+            }
+          );
+          this.setState({ eventData });
         });
-        this.setState({ eventData });
+    } else {
+      Toast.show({
+        text: "No Internet Connection",
+        buttonText: "OK",
+        position: "bottom"
       });
+    }
   }
 
   /**
@@ -1232,7 +1270,9 @@ const mapStateToProps = (state, ownProps) => {
     user: state.auth.user,
     event: state.event.details,
     indicatorShow: state.auth.indicatorShow,
-    contactList: state.contactList
+    contactList: state.contactList,
+    eventList: state.eventList.events,
+    isConnected: state.connection.isConnected
   };
 };
 const mapDispatchToProps = dispatch => {

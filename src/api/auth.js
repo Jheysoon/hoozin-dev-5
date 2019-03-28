@@ -56,7 +56,7 @@ export class AuthServiceAPI {
                 .once("value")
                 .then(userSnapshot => {
                   if (userSnapshot._value) {
-                    this.watchUserLocationChange(currentUser.user.uid);
+                    //this.watchUserLocationChange(currentUser.user.uid);
                   }
                   return currentUser;
                 });
@@ -506,6 +506,6 @@ export class AuthServiceAPI {
 
   watchUserLocationChange(uid) {
     locationSvc = new LocationServiceAPI();
-    watcher = setInterval(() => locationSvc.watchUserLocation(uid), 10000);
+    //watcher = setInterval(() => locationSvc.watchUserLocation(uid), 10000);
   }
 }

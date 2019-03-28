@@ -40,7 +40,7 @@ export class LocationServiceAPI {
       if (val.val()) {
         firebase
           .database()
-          .ref("userLocation/" + userid)
+          .ref("userLocation/" + userId)
           .update({ lat: coordinate.latitude, lng: coordinate.longitude });
       }
     });

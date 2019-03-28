@@ -7,6 +7,8 @@ import { withNavigation } from "react-navigation";
 
 import { IconsMap } from "../../../assets/assetMap";
 
+import { CachedImage } from "react-native-cached-image";
+
 const eventStatusColor = {
   goingOrHost: "#6EB25A",
   invitedOrMaybe: "#EF9A12",
@@ -50,7 +52,7 @@ class HoozinList extends React.Component {
               <View>
                 {eventData.hostProfileImgUrl ? (
                   <View style={styles.cardAvatar}>
-                    <Image
+                    <CachedImage
                       source={{ uri: eventData.hostProfileImgUrl }}
                       style={{
                         alignSelf: "center",
@@ -58,8 +60,6 @@ class HoozinList extends React.Component {
                         height: 85,
                         borderRadius: 85 / 2
                       }}
-                      onLoadEnd={() => loadImagesComplete()}
-                      onLoadStart={() => loadImagesStart()}
                     />
                   </View>
                 ) : (
@@ -239,15 +239,14 @@ class HoozinList extends React.Component {
                     }}
                   >
                     {item.profileImgUrl ? (
-                      <Image
+                      <CachedImage
                         source={{ uri: item.profileImgUrl }}
                         style={{
                           width: 48,
                           height: 48,
                           borderRadius: 24
                         }}
-                        onLoadEnd={() => loadImagesComplete()}
-                        onLoadStart={() => loadImagesStart()}
+                        permanent={true}
                       />
                     ) : (
                       <Image

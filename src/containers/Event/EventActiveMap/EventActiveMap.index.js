@@ -31,6 +31,8 @@ import { mapStyle } from "../../../components/NearbyEvents/config";
 
 import InviteeMarker from "./InviteeMarker";
 
+import { CachedImage } from "react-native-cached-image";
+
 let hostUserLocationWatcher;
 let attendeeLocationWatcher;
 
@@ -163,6 +165,19 @@ class EventActiveMapContainer extends Component {
 
     let eventDetail = _.find(this.props.eventList, { keyNode: eventId });
 
+    let evHostData = {
+      eventId: eventId,
+      hostId: hostUserId,
+      hostName: eventDetail.hostName,
+      isHostUser: isHostUser || false,
+      hostProfileImgUrl: eventDetail.hostProfileImgUrl || "",
+      eventTitle: eventDetail.eventTitle
+    };
+
+    this.setState({
+      eventAndHostData: evHostData
+    });
+
     /**
      * NOTE - Chat counter got reset when we come from Event list. so uncommenting
      */
@@ -172,77 +187,84 @@ class EventActiveMapContainer extends Component {
       //eventSvc.getUserDetailsAPI2(hostUserId),
       eventSvc.getEventInviteesDetailsAPI2(eventId, hostUserId),
       userSvc.getUsersFriendListAPI(this.props.user.socialUID)
-    ]).then(eventAndHostResult => {
-      const currentUsrFrnds = eventAndHostResult[1].filter(friend => {
-        if (friend.eventList) {
-          return (
-            friend.eventList.filter(event => {
-              if (event.eventId == eventId) {
-                friend["status"] = "maybe";
-                return true;
-              }
-            }).length > 0
-          );
-        } else if (friend.event) {
-          if (Object.keys(friend.event).includes(eventId)) {
-            friend["status"] = "going";
-            return true;
+    ])
+      .then(eventAndHostResult => {
+        let currFriends =
+          eventAndHostResult[1] == null ? [] : eventAndHostResult[1];
+        const currentUsrFrnds = currFriends.filter(friend => {
+          if (friend.eventList) {
+            return (
+              friend.eventList.filter(event => {
+                if (event.eventId == eventId) {
+                  friend["status"] = "maybe";
+                  return true;
+                }
+              }).length > 0
+            );
+          } else if (friend.event) {
+            if (Object.keys(friend.event).includes(eventId)) {
+              friend["status"] = "going";
+              return true;
+            }
           }
+        });
+
+        const eventAndHostData = {
+          eventId: eventId,
+          hostId: hostUserId,
+          hostName: eventDetail.hostName,
+          isHostUser: isHostUser || false,
+          hostProfileImgUrl: eventDetail.hostProfileImgUrl || "",
+          eventTitle: eventDetail.eventTitle,
+          invitee: eventAndHostResult[0] == null ? [] : eventAndHostResult[0]
+        };
+        const pinCounter = eventDetail.photos && eventDetail.photos.length;
+
+        //// CHANGED ON: 23rd October, 2018
+        if (!scopeToinviteeOnly) {
+          this.setState({
+            animating: false,
+            eventAndHostData: eventAndHostData,
+            eventImagePinCounter: pinCounter,
+            unfilteredInviteeList: eventAndHostData.invitee,
+            filteredInvitedList: eventAndHostData.invitee,
+            currentUserFriends: currentUsrFrnds,
+            defaultOrEventLocation: {
+              latitude: eventDetail.evtCoords
+                ? eventDetail.evtCoords.lat
+                : this.state.defaultOrEventLocation.latitude, //
+              longitude: eventDetail.evtCoords
+                ? eventDetail.evtCoords.lng
+                : this.state.defaultOrEventLocation.longitude, //
+              latitudeDelta: this.state.defaultOrEventLocation.latitudeDelta,
+              longitudeDelta: this.state.defaultOrEventLocation.longitudeDelta
+            },
+            userDraggedRegion: {
+              latitude: eventDetail.evtCoords
+                ? eventDetail.evtCoords.lat
+                : this.state.defaultOrEventLocation.latitude, //
+              longitude: eventDetail.evtCoords
+                ? eventDetail.evtCoords.lng
+                : this.state.defaultOrEventLocation.longitude, //
+              latitudeDelta: this.state.defaultOrEventLocation.latitudeDelta,
+              longitudeDelta: this.state.defaultOrEventLocation.longitudeDelta
+            }
+          });
+        } else {
+          this.setState({
+            animating: false,
+            eventAndHostData: eventAndHostData,
+            eventImagePinCounter: pinCounter,
+            unfilteredInviteeList: eventAndHostData.invitee,
+            filteredInvitedList: eventAndHostData.invitee,
+            currentUserFriends: currentUsrFrnds
+          });
         }
+      })
+      .catch(e => {
+        console.log("error here ##########");
+        console.log(e);
       });
-
-      const eventAndHostData = {
-        eventId: eventId,
-        hostId: hostUserId,
-        hostName: this.props.user.name,
-        isHostUser: isHostUser || false,
-        hostProfileImgUrl: eventDetail.profileImgUrl || "",
-        eventTitle: eventDetail.eventTitle,
-        invitee: eventAndHostResult[0]
-      };
-      const pinCounter = eventDetail.photos && eventDetail.photos.length;
-
-      //// CHANGED ON: 23rd October, 2018
-      if (!scopeToinviteeOnly) {
-        this.setState({
-          animating: false,
-          eventAndHostData: eventAndHostData,
-          eventImagePinCounter: pinCounter,
-          unfilteredInviteeList: eventAndHostData.invitee,
-          filteredInvitedList: eventAndHostData.invitee,
-          currentUserFriends: currentUsrFrnds,
-          defaultOrEventLocation: {
-            latitude: eventDetail.evtCoords
-              ? eventDetail.evtCoords.lat
-              : this.state.defaultOrEventLocation.latitude, //
-            longitude: eventDetail.evtCoords
-              ? eventDetail.evtCoords.lng
-              : this.state.defaultOrEventLocation.longitude, //
-            latitudeDelta: this.state.defaultOrEventLocation.latitudeDelta,
-            longitudeDelta: this.state.defaultOrEventLocation.longitudeDelta
-          },
-          userDraggedRegion: {
-            latitude: eventDetail.evtCoords
-              ? eventDetail.evtCoords.lat
-              : this.state.defaultOrEventLocation.latitude, //
-            longitude: eventDetail.evtCoords
-              ? eventDetail.evtCoords.lng
-              : this.state.defaultOrEventLocation.longitude, //
-            latitudeDelta: this.state.defaultOrEventLocation.latitudeDelta,
-            longitudeDelta: this.state.defaultOrEventLocation.longitudeDelta
-          }
-        });
-      } else {
-        this.setState({
-          animating: false,
-          eventAndHostData: eventAndHostData,
-          eventImagePinCounter: pinCounter,
-          unfilteredInviteeList: eventAndHostData.invitee,
-          filteredInvitedList: eventAndHostData.invitee,
-          currentUserFriends: currentUsrFrnds
-        });
-      }
-    });
   }
 
   feedbackToUser() {
@@ -388,7 +410,7 @@ class EventActiveMapContainer extends Component {
                 >
                   {this.state.eventAndHostData &&
                   this.state.eventAndHostData.hostProfileImgUrl ? (
-                    <Image
+                    <CachedImage
                       source={{
                         uri: this.state.eventAndHostData.hostProfileImgUrl
                       }}
@@ -453,7 +475,7 @@ class EventActiveMapContainer extends Component {
                         }}
                       >
                         {item.profileImgUrl ? (
-                          <Image
+                          <CachedImage
                             source={{ uri: item.profileImgUrl }}
                             style={{ width: 48, height: 48, borderRadius: 24 }}
                           />
@@ -501,13 +523,10 @@ class EventActiveMapContainer extends Component {
             </Marker>
           )}
 
-          {this.state.animating == false && (
-            <InviteeMarker
-              invitee={this.state.eventAndHostData.invitee}
-              hostId={this.state.hostId}
-            />
-          )}
-
+          <InviteeMarker
+            invitee={this.state.eventAndHostData.invitee}
+            hostId={this.state.eventAndHostData.hostId}
+          />
         </MapView>
       </Container>
     );
