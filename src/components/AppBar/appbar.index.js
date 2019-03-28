@@ -29,6 +29,7 @@ import { AppBarStyles } from "./appbar.style";
 import AppBar from "../../svgs/AppBar";
 import OfflineNotice from "../../components/OfflineNotice";
 import { getEventList } from "../../actions/events/list";
+import { changeUserLocation } from "../../actions/user";
 
 let hostAndInvitedEvents = [];
 /**
@@ -49,7 +50,8 @@ class AppBarComponent extends Component {
       prevBarElemColor: null,
       userId: null,
       currentFilterType: "all",
-      existingInvitedEvents: []
+      existingInvitedEvents: [],
+      first: true
     };
 
     this.handleEventStatusFilter = this.handleEventStatusFilter.bind(this);
@@ -59,6 +61,7 @@ class AppBarComponent extends Component {
   };
 
   componentDidMount() {
+    AppState.addEventListener("change", nextAppState => {});
     // ------------------------------------Background Tracker------------------------------------
     BackgroundGeolocation.configure({
       desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
@@ -152,10 +155,38 @@ class AppBarComponent extends Component {
 
     BackgroundGeolocation.on("background", () => {
       console.log("[INFO] App is in background");
+
+      // add a workaround for now...
+      // @TODO research for the plugin to not run first the background
+      if (!this.state.first) {
+        navigator.geolocation.setRNConfiguration({
+          skipPermissionRequests: true
+        });
+
+        navigator.geolocation.watchPosition(data => {
+          AsyncStorage.getItem("userId").then(userIdString => {
+            const { uid: userId } = JSON.parse(userIdString);
+
+            this.props.changeLocation(userId, data.coords);
+          });
+        });
+      } else {
+        this.setState({
+          first: false
+        });
+      }
     });
 
     BackgroundGeolocation.on("foreground", () => {
       console.log("[INFO] App is in foreground");
+      /* navigator.geolocation.watchPosition((data) => {
+        AsyncStorage.getItem("userId").then(userIdString => {
+          const { uid: userId } = JSON.parse(userIdString);
+
+          this.props.changeLocation(userId, data.coords);
+        });
+      }); */
+      //console.log(navigator.geolocation);
     });
 
     BackgroundGeolocation.on("abort_requested", () => {
@@ -834,6 +865,9 @@ const mapDispatchToProps = dispatch => {
   return {
     getEventList: (userId, type = undefined) => {
       dispatch(getEventList(userId, type));
+    },
+    changeLocation: (userId, location) => {
+      dispatch(changeUserLocation(userId, location));
     }
   };
 };

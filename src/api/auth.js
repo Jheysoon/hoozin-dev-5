@@ -30,6 +30,12 @@ export class AuthServiceAPI {
         // get user name from database first with the returned user id
         return this.fetchUserData(currentUser.user.uid).then(userSnapshot => {
           if (userSnapshot._value) {
+            firebase
+              .database()
+              .ref("userLocation/" + currentUser.user._user.uid)
+              .update({
+                profileImgUrl: currentUser.user._user.photoURL || ""
+              });
             // update storage with new user info
             return AsyncStorage.setItem(
               "userId",
@@ -50,7 +56,7 @@ export class AuthServiceAPI {
                 .once("value")
                 .then(userSnapshot => {
                   if (userSnapshot._value) {
-                    this.watchUserLocationChange(currentUser.user.uid);
+                    //this.watchUserLocationChange(currentUser.user.uid);
                   }
                   return currentUser;
                 });
@@ -94,6 +100,14 @@ export class AuthServiceAPI {
       })
       .then(currentUser => {
         currentUser.accountType = "facebook";
+
+        firebase
+          .database()
+          .ref("userLocation/" + currentUser.user.uid)
+          .update({
+            profileImgUrl: currentUser.user._user.photoURL || ""
+          });
+
         // Securely store UUID
         return AsyncStorage.setItem(
           "userId",
@@ -142,6 +156,13 @@ export class AuthServiceAPI {
       })
       .then(currentUser => {
         currentUser.accountType = "google";
+
+        firebase
+          .database()
+          .ref("userLocation/" + currentUser.user.uid)
+          .update({
+            profileImgUrl: currentUser.user._user.photoURL || ""
+          });
 
         return AsyncStorage.setItem(
           "userId",
@@ -275,6 +296,16 @@ export class AuthServiceAPI {
           profileImgUrl: profileImgUrl
         })
         .then(result => {
+          // set initial userLocation of user
+          firebase
+            .database() 
+            .ref("userLocation/" + socialUID)
+            .update({
+              lat: 0,
+              lng: 0,
+              profileImgUrl: profileImgUrl
+            });
+
           this.watchUserLocationChange(socialUID);
           return result;
         })
@@ -307,6 +338,16 @@ export class AuthServiceAPI {
               strava: strava,
               mapmyfitness: mapmyfitness,
               countryCode: countryCode,
+              profileImgUrl: profileImgUrl
+            });
+
+          //set initial user location
+          firebase
+            .database()
+            .ref("userLocation/" + data.user.uid)
+            .update({
+              lat: 0,
+              lng: 0,
               profileImgUrl: profileImgUrl
             });
           // cache it immediately
@@ -465,6 +506,6 @@ export class AuthServiceAPI {
 
   watchUserLocationChange(uid) {
     locationSvc = new LocationServiceAPI();
-    watcher = setInterval(() => locationSvc.watchUserLocation(uid), 10000);
+    //watcher = setInterval(() => locationSvc.watchUserLocation(uid), 10000);
   }
 }

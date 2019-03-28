@@ -49,7 +49,7 @@ class EventActiveAttendeesContainer extends Component {
         const eventData = await eventSvc.getEventDetailsAPI2(eventKey, hostId);
         const hostUserData = await userSvc.getUserDetailsAPI(hostId);
         const currentUserFriends = await userSvc.getUsersFriendListAPI(this.props.user.socialUID);
-        console.log("friends for invitee", currentUserFriends);
+        //console.log("friends for invitee", currentUserFriends);
         //this.resetUnreadMsgCount();
 
         if (eventData && hostUserData && currentUserFriends) {

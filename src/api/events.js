@@ -222,21 +222,33 @@ export class EventServiceAPI {
    * @param {boolean=} shouldPreselect
    */
   getEventInviteesDetailsAPI2(eventId, userId, shouldPreselect) {
-    return firebase
-      .database()
-      .ref(`users/${userId}/event/${eventId}/invitee`)
-      .once("value")
-      .then(inviteeSnapshot => {
-        if (inviteeSnapshot._value) {
-          return Object.keys(inviteeSnapshot._value).map(key => {
-            inviteeSnapshot._value[key]["inviteeId"] = key;
-            if (shouldPreselect) {
-              inviteeSnapshot._value[key]["preselect"] = true;
-            }
-            return inviteeSnapshot._value[key];
-          });
-        }
-      });
+    let connectedRef = firebase.database().ref(".info/connected");
+
+    return connectedRef.once('value').then(val => {
+      if (val.val()) {
+        return firebase
+        .database()
+        .ref(`users/${userId}/event/${eventId}/invitee`)
+        .once("value")
+        .then(inviteeSnapshot => {
+          if (inviteeSnapshot._value) {
+            return Object.keys(inviteeSnapshot._value).map(key => {
+              inviteeSnapshot._value[key]["inviteeId"] = key;
+              if (shouldPreselect) {
+                inviteeSnapshot._value[key]["preselect"] = true;
+              }
+              return inviteeSnapshot._value[key];
+            });
+          } else {
+            return null;
+          }
+        });
+      } else {
+        return null;
+      }
+      
+    })
+    
   }
 
   getEventInviteeDetail(hostUserId, inviteeId, eventId) {
@@ -315,10 +327,14 @@ export class EventServiceAPI {
    * @param {string} inviteeId
    */
   updateEventInviteeResponse(response, hostUserId, eventId, inviteeId) {
-    return firebase
-      .database()
-      .ref(`users/${hostUserId}/event/${eventId}/invitee/${inviteeId}`)
-      .update({ status: response });
+    firebase.database().ref(".info/connected").once("value").then(val => {
+      if (val.val()) {
+        return firebase
+          .database()
+          .ref(`users/${hostUserId}/event/${eventId}/invitee/${inviteeId}`)
+          .update({ status: response });
+      }
+    });
   }
 
   /**
