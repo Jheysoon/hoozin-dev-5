@@ -9,6 +9,8 @@ import { IconsMap } from "../../../assets/assetMap";
 
 import { CachedImage } from "react-native-cached-image";
 
+import InviteeList from "./InviteeList";
+
 const eventStatusColor = {
   goingOrHost: "#6EB25A",
   invitedOrMaybe: "#EF9A12",
@@ -221,47 +223,7 @@ class HoozinList extends React.Component {
             </View>
           </View>
           <View style={styles.invitees}>
-            {invitee ? (
-              <List
-                dataArray={invitee}
-                horizontal={true}
-                style={{ marginTop: 20 }}
-                renderRow={(item, key) => (
-                  <ListItem
-                    key={key}
-                    style={{
-                      paddingRight: 0,
-                      paddingLeft: 0,
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                      marginLeft: 5,
-                      borderBottomWidth: 0
-                    }}
-                  >
-                    {item.profileImgUrl ? (
-                      <CachedImage
-                        source={{ uri: item.profileImgUrl }}
-                        style={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: 24
-                        }}
-                        permanent={true}
-                      />
-                    ) : (
-                      <Image
-                        source={IconsMap.icon_contact_avatar}
-                        style={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: 24
-                        }}
-                      />
-                    )}
-                  </ListItem>
-                )}
-              />
-            ) : null}
+            <InviteeList eventId={eventData.keyNode} style={{ marginTop: 20 }} />
           </View>
         </View>
       </TouchableOpacity>

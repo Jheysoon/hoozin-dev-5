@@ -1,24 +1,63 @@
 import React from "react";
 import _ from "lodash";
+import moment from "moment";
 import { connect } from "react-redux";
-import Image from "react-native-remote-svg";
 import { Marker } from "react-native-maps";
+import Image from "react-native-remote-svg";
+import firebase from "react-native-firebase";
 
+import { EventServiceAPI } from "../../../api";
 import { IconsMap } from "../../../../assets/assetMap";
 import { getInviteeLocation } from "../../../actions/events/invitee";
 
-import { CachedImage } from "react-native-cached-image";
+const eventServiceApi = new EventServiceAPI();
+
+let Ref;
+let listener;
 
 class InviteeMarker extends React.Component {
   constructor(props) {
     super(props);
+
+    this.subInvitee = this.subInvitee.bind(this);
+    this.determineTime = this.determineTime.bind(this);
   }
 
-  componentDidMount() {
-    let invitees = new Array();
+  determineTime(startDateTimeInUTC, endDateTimeInUTC) {
+    const startDateTimeInUtc = moment.utc(startDateTimeInUTC);
+    const endDateTimeInUtc = moment.utc(endDateTimeInUTC);
 
-    _.forEach(this.props.invitee, invitee => {
-      invitees.push(invitee.inviteeId);
+    const currentDateTimeInUtc = moment.utc();
+    const subtractStart = startDateTimeInUtc.subtract(15, "minutes");
+    const subtractEnd = endDateTimeInUtc.subtract(15, "minutes");
+
+    if (
+      currentDateTimeInUtc.isSameOrAfter(subtractStart) &&
+      currentDateTimeInUtc.isSameOrBefore(subtractEnd)
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  subInvitee(inviteeList) {
+    let invitees = [];
+    let eventDetail = _.find(this.props.eventList, {
+      keyNode: this.props.eventId
+    });
+
+    // filter invitees for the going status only
+    _.forEach(inviteeList, val => {
+      if (
+        val.status == "going" &&
+        this.determineTime(
+          eventDetail.startDateTimeInUTC,
+          eventDetail.endDateTimeInUTC
+        )
+      ) {
+        invitees.push(val.userId);
+      }
     });
 
     if (this.props.hostId) {
@@ -29,11 +68,40 @@ class InviteeMarker extends React.Component {
     this.props.getInviteeLocation(invitees);
   }
 
+  async componentDidMount() {
+    let connected = await eventServiceApi.checkForConnection();
+
+    if (connected.val()) {
+      Ref = firebase
+        .database()
+        .ref(`invitees/${this.props.eventId}`);
+        listener = Ref.on("value", inviteeSnapshot => {
+          console.log('wathcing here');
+          let invitee = Object.keys(inviteeSnapshot._value).map(key => {
+            inviteeSnapshot._value[key]["inviteeId"] = key;
+            return inviteeSnapshot._value[key];
+          });
+
+          this.subInvitee(invitee);
+        });
+    }
+  }
+
+  componentWillUnmount() {
+    Ref.off("value", listener);
+  }
+
   render() {
     const { inviteeLocations } = this.props;
 
-    return inviteeLocations && inviteeLocations.length
-      ? inviteeLocations.map((invitee, key) => (
+    let invitees = [];
+
+    _.forEach(inviteeLocations, val => {
+      invitees.push(val);
+    });
+    
+    return invitees && invitees.length
+      ? invitees.map((invitee, key) => (
           <Marker
             coordinate={{
               latitude: invitee.lat == undefined ? 0 : invitee.lat,
@@ -41,9 +109,9 @@ class InviteeMarker extends React.Component {
             }}
             key={key}
           >
-            {invitee.userProfileImg ? (
-              <CachedImage
-                source={{ uri: invitee.userProfileImg }}
+            {invitee.profileImgUrl ? (
+              <Image
+                source={{ uri: invitee.profileImgUrl }}
                 style={{ width: 47, height: 47, borderRadius: 47 / 2 }}
               />
             ) : (
@@ -60,7 +128,8 @@ class InviteeMarker extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    inviteeLocations: state.invitee.locations
+    inviteeLocations: state.invitee.locations,
+    eventList: state.eventList.events
   };
 };
 

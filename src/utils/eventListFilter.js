@@ -88,7 +88,7 @@ const getHostedEvents = async (hostedEventsPushKeyList, currentUserId) => {
         }
         return [];
       })
-      .filter(event => event && event.status == "confirmed" && event.invitee);
+      .filter(event => event && event.status == "confirmed");
   }
 };
 

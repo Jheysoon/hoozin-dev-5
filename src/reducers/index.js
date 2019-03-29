@@ -9,6 +9,7 @@ const rootReducer = combineReducers({
   auth,
   event: eventReducer,
   connection,
+  // @TODO remove `eventReducer` and change `eventList` reducer to `events`
   eventList,
   invitee
 });
