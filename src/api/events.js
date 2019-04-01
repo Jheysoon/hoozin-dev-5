@@ -113,7 +113,6 @@ export class EventServiceAPI {
           if (ref) {
             let retData = { userData: snapshot._value, key: ref.key };
 
-
             return retData;
           } else {
             return Promise.reject(new Error(error));
@@ -168,13 +167,19 @@ export class EventServiceAPI {
    * @param {string} eventId
    * @param {string} userId
    */
-  getEventDetailsAPI(eventId, userId) {
-    return firebase
-      .database()
-      .ref(`users/${userId}/event/${eventId}`)
-      .orderByChild("eventTitle")
-      .once("value")
-      .then(eventDetailsSnapshot => eventDetailsSnapshot._value || null);
+  async getEventDetailsAPI(eventId, userId) {
+    let connect = await this.checkForConnection();
+
+    if (connect.val()) {
+      return firebase
+        .database()
+        .ref(`users/${userId}/event/${eventId}`)
+        .orderByChild("eventTitle")
+        .once("value")
+        .then(eventDetailsSnapshot => eventDetailsSnapshot._value || null);
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -224,31 +229,29 @@ export class EventServiceAPI {
   getEventInviteesDetailsAPI2(eventId, userId, shouldPreselect) {
     let connectedRef = firebase.database().ref(".info/connected");
 
-    return connectedRef.once('value').then(val => {
+    return connectedRef.once("value").then(val => {
       if (val.val()) {
         return firebase
-        .database()
-        .ref(`users/${userId}/event/${eventId}/invitee`)
-        .once("value")
-        .then(inviteeSnapshot => {
-          if (inviteeSnapshot._value) {
-            return Object.keys(inviteeSnapshot._value).map(key => {
-              inviteeSnapshot._value[key]["inviteeId"] = key;
-              if (shouldPreselect) {
-                inviteeSnapshot._value[key]["preselect"] = true;
-              }
-              return inviteeSnapshot._value[key];
-            });
-          } else {
-            return null;
-          }
-        });
+          .database()
+          .ref(`users/${userId}/event/${eventId}/invitee`)
+          .once("value")
+          .then(inviteeSnapshot => {
+            if (inviteeSnapshot._value) {
+              return Object.keys(inviteeSnapshot._value).map(key => {
+                inviteeSnapshot._value[key]["inviteeId"] = key;
+                if (shouldPreselect) {
+                  inviteeSnapshot._value[key]["preselect"] = true;
+                }
+                return inviteeSnapshot._value[key];
+              });
+            } else {
+              return null;
+            }
+          });
       } else {
         return null;
       }
-      
-    })
-    
+    });
   }
 
   getEventInviteeDetail(hostUserId, inviteeId, eventId) {
@@ -327,14 +330,18 @@ export class EventServiceAPI {
    * @param {string} inviteeId
    */
   updateEventInviteeResponse(response, hostUserId, eventId, inviteeId) {
-    firebase.database().ref(".info/connected").once("value").then(val => {
-      if (val.val()) {
-        return firebase
-          .database()
-          .ref(`users/${hostUserId}/event/${eventId}/invitee/${inviteeId}`)
-          .update({ status: response });
-      }
-    });
+    firebase
+      .database()
+      .ref(".info/connected")
+      .once("value")
+      .then(val => {
+        if (val.val()) {
+          return firebase
+            .database()
+            .ref(`users/${hostUserId}/event/${eventId}/invitee/${inviteeId}`)
+            .update({ status: response });
+        }
+      });
   }
 
   /**
@@ -649,16 +656,87 @@ export class EventServiceAPI {
           );
 
           if (isAttendeeNearby) {
-            this.updateInviteeAPI(
-              item.hostId,
-              userId,
-              item.keyNode,
-              { withinOneMile: true }
-            );
+            this.updateInviteeAPI(item.hostId, userId, item.keyNode, {
+              withinOneMile: true
+            });
           }
         });
     }
   }
+
+  /**
+   * @description Check for connection to firebase server
+   *
+   * @returns {Promise}
+   */
+  checkForConnection() {
+    return firebase
+      .database()
+      .ref(".info/connected")
+      .once("value");
+  }
+
+  /**
+   * @description Add user to event
+   *
+   * @param userInvitee
+   * @param inviteeId
+   * @param eventId
+   */
+  addUserToEvent(userInvitee, inviteeId, eventId) {
+    return new Promise(async (resolve, reject) => {
+      let connect = await this.checkForConnection();
+
+      if (connect.val()) {
+        firebase
+          .database()
+          .ref(`invitees/${eventId}/${inviteeId}`)
+          .set({ userId: inviteeId, ...userInvitee }, () => {
+            resolve();
+          });
+      } else {
+        reject();
+      }
+    });
+  }
+
+  /**
+   * @description Remove user from event
+   *
+   * @param {*} eventId
+   * @param {*} inviteeId
+   */
+  async removeUserFromEvent(eventId, inviteeId) {
+    let connect = await this.checkForConnection();
+
+    if (connect.val()) {
+      firebase
+        .database()
+        .ref(`invitees/${eventId}/${inviteeId}`)
+        .remove();
+    }
+  }
+
+  async getEventInvitees(eventId) {
+    let connect = await this.checkForConnection();
+
+    if (connect.val()) {
+      return firebase
+        .database()
+        .ref(`invitees/${eventId}`)
+        .once("value")
+        .then(inviteeSnapshot => {
+          if (inviteeSnapshot._value) {
+            return Object.keys(inviteeSnapshot._value).map(key => {
+              inviteeSnapshot._value[key]["inviteeId"] = key;
+              return inviteeSnapshot._value[key];
+            });
+          } else {
+            return [];
+          }
+        });
+    } else {
+      return [];
+    }
+  }
 }
-
-

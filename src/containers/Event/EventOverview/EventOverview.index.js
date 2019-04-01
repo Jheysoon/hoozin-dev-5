@@ -102,29 +102,18 @@ class EventOverviewContainer extends Component {
     const eventSvc = new EventServiceAPI();
     const userSvc = new UserManagementServiceAPI();
 
-    console.log('eventKey here #######');
-    console.log(eventKey);
-    console.log('userId here #######');
-    console.log(userId);
-
-    const eventData = await eventSvc.getEventDetailsAPI2(eventKey, userId);
+    let eventData = await eventSvc.getEventDetailsAPI2(eventKey, userId);
     const currentUserData = await userSvc.getUserDetailsAPI(userId);
     const currentUserFriends = await userSvc.getUsersFriendListAPI(userId);
-
-    console.log('eventData here #############');
-    console.log(eventData);
-
-    console.log('currentUserDate here #############');
-    console.log(currentUserData);
-
-    console.log('currentUserFriends here ##########');
-    console.log(currentUserFriends);
+    let invitees = await eventSvc.getEventInvitees(eventKey);
 
     if (eventData && currentUserData && currentUserFriends) {
-      eventData.invitee = Object.keys(eventData.invitee).map(inviteeUserKey => {
-        eventData.invitee[inviteeUserKey]["inviteeId"] = inviteeUserKey;
-        return eventData.invitee[inviteeUserKey];
+      invitees = Object.keys(invitees).map(inviteeUserKey => {
+        invitees[inviteeUserKey]["inviteeId"] = inviteeUserKey;
+        return invitees[inviteeUserKey];
       });
+
+      eventData.invitee = invitees;
 
       const currentUsrFrnds = currentUserFriends.filter(friend => {
         if (friend.eventList) {

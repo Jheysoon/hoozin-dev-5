@@ -166,7 +166,7 @@ const tabIconIos = {
 
 const TabScreen = TabNavigator(components, {
   initialRouteName: "EventActiveMap",
-  lazy: false,
+  lazy: true,
   swipeEnabled: false,
   tabBarComponent: TabBarTop,
   animationEnabled: false,

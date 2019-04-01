@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   TextInput,
   Platform,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert
 } from "react-native";
 import Image from "react-native-remote-svg";
 import {

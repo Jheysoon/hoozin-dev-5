@@ -16,7 +16,7 @@ import MapView, { Marker } from "react-native-maps";
 import { connect } from "react-redux";
 
 /* Third-party UI modules */
-import { Container, Body, Icon, Item, Left, List, ListItem } from "native-base";
+import { Container, Body, Icon, Item, Left } from "native-base";
 
 /* Custom reusable component / modules */
 import AppBarComponent from "../../../components/AppBar/appbar.index";
@@ -32,6 +32,7 @@ import { mapStyle } from "../../../components/NearbyEvents/config";
 import InviteeMarker from "./InviteeMarker";
 
 import { CachedImage } from "react-native-cached-image";
+import InviteeList from "./../../../components/EventList/InviteeList";
 
 let hostUserLocationWatcher;
 let attendeeLocationWatcher;
@@ -84,7 +85,10 @@ class EventActiveMapContainer extends Component {
       isGalleryAtEnd: false,
       isGalleryAtStart: true,
       chats: [],
-      chatCounter: 0
+      chatCounter: 0,
+
+      // 3-29-2019 - add new state to hold the invitees
+      inviteesList: []
     };
   }
   async componentDidMount() {
@@ -189,6 +193,10 @@ class EventActiveMapContainer extends Component {
       userSvc.getUsersFriendListAPI(this.props.user.socialUID)
     ])
       .then(eventAndHostResult => {
+
+        //console.log('eventAndHostResult #############');
+        //console.log(eventAndHostResult[1]);
+
         let currFriends =
           eventAndHostResult[1] == null ? [] : eventAndHostResult[1];
         const currentUsrFrnds = currFriends.filter(friend => {
@@ -458,37 +466,9 @@ class EventActiveMapContainer extends Component {
 
             {this.props.navigation.state.routeName === "EventActiveMap" ? (
               <Item style={{ borderBottomWidth: 0 }}>
-                {this.state.eventAndHostData &&
-                this.state.eventAndHostData.invitee ? (
-                  <List
-                    dataArray={this.state.eventAndHostData.invitee}
-                    horizontal={true}
-                    renderRow={item => (
-                      <ListItem
-                        style={{
-                          paddingRight: 0,
-                          paddingLeft: 0,
-                          paddingTop: 0,
-                          paddingBottom: 0,
-                          marginLeft: 5,
-                          borderBottomWidth: 0
-                        }}
-                      >
-                        {item.profileImgUrl ? (
-                          <CachedImage
-                            source={{ uri: item.profileImgUrl }}
-                            style={{ width: 48, height: 48, borderRadius: 24 }}
-                          />
-                        ) : (
-                          <Image
-                            source={IconsMap.icon_contact_avatar}
-                            style={{ width: 48, height: 48, borderRadius: 24 }}
-                          />
-                        )}
-                      </ListItem>
-                    )}
-                  />
-                ) : null}
+                {this.state.eventAndHostData && this.state.eventAndHostData.eventId != undefined && (
+                  <InviteeList eventId={this.state.eventAndHostData.eventId} />
+                )}
               </Item>
             ) : null}
           </View>
@@ -523,10 +503,12 @@ class EventActiveMapContainer extends Component {
             </Marker>
           )}
 
-          <InviteeMarker
-            invitee={this.state.eventAndHostData.invitee}
-            hostId={this.state.eventAndHostData.hostId}
-          />
+          {this.state.animating == false && (
+            <InviteeMarker
+              eventId={this.state.eventAndHostData.eventId}
+              hostId={this.state.eventAndHostData.hostId}
+            />
+          )}
         </MapView>
       </Container>
     );
