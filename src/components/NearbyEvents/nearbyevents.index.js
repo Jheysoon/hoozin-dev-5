@@ -281,7 +281,7 @@ class NearbyEventsComponent extends Component {
           <MapView
             style={styles.map}
             initialRegion={this.state.userGPSLocation}
-            region={this.state.userDraggedRegion}
+            region={this.state.userGPSLocation}
             onRegionChangeComplete={() => this.handleMapDragEvents()}
             customMapStyle={mapStyle}
             showsCompass={true}
