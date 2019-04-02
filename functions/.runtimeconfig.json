@@ -1,0 +1,8 @@
+{
+  "firebase": {
+    "projectId": "hoozin-65750",
+    "databaseURL": "https://hoozin-65750.firebaseio.com",
+    "storageBucket": "hoozin-65750.appspot.com",
+    "cloudResourceLocation": "us-central"
+  }
+}
