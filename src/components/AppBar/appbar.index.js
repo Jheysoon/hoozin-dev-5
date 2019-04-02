@@ -67,9 +67,7 @@ class AppBarComponent extends Component {
       desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
       stationaryRadius: 50,
       distanceFilter: 50,
-      notificationTitle: "Background tracking",
-      notificationText: "enabled",
-      debug: true,
+      debug: false,
       startOnBoot: false,
       stopOnTerminate: true,
       locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
@@ -78,6 +76,8 @@ class AppBarComponent extends Component {
       activitiesInterval: 10000,
       stopOnStillActivity: false,
       url: "http://192.168.81.15:3000/location",
+      notificationsEnabled: false,
+      startForeground: false,
       httpHeaders: {
         "X-FOO": "bar"
       },
