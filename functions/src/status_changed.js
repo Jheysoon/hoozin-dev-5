@@ -3,6 +3,9 @@ const admin = require("firebase-admin");
 const functions = require("firebase-functions");
 const _ = require("lodash");
 const { sendSMS, sendWelcomeEmail } = require("./utils");
+const { serverKey } = require("./constants");
+
+const fcm = new FCM(serverKey);
 
 exports.status_changed = functions.database
   .ref("users/{userId}/event/{eventId}")
@@ -41,7 +44,7 @@ exports.status_changed = functions.database
 
                   if (deviceTokens) {
                     // prettier-ignore
-                    let msg = "You have been invited by " + user.name + " for an event " + newer.eventTitle + ", of type " +
+                    var msg = "You have been invited by " + user.name + " for an event " + newer.eventTitle + ", of type " +
                       newer.eventType + " which starts on " + newer.startDate +  " at" + newer.startTime + " and will end on " +
                       newer.endDate + " at" + newer.endTime;
 
