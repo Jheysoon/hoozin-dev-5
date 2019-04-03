@@ -36,6 +36,9 @@ export class EventServiceAPI {
     status,
     eventId
   ) {
+    /**
+     * @TODO change the path to new events table/node
+     */
     const path = "users/" + socialUID + "/event";
     let evtCoords = {};
     console.log("[Event API] Location Request For", location);
@@ -50,28 +53,29 @@ export class EventServiceAPI {
 
     if (eventId) {
       // just update event data
+      let updateDate = {
+        startDate,
+        startTime,
+        startDateTimeInUTC: moment.utc(
+          moment(`${startDate} ${startTime}`, "YYYY-MM-DD hh:mm A")
+        ),
+        endDate,
+        endTime,
+        endDateTimeInUTC: moment.utc(
+          moment(`${endDate} ${endTime}`, "YYYY-MM-DD hh:mm A")
+        ),
+        eventCreationTime: moment.utc(),
+        eventTitle,
+        eventType,
+        location,
+        evtCoords,
+        privateValue,
+        status
+      };
       return firebase
         .database()
         .ref(`${path}/${eventId}`)
-        .update({
-          startDate,
-          startTime,
-          startDateTimeInUTC: moment.utc(
-            moment(`${startDate} ${startTime}`, "YYYY-MM-DD hh:mm A")
-          ),
-          endDate,
-          endTime,
-          endDateTimeInUTC: moment.utc(
-            moment(`${endDate} ${endTime}`, "YYYY-MM-DD hh:mm A")
-          ),
-          eventCreationTime: moment.utc(),
-          eventTitle,
-          eventType,
-          location,
-          evtCoords,
-          privateValue,
-          status
-        })
+        .update(updateDate)
         .then(result => {
           let retData = {};
           return retData;
@@ -88,28 +92,31 @@ export class EventServiceAPI {
         .child(socialUID)
         .once("value")
         .then(function(snapshot) {
+          let insertData = {
+            startDate,
+            startTime,
+            startDateTimeInUTC: moment.utc(
+              moment(`${startDate} ${startTime}`, "YYYY-MM-DD hh:mm A")
+            ),
+            endDate,
+            endTime,
+            endDateTimeInUTC: moment.utc(
+              moment(`${endDate} ${endTime}`, "YYYY-MM-DD hh:mm A")
+            ),
+            eventTitle,
+            eventType,
+            location,
+            evtCoords,
+            privateValue,
+            status,
+            eventCreationTime: moment.utc(),
+            hostID: socialUID
+          };
+
           let ref = firebase
             .database()
             .ref(path)
-            .push({
-              startDate,
-              startTime,
-              startDateTimeInUTC: moment.utc(
-                moment(`${startDate} ${startTime}`, "YYYY-MM-DD hh:mm A")
-              ),
-              endDate,
-              endTime,
-              endDateTimeInUTC: moment.utc(
-                moment(`${endDate} ${endTime}`, "YYYY-MM-DD hh:mm A")
-              ),
-              eventTitle,
-              eventType,
-              location,
-              evtCoords,
-              privateValue,
-              status,
-              eventCreationTime: moment.utc()
-            });
+            .push(insertData);
           if (ref) {
             let retData = { userData: snapshot._value, key: ref.key };
 

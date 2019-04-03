@@ -270,6 +270,9 @@ class NearbyEventsComponent extends Component {
   render() {
     let { events } = this.props;
 
+    console.log('events here ##########################');
+    console.log(events)
+
     return (
       <React.Fragment>
         <AppBarComponent

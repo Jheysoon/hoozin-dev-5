@@ -133,6 +133,10 @@ class ConfirmEventContainer extends Component {
   }
 
   updateinviteList() {
+
+    /**
+     * @TODO Update to to new invitee node
+     */
     let self = this;
     let eventKey = this.state.eventId;
     let ref = firebase

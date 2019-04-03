@@ -15,67 +15,75 @@ exports.invitee_updated = functions.database
 
     admin
       .database()
-      .ref("/users/" + context.params.userId + "/deviceTokens")
+      .ref(`/events/${context.params.eventId}`)
       .once("value")
-      .then(deviceTokens => {
-        deviceTokens = deviceTokens.val();
-        var rtn = false;
+      .then(eventData => {
+        eventData = eventData.val();
 
-        if (deviceTokens) {
-          if (old.status !== newer.status && newer.status !== "invited") {
-            rtn = true;
+        admin
+          .database()
+          .ref("/users/" + eventData.hostID + "/deviceTokens")
+          .once("value")
+          .then(deviceTokens => {
+            deviceTokens = deviceTokens.val();
+            var rtn = false;
 
-            // prettier-ignore
-            var msg = "User " + newer.name + " has responded to your event with status  " + newer.status;
+            if (deviceTokens) {
+              if (old.status !== newer.status && newer.status !== "invited") {
+                rtn = true;
 
-            var message = {
-              registration_ids: deviceTokens, // required fill with device token or topics
-              notification: {
-                title: "Event Invitation Response",
-                body: msg
-              },
-              data: {
-                type: "HOST_INVITEE_RESPONSE",
-                event_id: context.params.eventId,
-                host_id: context.params.userId,
-                invitee_id: context.params.inviteeId
+                // prettier-ignore
+                var msg = "User " + newer.name + " has responded to your event with status  " + newer.status;
+
+                var message = {
+                  registration_ids: deviceTokens, // required fill with device token or topics
+                  notification: {
+                    title: "Event Invitation Response",
+                    body: msg
+                  },
+                  data: {
+                    type: "HOST_INVITEE_RESPONSE",
+                    event_id: context.params.eventId,
+                    host_id: eventData.hostID,
+                    invitee_id: context.params.inviteeId
+                  }
+                };
               }
-            };
-          }
 
-          if (!old.withinOneMile && newer.withinOneMile) {
-            rtn = true;
+              if (!old.withinOneMile && newer.withinOneMile) {
+                rtn = true;
 
-            // prettier-ignore
-            var msg = "User " + newer.name + " is reaching the destination and is within a mile  ";
-            var message = {
-              registration_ids: deviceTokens, // required fill with device token or topics
-              notification: {
-                title: newer.name + " is within a mile from event location",
-                body: msg
-              },
-              data: {
-                type: "HOST_ONE_MILE",
-                event_id: context.params.eventId,
-                host_id: context.params.userId,
-                invitee_id: context.params.inviteeId
+                // prettier-ignore
+                var msg = "User " + newer.name + " is reaching the destination and is within a mile  ";
+                var message = {
+                  registration_ids: deviceTokens, // required fill with device token or topics
+                  notification: {
+                    title: newer.name + " is within a mile from event location",
+                    body: msg
+                  },
+                  data: {
+                    type: "HOST_ONE_MILE",
+                    event_id: context.params.eventId,
+                    host_id: eventData.hostID,
+                    invitee_id: context.params.inviteeId
+                  }
+                };
               }
-            };
-          }
 
-          if (rtn) {
-            fcm
-              .send(message)
-              .then(response => {
-                console.log("Successfully sent with response: ", response);
-                return true;
-              })
-              .catch(err => {
-                console.log("FCM err, Something has gone wrong!");
-                console.error(err);
-              });
-          }
-        }
+              if (rtn) {
+                fcm
+                  .send(message)
+                  .then(response => {
+                    console.log("Successfully sent with response: ", response);
+                    return true;
+                  })
+                  .catch(err => {
+                    console.log("FCM err, Something has gone wrong!");
+                    console.error(err);
+                  });
+              }
+            }
+          });
       })
       .catch(err => {
         console.log("FCM err, Something has gone wrong!", err);

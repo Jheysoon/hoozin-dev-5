@@ -4,7 +4,6 @@ import {
   UserManagementServiceAPI
 } from "../api";
 import moment from "moment";
-
 /**
  * @description get only those events where the current user has been invited
  * @param {Array} eventsMap invited events map with 2 objects - eventId and hostId

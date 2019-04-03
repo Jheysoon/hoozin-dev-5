@@ -9,11 +9,17 @@ const { event_created } = require("./src/event_created");
 const { invitee_updated } = require("./src/invitee_updated");
 const { location_updated } = require("./src/location_updated");
 const { status_changed } = require("./src/status_changed");
+const { event_onCreate } = require("./src/event_onCreate");
 
 exports.event_created = event_created;
 exports.invitee_updated = invitee_updated;
 exports.location_updated = location_updated;
 exports.status_changed = status_changed;
+exports.event_onCreate = event_onCreate;
+
+/**
+ * @TODO organize code
+ */
 
 //const gmailEmail = functions.config().gmail.email;
 //const gmailPassword = functions.config().gmail.password;

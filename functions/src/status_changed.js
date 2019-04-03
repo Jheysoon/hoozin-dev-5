@@ -12,6 +12,7 @@ exports.status_changed = functions.database
 
     if (old.status === "inProgress" && newer.status === "confirmed") {
       if (!newer.invite_sent) {
+
         admin
           .database()
           .ref(`invitees/${context.params.eventId}`)
@@ -35,11 +36,16 @@ exports.status_changed = functions.database
                 .then(deviceTokens => {
                   deviceTokens = deviceTokens.val();
 
+                  console.log('devicesTokens');
+                  console.log(deviceTokens);
+
                   if (deviceTokens) {
                     // prettier-ignore
-                    let msg = "You have been invited by " + userRecord.name + " for an event " + newer.eventTitle + ", of type " +
+                    let msg = "You have been invited by " + user.name + " for an event " + newer.eventTitle + ", of type " +
                       newer.eventType + " which starts on " + newer.startDate +  " at" + newer.startTime + " and will end on " +
                       newer.endDate + " at" + newer.endTime;
+
+                      console.log('FCM here');
 
                     var message = {
                       registration_ids: deviceTokens, // required fill with device token or topics
@@ -66,10 +72,14 @@ exports.status_changed = functions.database
                       .catch(err => {
                         console.log("FCM err, Something has gone wrong!");
                         console.error(err);
+                        return false;
                       });
                   } else if (val.phone) {
+                    /**
+                     * @TODO change the 2nd val.name
+                     */
                     // prettier-ignore
-                    let msg = "Hi! " + newer.invitee[key].name + ", you have been invited by " + userRecord.name + " for an event " +
+                    let msg = "Hi! " + val.name + ", you have been invited by " + val.name + " for an event " +
                       newer.eventTitle + ", of type " + newer.eventType + " which starts on " + newer.startDate + " at" +
                       newer.startTime + " and will end on " + newer.endDate +  " at" + newer.endTime;
 
