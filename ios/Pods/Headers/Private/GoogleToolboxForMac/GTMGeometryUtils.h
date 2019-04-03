@@ -1,1 +1,0 @@
-../../../GoogleToolboxForMac/Foundation/GTMGeometryUtils.h
