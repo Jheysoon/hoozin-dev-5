@@ -120,8 +120,8 @@ class EventActiveAttendeesContainer extends Component {
       );
       this.setState({
         eventData: eventData,
-        unfilteredInviteeList: eventData.invitee,
-        filteredInvitedList: eventData.invitee,
+        unfilteredInviteeList: invitees,
+        filteredInvitedList: invitees,
         currentUserFriends: currentUsrFrnds,
         hostId: hostId,
         hostUserName: hostUserData.name,

@@ -12,7 +12,7 @@ import { getInviteeLocation } from "../../../actions/events/invitee";
 
 const eventServiceApi = new EventServiceAPI();
 
-let Ref;
+let reference = null;
 let listener;
 
 class InviteeMarker extends React.Component {
@@ -72,23 +72,23 @@ class InviteeMarker extends React.Component {
     let connected = await eventServiceApi.checkForConnection();
 
     if (connected.val()) {
-      Ref = firebase
-        .database()
-        .ref(`invitees/${this.props.eventId}`);
-        listener = Ref.on("value", inviteeSnapshot => {
-          console.log('wathcing here');
-          let invitee = Object.keys(inviteeSnapshot._value).map(key => {
-            inviteeSnapshot._value[key]["inviteeId"] = key;
-            return inviteeSnapshot._value[key];
-          });
-
-          this.subInvitee(invitee);
+      reference = firebase.database().ref(`invitees/${this.props.eventId}`);
+      listener = reference.on("value", inviteeSnapshot => {
+        console.log("wathcing here");
+        let invitee = Object.keys(inviteeSnapshot._value).map(key => {
+          inviteeSnapshot._value[key]["inviteeId"] = key;
+          return inviteeSnapshot._value[key];
         });
+
+        this.subInvitee(invitee);
+      });
     }
   }
 
   componentWillUnmount() {
-    Ref.off("value", listener);
+    if (reference) {
+      reference.off("value", listener);
+    }
   }
 
   render() {
@@ -99,7 +99,7 @@ class InviteeMarker extends React.Component {
     _.forEach(inviteeLocations, val => {
       invitees.push(val);
     });
-    
+
     return invitees && invitees.length
       ? invitees.map((invitee, key) => (
           <Marker

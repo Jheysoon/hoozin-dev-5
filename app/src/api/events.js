@@ -336,19 +336,20 @@ export class EventServiceAPI {
    * @param {string} eventId
    * @param {string} inviteeId
    */
-  updateEventInviteeResponse(response, hostUserId, eventId, inviteeId) {
-    firebase
+  async updateEventInviteeResponse(response, eventId, inviteeId) {
+    let connected = await firebase
+    .database()
+    .ref(".info/connected")
+    .once("value");
+
+    if (connected.val()) {
+      return firebase
       .database()
-      .ref(".info/connected")
-      .once("value")
-      .then(val => {
-        if (val.val()) {
-          return firebase
-            .database()
-            .ref(`users/${hostUserId}/event/${eventId}/invitee/${inviteeId}`)
-            .update({ status: response });
-        }
-      });
+      .ref(`invitees/${eventId}/${inviteeId}`)
+      .update({ status: response });
+    }
+
+    return new Promise.reject([]);
   }
 
   /**
@@ -657,15 +658,18 @@ export class EventServiceAPI {
       eventList
         .filter(item => item.isActive && !item.isHostEvent)
         .forEach(item => {
-          const isAttendeeNearby = this.determineLocationDifference(
-            [Number(userLocation.lat), Number(userLocation.lng)],
-            [item.evtCoords.lat, item.evtCoords.lng]
-          );
 
-          if (isAttendeeNearby) {
-            this.updateInviteeAPI(item.hostId, userId, item.keyNode, {
-              withinOneMile: true
-            });
+          if (item.evtCoords) {
+            const isAttendeeNearby = this.determineLocationDifference(
+              [Number(userLocation.lat), Number(userLocation.lng)],
+              [item.evtCoords.lat, item.evtCoords.lng]
+            );
+
+            if (isAttendeeNearby) {
+              this.updateInviteeAPI(item.hostId, userId, item.keyNode, {
+                withinOneMile: true
+              });
+            }
           }
         });
     }

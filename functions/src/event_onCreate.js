@@ -3,10 +3,10 @@ const functions = require("firebase-functions");
 
 exports.event_onCreate = functions.database
   .ref("users/{userId}/event/{eventId}")
-  .onWrite((snapshot, context) => {
-    /* admin
+  .onCreate((snapshot, context) => {
+    admin
       .database()
       .ref(`events/${context.params.eventId}`)
-      .set(snapshot.val()); */
+      .set(snapshot.val());
       return true;
   });

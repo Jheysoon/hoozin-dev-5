@@ -1,3 +1,4 @@
+import _ from "lodash";
 import {
   AuthServiceAPI,
   EventServiceAPI,
@@ -21,21 +22,21 @@ export const getInvitedEvents = (eventsMap, currentUserId) => {
           if (
             eventData &&
             eventData.status &&
-            eventData.status == "confirmed" &&
-            eventData.invitee
+            eventData.status == "confirmed"
           ) {
             const userData = await eventSvc.getUserDetailsAPI2(event.hostId);
+            const invitees = await eventSvc.getEventInvitees(event.eventId);
+           
             eventData.keyNode = event.eventId;
-            eventData.invitee = Object.keys(eventData.invitee).map(
-              inviteeId => {
-                //eventData.eventResponse = inviteeId == currentUserId ? eventData.invitee[inviteeId]['status'] : 'attendee';
-                if (inviteeId == currentUserId) {
-                  eventData.eventResponse =
-                    eventData.invitee[inviteeId]["status"];
-                }
-                return eventData.invitee[inviteeId];
+
+            _.forEach(invitees, invitee => {
+              if (invitee.userId == currentUserId) {
+                eventData.eventResponse = invitee["status"];
               }
-            );
+            });
+
+            eventData["invitee"] = invitees;
+
             eventData.isHostEvent = false;
             eventData.hostId = event.hostId;
             eventData.hostName = userData.name;
@@ -121,8 +122,6 @@ export const mergeToHostedEvents = async (
         : validateEvent(event)
     );
   //.filter(event => filterType != 'history'?validateEvent(event):true);
-
-  
 
   if (filterType != "history") {
     hostedAndInvitedEventsList = hostedAndInvitedEventsList.map(event => {

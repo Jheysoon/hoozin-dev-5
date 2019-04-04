@@ -29,6 +29,7 @@ import { filterInviteeByRSVP } from "../../../utils/eventListFilter";
 // stylesheet
 import { EventDetailStyles } from "./EventDetail.style";
 import { EventServiceAPI, UserManagementServiceAPI } from "../../../api";
+import { getEventList } from './../../../actions/events/list';
 
 const inviteeStatusMarker = {
   going: "rgba(110, 178, 90, 0.55)",
@@ -97,19 +98,18 @@ class EventDetailContainer extends Component {
    */
   async getEventInformation(eventKey, hostId) {
     const userSvc = new UserManagementServiceAPI();
+    const eventSvc = new EventServiceAPI();
 
     let eventData = _.find(this.props.eventList, { keyNode: eventKey });
 
-    if (!!eventData) {
+    if (eventData == undefined) {
       eventData = await eventSvc.getEventDetailsAPI2(eventKey, hostId);
     }
 
-    eventData.invitee = Object.keys(eventData.invitee).map(inviteeUserKey => {
-      eventData.invitee[inviteeUserKey]["inviteeId"] = inviteeUserKey;
-      return eventData.invitee[inviteeUserKey];
-    });
+    let invitees = await eventSvc.getEventInvitees(eventKey);
 
     eventData["eventId"] = eventKey;
+    eventData.invitee = invitees;
 
     this.setState({
       eventData: eventData
@@ -155,9 +155,9 @@ class EventDetailContainer extends Component {
         "hsla(207, 97%, 75%, 1)"
       );
       this.setState({
-        unfilteredEventData: eventData.invitee,
-        unfilteredInviteeList: eventData.invitee,
-        filteredInvitedList: eventData.invitee,
+        unfilteredEventData: invitees,
+        unfilteredInviteeList: invitees,
+        filteredInvitedList: invitees,
         currentUserFriends: currentUsrFrnds,
         defaultOrEventLocation: coords,
         hostId: hostId,
@@ -194,7 +194,6 @@ class EventDetailContainer extends Component {
       eventSvc
         .updateEventInviteeResponse(
           response,
-          this.state.hostId,
           this.state.eventData.eventId,
           this.props.user.socialUID
         )
@@ -219,7 +218,9 @@ class EventDetailContainer extends Component {
               }
             }
           );
-          this.setState({ eventData });
+          this.setState({ eventData }, () => {
+            this.props.getEventList(this.props.user.socialUID)
+          });
         });
     } else {
       Toast.show({
@@ -1281,6 +1282,9 @@ const mapDispatchToProps = dispatch => {
   return {
     onShowIndicator: bShow => {
       dispatch(setVisibleIndicator(bShow));
+    },
+    getEventList: (user_id) => {
+      dispatch(getEventList(user_id))
     }
   };
 };

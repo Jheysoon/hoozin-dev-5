@@ -176,6 +176,12 @@ class NearbyEventsComponent extends Component {
             [{ text: "Yes, please", onPress: () => this.getUserLocation() }],
             { cancelable: false }
           );
+        } else {
+          this.setState({
+            isLocationUnavailable: true,
+            userGPSLocation: this.state.defaultMapRegion,
+            userDraggedRegion: this.state.defaultMapRegion
+          });
         }
       },
       {
@@ -270,9 +276,6 @@ class NearbyEventsComponent extends Component {
   render() {
     let { events } = this.props;
 
-    console.log('events here ##########################');
-    console.log(events)
-
     return (
       <React.Fragment>
         <AppBarComponent
@@ -284,7 +287,7 @@ class NearbyEventsComponent extends Component {
           <MapView
             style={styles.map}
             initialRegion={this.state.userGPSLocation}
-            region={this.state.userGPSLocation}
+            region={this.state.userDraggedRegion}
             onRegionChangeComplete={() => this.handleMapDragEvents()}
             customMapStyle={mapStyle}
             showsCompass={true}

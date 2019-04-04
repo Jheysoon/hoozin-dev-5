@@ -86,9 +86,6 @@ class EventActiveMapContainer extends Component {
       isGalleryAtStart: true,
       chats: [],
       chatCounter: 0,
-
-      // 3-29-2019 - add new state to hold the invitees
-      inviteesList: []
     };
   }
   async componentDidMount() {

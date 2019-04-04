@@ -89,7 +89,6 @@ export const getEventList = (userId, eventRSVPFilterType) => {
 
     connectedRef.on("value", snap => {
       if (snap.val()) {
-        
         firebase
           .database()
           .ref("users/" + userId)
