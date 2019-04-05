@@ -10,12 +10,18 @@ const { invitee_updated } = require("./src/invitee_updated");
 const { location_updated } = require("./src/location_updated");
 const { status_changed } = require("./src/status_changed");
 const { event_onCreate } = require("./src/event_onCreate");
+const { chatUpdateMsgCounter } = require("./src/chatUpdateMsgCounter");
+const { event_update } = require("./src/event_update");
+const { chat } = require("./src/chat");
 
 exports.event_created = event_created;
 exports.invitee_updated = invitee_updated;
 exports.location_updated = location_updated;
 exports.status_changed = status_changed;
 exports.event_onCreate = event_onCreate;
+exports.chatUpdateMsgCounter = chatUpdateMsgCounter;
+exports.event_update = event_update;
+exports.chat = chat;
 
 /**
  * @TODO organize code
@@ -60,85 +66,6 @@ exports.sendEmail = functions.auth.user().onCreate(event => {
 
   return sendWelcomeEmail(email, displayName, em, "Welcome to Hoozin App!");
 });
-
-exports.chat = functions.database
-  .ref("users/{userId}/event/{eventId}/messages/{messageid}")
-  .onCreate((snap, context) => {
-    const snapshot = snap.val();
-    console.log(
-      "/users/" + context.params.userId + "event/" + context.params.eventId
-    );
-    admin
-      .database()
-      .ref(
-        "/users/" + context.params.userId + "/event/" + context.params.eventId
-      )
-      .once("value")
-      .then(newer => {
-        newer = newer.val();
-        console.log("chat", newer);
-        for (var key in newer.invitee) {
-          console.log(key, newer.invitee[key]);
-          if (
-            newer.invitee[key].status === "going" ||
-            newer.invitee[key].status === "maybe"
-          ) {
-            admin
-              .database()
-              .ref("/users/" + key + "/deviceTokens")
-              .once("value")
-              .then(deviceTokens => {
-                deviceTokens = deviceTokens.val();
-                console.log(
-                  "New message by ",
-                  snapshot.userName,
-                  "",
-                  snapshot.message
-                );
-                if (deviceTokens) {
-                  let msg = snapshot.message;
-                  var message = {
-                    registration_ids: deviceTokens, // required fill with device token or topics
-                    notification: {
-                      title: snapshot.userName + " @ " + newer.eventTitle,
-                      body: msg
-                    },
-                    data: {
-                      type: "CHAT",
-                      event_id: context.params.eventId,
-                      host_id: context.params.userId,
-                      message_id: context.params.messageid
-                    }
-                  };
-                  console.log("chat notification", message);
-                  fcm
-                    .send(message)
-                    .then(response => {
-                      console.log(
-                        "Successfully sent with response: ",
-                        response
-                      );
-                      return true;
-                    })
-                    .catch(err => {
-                      console.log("FCM err, Something has gone wrong!");
-                      console.error(err);
-                    });
-                }
-                console.log("chat notification to ", newer.invitee[key].name);
-              })
-              .catch(err => {
-                console.log("err, Something has gone wrong!", err);
-                console.error(err);
-              });
-          }
-        }
-      })
-      .catch(err => {
-        console.log("err, Something has gone wrong!", err);
-        console.error(err);
-      });
-  });
 
 exports.image_added = functions.database
   .ref("users/{userId}/event/{eventId}/photos/{photosid}")

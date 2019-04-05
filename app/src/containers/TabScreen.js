@@ -1,10 +1,5 @@
 import React, { Component } from "react";
-import {
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  Text
-} from "react-native";
+import { Platform, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { TabNavigator, TabBarTop } from "react-navigation";
 import Image from "react-native-remote-svg";
 import { connect } from "react-redux";
@@ -105,9 +100,7 @@ const components = {
             <Image source={IconsMap.icon_chat_fab} style={styles.c2aBtn} />
           ) : (
             <Image
-              source={{
-                uri: TabScreenSvg.EventActiveChat
-              }}
+              source={{ uri: TabScreenSvg.EventActiveChat }}
               style={styles.c2aBtn}
             />
           )}
@@ -226,6 +219,9 @@ const styles = StyleSheet.create({
   }
 });
 
+let chatRef = null;
+let chatListener = null;
+
 /// +++ ADDED ON 06.11.2018 BY SOMNATH
 class TabScreenWrapper extends Component {
   static navigationOptions = {
@@ -243,33 +239,43 @@ class TabScreenWrapper extends Component {
     this.watchForIncomingChats();
   }
 
+  componentWillUnmount() {
+    if (chatRef) {
+      chatRef.off("value", chatListener);
+    }
+  }
+
   watchForIncomingChats() {
     const eventSvc = new EventServiceAPI();
     const { hostId, eventId, isHostUser } = this.props.navigation.state.params;
 
     if (isHostUser && hostId == this.props.user.socialUID) {
-      eventSvc
-        .watchForEventDataByFieldAPI(hostId, eventId, "newMsgCount")
-        .on("value", snapshot => {
-          if (!isNaN(snapshot.val())) {
-            console.log("@@@ msgcounter snapshot for host", snapshot.val());
-            this.setState({ msgCount: snapshot.val() });
-          }
-        });
+      chatRef = eventSvc.watchForEventDataByFieldAPI(
+        hostId,
+        eventId,
+        "newMsgCount"
+      );
+
+      chatListener = chatRef.on("value", snapshot => {
+        if (!isNaN(snapshot.val())) {
+          console.log("@@@ msgcounter snapshot for host", snapshot.val());
+          this.setState({ msgCount: snapshot.val() });
+        }
+      });
     } else {
-      eventSvc
-        .watchForEventInviteeDataByFieldAPI(
-          hostId,
-          eventId,
-          this.props.user.socialUID,
-          "newMsgCount"
-        )
-        .on("value", snapshot => {
-          if (!isNaN(snapshot.val())) {
-            console.log("@@@ msgcounter snapshot for invitee", snapshot.val());
-            this.setState({ msgCount: snapshot.val() });
-          }
-        });
+      chatRef = eventSvc.watchForEventInviteeDataByFieldAPI(
+        hostId,
+        eventId,
+        this.props.user.socialUID,
+        "newMsgCount"
+      );
+
+      chatListener = chatRef.on("value", snapshot => {
+        if (!isNaN(snapshot.val())) {
+          console.log("@@@ msgcounter snapshot for invitee", snapshot.val());
+          this.setState({ msgCount: snapshot.val() });
+        }
+      });
     }
   }
 

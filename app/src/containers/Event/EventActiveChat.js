@@ -184,11 +184,8 @@ class EventActiveChatContainer extends Component {
             false
           ),
           eventSvc.updateHostOrAttendeesChatMsgCounter(
-            hostId,
             eventId,
-            this.props.user.socialUID,
-            isHostUser,
-            1
+            this.props.user.socialUID
           )
         ]).then(() =>
           this.setState({ animating: false, messageText: "\u0020" })

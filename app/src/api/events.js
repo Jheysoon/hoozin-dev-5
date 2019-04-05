@@ -338,15 +338,15 @@ export class EventServiceAPI {
    */
   async updateEventInviteeResponse(response, eventId, inviteeId) {
     let connected = await firebase
-    .database()
-    .ref(".info/connected")
-    .once("value");
+      .database()
+      .ref(".info/connected")
+      .once("value");
 
     if (connected.val()) {
       return firebase
-      .database()
-      .ref(`invitees/${eventId}/${inviteeId}`)
-      .update({ status: response });
+        .database()
+        .ref(`invitees/${eventId}/${inviteeId}`)
+        .update({ status: response });
     }
 
     return new Promise.reject([]);
@@ -363,7 +363,7 @@ export class EventServiceAPI {
   updateEventInviteeDataAPI(hostUserId, eventId, inviteeId, payload) {
     return firebase
       .database()
-      .ref(`users/${hostUserId}/event/${eventId}/invitee/${inviteeId}`)
+      .ref(`invitees/${eventId}/${inviteeId}`)
       .update(payload);
   }
 
@@ -507,44 +507,10 @@ export class EventServiceAPI {
       });
   }
 
-  async updateHostOrAttendeesChatMsgCounter(
-    hostUserId,
-    eventId,
-    currentUserId,
-    isHostUser,
-    msgCounter
-  ) {
-    const {
-      invitee: allInvitees,
-      newMsgCount
-    } = await this.getEventDetailsByMultipleFieldAPI(hostUserId, eventId, [
-      "invitee",
-      "newMsgCount"
-    ]);
+  async updateHostOrAttendeesChatMsgCounter(eventId, currentUserId) {
+    const rtn = firebase.functions().httpsCallable("chatUpdateMsgCounter");
 
-    if (!isHostUser) {
-      const peerInvitees = allInvitees.filter(
-        invitee => invitee.inviteeId != currentUserId
-      );
-      this.updateEventDataAPI(hostUserId, eventId, {
-        newMsgCount: newMsgCount ? newMsgCount + msgCounter : msgCounter
-      });
-      return Promise.all(
-        peerInvitees.map(async ({ inviteeId, newMsgCount }) => {
-          await this.updateEventInviteeDataAPI(hostUserId, eventId, inviteeId, {
-            newMsgCount: newMsgCount ? newMsgCount + msgCounter : msgCounter
-          });
-        })
-      );
-    }
-
-    return Promise.all(
-      allInvitees.map(async ({ inviteeId, newMsgCount }) => {
-        await this.updateEventInviteeDataAPI(hostUserId, eventId, inviteeId, {
-          newMsgCount: newMsgCount ? newMsgCount + msgCounter : msgCounter
-        });
-      })
-    );
+    return rtn({ eventId: eventId, userId: currentUserId });
   }
 
   async resetChatMsgCounterAPI(
@@ -554,32 +520,21 @@ export class EventServiceAPI {
     isHostUser,
     msgCounter
   ) {
-    const eventData = await this.getEventDetailsByFieldAPI(
-      hostUserId,
-      eventId,
-      "invitee"
-    );
-    console.log("chat reset event data", eventData);
-    const allInvitees = Object.keys(eventData).map(key => {
-      eventData[key]["inviteeId"] = key;
-      return eventData[key];
-    });
-
-    console.log("chat reset invitee data", allInvitees);
     if (!isHostUser) {
-      const currentUserAsInvitee = allInvitees.filter(
-        invitee => invitee.inviteeId == currentUserId
-      )[0];
       return this.updateEventInviteeDataAPI(
         hostUserId,
         eventId,
-        currentUserAsInvitee.inviteeId,
+        currentUserId,
         { newMsgCount: msgCounter }
       );
     }
-    return this.updateEventDataAPI(hostUserId, eventId, {
-      newMsgCount: msgCounter
-    });
+
+    return firebase
+      .database()
+      .ref(`events/${eventId}`)
+      .update({
+        newMsgCount: msgCounter
+      });
   }
 
   async getEventInviteeById(hostUserId, eventId, inviteeId) {
@@ -619,9 +574,7 @@ export class EventServiceAPI {
   }
 
   watchForEventDataByFieldAPI(hostUserId, eventId, fieldName) {
-    return firebase
-      .database()
-      .ref(`users/${hostUserId}/event/${eventId}/${fieldName}`);
+    return firebase.database().ref(`events/${eventId}/${fieldName}`);
   }
 
   watchForEventInviteeDataAPI(hostUserId, eventId, inviteeId) {
@@ -637,9 +590,7 @@ export class EventServiceAPI {
   ) {
     return firebase
       .database()
-      .ref(
-        `users/${hostUserId}/event/${eventId}/invitee/${inviteeId}/${fieldName}`
-      );
+      .ref(`invitees/${eventId}/${inviteeId}/${fieldName}`);
   }
 
   watchForEventDataByAPI(hostUserId, eventId) {
@@ -658,7 +609,6 @@ export class EventServiceAPI {
       eventList
         .filter(item => item.isActive && !item.isHostEvent)
         .forEach(item => {
-
           if (item.evtCoords) {
             const isAttendeeNearby = this.determineLocationDifference(
               [Number(userLocation.lat), Number(userLocation.lng)],
