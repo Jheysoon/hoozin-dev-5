@@ -3,6 +3,7 @@ import { Platform, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { TabNavigator, TabBarTop } from "react-navigation";
 import Image from "react-native-remote-svg";
 import { connect } from "react-redux";
+import firebase from "react-native-firebase";
 
 import EventActiveMap from "./Event/EventActiveMap/EventActiveMap.index";
 import EventActiveUser from "./Event/EventActiveUser";
@@ -250,11 +251,7 @@ class TabScreenWrapper extends Component {
     const { hostId, eventId, isHostUser } = this.props.navigation.state.params;
 
     if (isHostUser && hostId == this.props.user.socialUID) {
-      chatRef = eventSvc.watchForEventDataByFieldAPI(
-        hostId,
-        eventId,
-        "newMsgCount"
-      );
+      chatRef = firebase.database().ref(`events/${eventId}/newMsgCount`);
 
       chatListener = chatRef.on("value", snapshot => {
         if (!isNaN(snapshot.val())) {

@@ -574,7 +574,7 @@ export class EventServiceAPI {
   }
 
   watchForEventDataByFieldAPI(hostUserId, eventId, fieldName) {
-    return firebase.database().ref(`events/${eventId}/${fieldName}`);
+    return firebase.database().ref(`users/${hostUserId}/event/${eventId}/${fieldName}`);
   }
 
   watchForEventInviteeDataAPI(hostUserId, eventId, inviteeId) {
