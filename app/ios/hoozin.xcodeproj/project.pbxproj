@@ -88,6 +88,7 @@
 		DF60AC7A0B7148C28E157698 /* Roboto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 56F006DBAF554ED58970A14F /* Roboto.ttf */; };
 		F06700E296F44D4EBE292CDD /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E7238DCA68641A4A2C97EFA /* Feather.ttf */; };
 		81BC5FD318754466AC731188 /* libRCTBackgroundGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5E1F1FD1054B2F8A7BF94D /* libRCTBackgroundGeolocation.a */; };
+		302F014023094E29A6E40CB5 /* libRNGooglePlaces.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5FE178BFF0748C0AFA8FCD3 /* libRNGooglePlaces.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -539,6 +540,8 @@
 		F17D19B9BB444DFE9C3F8A98 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/native-base/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		25D7B7D0087547939873360D /* RCTBackgroundGeolocation.xcodeproj */ = {isa = PBXFileReference; name = "RCTBackgroundGeolocation.xcodeproj"; path = "../node_modules/react-native-mauron85-background-geolocation/ios/RCTBackgroundGeolocation.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		6F5E1F1FD1054B2F8A7BF94D /* libRCTBackgroundGeolocation.a */ = {isa = PBXFileReference; name = "libRCTBackgroundGeolocation.a"; path = "libRCTBackgroundGeolocation.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		2962D345132A4C3388C33655 /* RNGooglePlaces.xcodeproj */ = {isa = PBXFileReference; name = "RNGooglePlaces.xcodeproj"; path = "../node_modules/react-native-google-places/ios/RNGooglePlaces.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		F5FE178BFF0748C0AFA8FCD3 /* libRNGooglePlaces.a */ = {isa = PBXFileReference; name = "libRNGooglePlaces.a"; path = "libRNGooglePlaces.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -590,6 +593,7 @@
 				141046DC270D42AEB57DAB3D /* libRNTextInputMask.a in Frameworks */,
 				D232F7C9F85F0749618D35DB /* libPods-hoozin.a in Frameworks */,
 				81BC5FD318754466AC731188 /* libRCTBackgroundGeolocation.a in Frameworks */,
+				302F014023094E29A6E40CB5 /* libRNGooglePlaces.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -868,6 +872,7 @@
 				11F042F031234E79B8EDE4F9 /* RNOpenAppSettings.xcodeproj */,
 				9D65FFE462CD4DE283402765 /* RNTextInputMask.xcodeproj */,
 				25D7B7D0087547939873360D /* RCTBackgroundGeolocation.xcodeproj */,
+				2962D345132A4C3388C33655 /* RNGooglePlaces.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1844,12 +1849,14 @@
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
 					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
+					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 				);
 				INFOPLIST_FILE = hoozinTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1879,12 +1886,14 @@
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
 					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
+					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 				);
 				INFOPLIST_FILE = hoozinTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1929,6 +1938,7 @@
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
 					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
+					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 				);
 				INFOPLIST_FILE = hoozin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
@@ -1979,6 +1989,7 @@
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
 					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
+					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 				);
 				INFOPLIST_FILE = hoozin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
@@ -2020,11 +2031,13 @@
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
 					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
+					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 				);
 				INFOPLIST_FILE = "hoozin-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -2062,11 +2075,13 @@
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
 					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
+					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 				);
 				INFOPLIST_FILE = "hoozin-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -2103,11 +2118,13 @@
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
 					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
+					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 				);
 				INFOPLIST_FILE = "hoozin-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -2144,11 +2161,13 @@
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
 					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
+					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 				);
 				INFOPLIST_FILE = "hoozin-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",

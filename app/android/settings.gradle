@@ -1,4 +1,6 @@
 rootProject.name = 'hoozin'
+include ':react-native-google-places'
+project(':react-native-google-places').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-google-places/android')
 include ':bugsnag-react-native'
 project(':bugsnag-react-native').projectDir = new File(rootProject.projectDir, '../node_modules/bugsnag-react-native/android')
 include ':react-native-google-signin'

@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
-  Platform
+  Platform,
+  Keyboard
 } from "react-native";
 import Image from "react-native-remote-svg";
 import {
@@ -18,6 +19,7 @@ import {
   ListItem,
   CheckBox
 } from "native-base";
+import RNGooglePlaces from "react-native-google-places";
 import { connect } from "react-redux";
 import DatePicker from "react-native-datepicker";
 import { UIActivityIndicator } from "react-native-indicators";
@@ -34,7 +36,6 @@ import AppBarComponent from "../../../components/AppBar/appbar.index";
 
 // stylesheet
 import { AddOrCreateEventStyles } from "./addevent.style";
-import { getEventList } from "../../../actions/events/list";
 
 /* Redux container component to create a new event or edit a particular event */
 class CreateOrEditEventContainer extends Component {
@@ -58,7 +59,9 @@ class CreateOrEditEventContainer extends Component {
       animating: false,
       eventId: "",
       isEditMode: false,
-      isEventFormEmpty: false
+      isEventFormEmpty: false,
+      evtCoords: null,
+      textInputHeight: 0
     };
 
     this.assignDateEnd = this.assignDateEnd.bind(this);
@@ -284,6 +287,7 @@ class CreateOrEditEventContainer extends Component {
     let socialUID = this.props.user.socialUID;
     let evtStatus = this.state.isEditMode ? "Editing" : this.state.status;
     let eventId = this.state.eventId ? this.state.eventId : "";
+    let evtCoords = this.state.evtCoords;
 
     /* Alert.alert("Error", "No Internet Connection you want to try again ?",
       [{
@@ -316,7 +320,8 @@ class CreateOrEditEventContainer extends Component {
         privateValue,
         socialUID,
         evtStatus,
-        eventId
+        eventId,
+        evtCoords
       );
     } else {
       this.state.isEventFormEmpty
@@ -628,24 +633,55 @@ class CreateOrEditEventContainer extends Component {
                       }}
                     />
                   )}
-                  <TextInput
-                    style={[{ height: 100 }, AddOrCreateEventStyles.textInput]}
-                    autoCapitalize="words"
-                    enablesReturnKeyAutomatically={true}
-                    multiline={false}
-                    placeholder="Location"
-                    value={this.state.location}
-                    onChangeText={text => {
-                      this.setState({ location: text });
+
+                  <TouchableOpacity
+                    style={{ height: 85, width: "100%", marginTop: -10 }}
+                    onPress={() => {
+                      RNGooglePlaces.openAutocompleteModal({
+                        type: "address"
+                      }).then(place => {
+                        this.setState(
+                          {
+                            location: place.address,
+                            evtCoords: {
+                              lat: place.latitude,
+                              lng: place.longitude
+                            }
+                          },
+                          () => {
+                            this.refs.eventLoc.focus();
+                            Keyboard.dismiss();
+                            this.refs.eventLoc.setNativeProps({
+                              selection: { start: 0, end: 0 }
+                            });
+                          }
+                        );
+                      }).catch(e => {
+                        console.log(e);
+                      });
                     }}
-                    onEndEditing={text =>
-                      this.validateTextField(
-                        text.nativeEvent,
-                        this.refs.eventLocationBorder
-                      )
-                    }
-                    underlineColorAndroid="transparent"
-                  />
+                  >
+                    <TextInput
+                      ref="eventLoc"
+                      selection={{ start: 0, end: 0 }}
+                      multiline={true}
+                      editable={false}
+                      value={this.state.location}
+                      onContentSizeChange={event => {
+                        this.setState({
+                          textInputHeight: event.nativeEvent.contentSize.height
+                        });
+                      }}
+                      style={{
+                        marginTop: 35,
+                        marginLeft: -5,
+                        fontSize: 17,
+                        color: "#707070",
+                        height: Math.max(45, this.state.textInputHeight)
+                      }}
+                      placeholder="Location"
+                    />
+                  </TouchableOpacity>
                 </View>
                 <View
                   ref="eventLocationBorder"
@@ -880,7 +916,13 @@ class CreateOrEditEventContainer extends Component {
                 </View>
               </View>
 
-              <View style={{ flexDirection: "row", paddingTop: 15 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  paddingTop: 15,
+                  marginBottom: 50
+                }}
+              >
                 <View style={{ flex: 2 }}>
                   <ListItem
                     noIndent
@@ -1445,7 +1487,8 @@ const mapDispatchToProps = dispatch => {
       privateValue,
       socialUID,
       status,
-      eventId
+      eventId,
+      eventCoords
     ) => {
       dispatch(
         upsertEventDataAction(
@@ -1459,7 +1502,8 @@ const mapDispatchToProps = dispatch => {
           privateValue,
           socialUID,
           status,
-          eventId
+          eventId,
+          eventCoords
         )
       );
     },

@@ -159,6 +159,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-google-places')
     compile project(':bugsnag-react-native')
     
     compile project(':react-native-mauron85-background-geolocation')   
