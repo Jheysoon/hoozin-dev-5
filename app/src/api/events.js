@@ -34,22 +34,23 @@ export class EventServiceAPI {
     privateValue,
     socialUID,
     status,
-    eventId
+    eventId,
+    evtCoords
   ) {
     /**
      * @TODO change the path to new events table/node
      */
     const path = "users/" + socialUID + "/event";
-    let evtCoords = {};
-    console.log("[Event API] Location Request For", location);
+    //let evtCoords = {};
+    //console.log("[Event API] Location Request For", location);
 
     // Geocode location first
-    await Geocoder.geocodeAddress(location)
+    /* await Geocoder.geocodeAddress(location)
       .then(res => {
         console.log("[Event API] Geodecoded Location", res);
         evtCoords = res[0].position;
       })
-      .catch(err => (evtCoords = {}));
+      .catch(err => (evtCoords = {})); */
 
     if (eventId) {
       // just update event data
@@ -574,7 +575,7 @@ export class EventServiceAPI {
   }
 
   watchForEventDataByFieldAPI(hostUserId, eventId, fieldName) {
-    return firebase.database().ref(`events/${eventId}/${fieldName}`);
+    return firebase.database().ref(`users/${hostUserId}/event/${eventId}/${fieldName}`);
   }
 
   watchForEventInviteeDataAPI(hostUserId, eventId, inviteeId) {

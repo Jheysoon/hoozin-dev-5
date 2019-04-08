@@ -27,9 +27,8 @@ exports.chatUpdateMsgCounter = functions.https.onCall((data, context) => {
             newMsgCount: newMsgCount ? newMsgCount + msgCounter : msgCounter
           },
           () => {
-            const peerInvitees = invitees.filter(
-              invitee => invitee.userId != userId
-            );
+
+            const peerInvitees = _.filter(invitee => invitee.userId != userId);
 
             /**
              * @TODO backward compatibility, this should remove once the events have

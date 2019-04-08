@@ -28,7 +28,8 @@ export const upsertEventDataAction = (
   privateValue,
   socialUID,
   status,
-  eventId
+  eventId,
+  evtCoords
 ) => {
   return (dispatch, getStore) => {
     const eventSvc = new EventServiceAPI();
@@ -44,7 +45,8 @@ export const upsertEventDataAction = (
         privateValue,
         socialUID,
         status,
-        eventId
+        eventId,
+        evtCoords
       )
       .then(data => {
         let eventDetails = {

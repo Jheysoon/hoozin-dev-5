@@ -19,7 +19,7 @@ exports.chat = functions.database
       db.ref(`/events/${context.params.eventId}`).once("value"),
       db.ref(`/invitees/${context.params.eventId}`).once("value")
     ]).then(([event, invitees]) => {
-      var invitees = invitees.val();
+      invitees = invitees.val();
       event = event.val();
 
       _.forEach(invitees, val => {
