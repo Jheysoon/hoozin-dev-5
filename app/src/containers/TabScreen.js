@@ -56,10 +56,10 @@ const components = {
       tabBarVisible: false,
       tabBarOnPress({ jumpToIndex, scene }) {
         // if the user is attendee, then dont jump to screen
-        console.log(
+        /* console.log(
           "++ camera screen props ++",
           screenProps.rootNav.state.params
-        );
+        ); */
 
         jumpToIndex(scene.index);
       },
@@ -121,13 +121,13 @@ const components = {
           isHostUser
         } = screenProps.rootNav.state.params;
 
-        console.log(
+        /* console.log(
           "chat screen params",
           hostId,
           eventId,
           screenProps.withUserId,
           isHostUser
-        );
+        ); */
         eventSvc.resetChatMsgCounterAPI(
           hostId,
           eventId,
