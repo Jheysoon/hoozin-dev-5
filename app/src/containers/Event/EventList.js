@@ -17,19 +17,20 @@ import {
   Body,
   Right,
   Spinner,
-  Button,
+  Button
 } from "native-base";
 import { connect } from "react-redux";
 import moment from "moment";
-import AppBarComponent from "../../components/AppBar/appbar.index";
-import { IconsMap, ImageMap } from "../../../assets/assetMap";
 
-import styles from "../../components/EventList/style";
-import HoozinList from "../../components/EventList/HoozinList";
-import EventListSvg from "./../../svgs/EventList";
 import EventsLib from "./../../lib/EventsLib";
-import { getEventList } from './../../actions/events/list';
-import * as Theme from '../../theme/hoozin-theme';
+import EventListSvg from "./../../svgs/EventList";
+import * as Theme from "../../theme/hoozin-theme";
+import styles from "../../components/EventList/style";
+import { getEventList } from "./../../actions/events/list";
+import NoEvents from "./../../components/EventList/NoEvents";
+import { IconsMap, ImageMap } from "../../../assets/assetMap";
+import HoozinList from "../../components/EventList/HoozinList";
+import AppBarComponent from "../../components/AppBar/appbar.index";
 
 class EventList extends Component {
   static navigationOptions = {
@@ -294,9 +295,7 @@ class EventList extends Component {
                       onChangeText={text => this.filterEvents(text)}
                     />
                   </View>
-                  <TouchableOpacity
-                    onPress={() => this.clearEventsFilter()}
-                  >
+                  <TouchableOpacity onPress={() => this.clearEventsFilter()}>
                     <Text
                       style={{
                         alignSelf: "center",
@@ -316,9 +315,7 @@ class EventList extends Component {
               isRibbonVisible={true}
               invalidateCache={this.state.forceReloadCache}
               fetchEventListFor={this.state.eventListFetchMode}
-              eventListForAttendee={this.captureEventListFromAppBar.bind(
-                this
-              )}
+              eventListForAttendee={this.captureEventListFromAppBar.bind(this)}
             />
           )}
           <Content>
@@ -328,33 +325,12 @@ class EventList extends Component {
                   <HoozinList
                     eventData={eventData}
                     key={keyE}
-                    loadImagesStart={() => {
-                      //this.setState({ animating: true });
-                    }}
                     showEventInfo={this.showEventInfo}
-                    loadImagesComplete={() => {
-                      //this.setState({ animating: false });
-                    }}
                   />
                 );
               })
             ) : (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center"
-                }}
-              >
-                <Text
-                  style={{
-                    textAlign: "center",
-                    textAlignVertical: "center"
-                  }}
-                >
-                  No events to show right now
-                </Text>
-              </View>
+              <NoEvents />
             )}
 
             {this.props.isConnected == false && (
@@ -371,10 +347,7 @@ class EventList extends Component {
                     color={Theme.BRAND_COLOR.PRIMARY}
                   />
                 )}
-                <Image
-                  source={ImageMap.disconnect}
-                  style={{ marginTop: 30 }}
-                />
+                <Image source={ImageMap.disconnect} style={{ marginTop: 30 }} />
                 <View
                   style={{
                     width: "50%",
@@ -465,9 +438,7 @@ class EventList extends Component {
             <View style={styles.bottomView_android}>
               <Left>
                 <TouchableOpacity
-                  onPress={() =>
-                    this.props.navigation.navigate("NearbyEvents")
-                  }
+                  onPress={() => this.props.navigation.navigate("NearbyEvents")}
                   style={styles.fabLeftWrapperStyles}
                 >
                   {Platform.OS === "ios" ? (
@@ -524,10 +495,7 @@ class EventList extends Component {
         </Container>
         {this.state.animating && (
           <View style={styles.overlay}>
-            <Spinner
-              color={"lightgoldenrodyellow"}
-              style={styles.spinner}
-            />
+            <Spinner color={"lightgoldenrodyellow"} style={styles.spinner} />
           </View>
         )}
       </React.Fragment>

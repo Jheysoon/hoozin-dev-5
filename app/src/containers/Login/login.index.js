@@ -64,7 +64,7 @@ class LoginContainer extends Component {
         this.props.fetchProfileForLogin(uid, parseResult);
 
         popToTop();
-        replace("NearbyEvents", { account: accountType });
+        replace("EventList", { account: accountType });
       }
     });
   }
@@ -101,7 +101,7 @@ class LoginContainer extends Component {
           replace("Profile");
         } else {
           popToTop();
-          replace("NearbyEvents", { account: this.accountType });
+          replace("EventList", { account: this.accountType });
         }
       } else {
         Alert.alert(
