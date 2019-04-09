@@ -1,27 +1,9 @@
 import React, { Component } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Alert,
-  Platform,
-  Keyboard
-} from "react-native";
+import { Formik } from "formik";
+import { View, Text, TouchableOpacity, Alert, Platform } from "react-native";
 import Image from "react-native-remote-svg";
-import {
-  Container,
-  Content,
-  Footer,
-  Left,
-  Body,
-  Right,
-  ListItem,
-  CheckBox
-} from "native-base";
-import RNGooglePlaces from "react-native-google-places";
+import { Container, Content, Footer, Left, Body, Right } from "native-base";
 import { connect } from "react-redux";
-import DatePicker from "react-native-datepicker";
 import { UIActivityIndicator } from "react-native-indicators";
 import moment from "moment";
 
@@ -36,6 +18,11 @@ import AppBarComponent from "../../../components/AppBar/appbar.index";
 
 // stylesheet
 import { AddOrCreateEventStyles } from "./addevent.style";
+import AddEventForm from "./AddEventForm";
+import { validate } from "./validate";
+import AddEventSvg from "../../../svgs/AddEvent";
+import EventCancel from "./EventCancel";
+import EventOverview from "./EventOverview";
 
 /* Redux container component to create a new event or edit a particular event */
 class CreateOrEditEventContainer extends Component {
@@ -65,6 +52,7 @@ class CreateOrEditEventContainer extends Component {
     };
 
     this.assignDateEnd = this.assignDateEnd.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
   /**
@@ -381,6 +369,7 @@ class CreateOrEditEventContainer extends Component {
                 this.props.user.socialUID
               )
               .then(() => {
+                // redirect to event list
                 this.props.navigation.navigate({
                   routeName: "NearbyEvents",
                   key: "NearbyEvents"
@@ -479,34 +468,21 @@ class CreateOrEditEventContainer extends Component {
       .then(result => this.props.navigation.goBack());
   }
 
-  assignDateEnd(time) {
-    this.setState({ startTime: time }, () => {
-      let p = this.state.startDate + " " + time;
-
-      let m = moment(p, "YYYY-MM-DD h:mm A").valueOf();
-      let hour = moment(p, "YYYY-MM-DD h:mm A").format("h");
-      let amPm = moment(p, "YYYY-MM-DD h:mm A").format("A");
-      let ampm = amPm;
-
-      if (hour == 12 && amPm == "AM") {
-        ampm = "PM";
-      } else if (hour == 12 && amPm == "PM") {
-        ampm = "AM";
-      }
-
-      if (this.state.startDate != "") {
-        this.setState({
-          endTime:
-            moment(m)
-              .add(1, "h")
-              .format("hh:mm") + ampm,
-          endDate: moment(p, "YYYY-MM-DD").format("YYYY-MM-DD")
-        });
-      }
-    });
-  }
+  onSubmit(values, actions) {}
 
   render() {
+
+    const initialValues = {
+      privateValue: this.state.privateValue,
+      eventTitle: this.state.eventTitle,
+      eventType: this.state.eventType,
+      startDate: this.state.startDate,
+      startTime: this.state.startTime,
+      endDate: this.state.endDate,
+      endTime: this.state.endTime,
+      location: this.state.location
+    };
+
     return (
       <React.Fragment>
         <Container style={{ backgroundColor: "#ffffff" }}>
@@ -517,939 +493,86 @@ class CreateOrEditEventContainer extends Component {
                 Start by entering your event details here
               </Text>
             </View>
-            <View
-              style={{
-                flexDirection: "column",
-                paddingTop: 15,
-                paddingBottom: 15,
-                paddingLeft: 30,
-                paddingRight: 30
-              }}
-            >
-              <View style={{ padding: 5 }}>
-                <TextInput
-                  style={AddOrCreateEventStyles.textInput}
-                  placeholder="Event Title"
-                  autoCapitalize="words"
-                  enablesReturnKeyAutomatically={true}
-                  value={this.state.eventTitle}
-                  onChangeText={text => {
-                    this.setState({ eventTitle: text });
-                  }}
-                  onEndEditing={text =>
-                    this.validateTextField(
-                      text.nativeEvent,
-                      this.refs.eventTitleBorder
-                    )
-                  }
-                  underlineColorAndroid="transparent"
-                />
-                <View
-                  ref="eventTitleBorder"
-                  style={{
-                    borderBottomColor: "#bcbcbc",
-                    borderBottomWidth: 1,
-                    paddingTop: 3
-                  }}
-                />
-              </View>
-              <View style={{ padding: 5 }}>
-                <TextInput
-                  style={AddOrCreateEventStyles.textInput}
-                  placeholder="Type"
-                  autoCapitalize="words"
-                  enablesReturnKeyAutomatically={true}
-                  value={this.state.eventType}
-                  onChangeText={text => {
-                    this.setState({ eventType: text });
-                  }}
-                  onEndEditing={text =>
-                    this.validateTextField(
-                      text.nativeEvent,
-                      this.refs.eventTypeBorder
-                    )
-                  }
-                  underlineColorAndroid="transparent"
-                />
-                <View
-                  ref="eventTypeBorder"
-                  style={{
-                    borderBottomColor: "#bcbcbc",
-                    borderBottomWidth: 1,
-                    paddingTop: 3
-                  }}
-                />
-              </View>
-              <View style={{ padding: 5 }}>
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: "row",
-                    justifyContent: "flex-start",
-                    position: "relative"
-                  }}
-                >
+
+            <Formik
+              initialValues={initialValues}
+              validate={validate}
+              onSubmit={this.onSubmit}
+              render={props => (
+                <React.Fragment>
+                  <AddEventForm form={props} />
+
                   {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_location_pin}
-                      style={{
-                        width: 20,
-                        height: 20,
-                        position: "absolute",
-                        left: -10,
-                        top: 4
-                      }}
-                    />
+                    <Footer style={AddOrCreateEventStyles.bottomView_ios}>
+                      <Left>
+                        {this.state.isEditMode ? (
+                          <View>
+                            <EventCancel isEditMode={this.state.isEditMode} />
+                            <EventOverview isEditMode={this.state.isEditMode} />
+                          </View>
+                        ) : (
+                          <EventCancel isEditMode={this.state.isEditMode} />
+                        )}
+                      </Left>
+                      <Body />
+                      <Right>
+                        <TouchableOpacity
+                          disabled={props.isSubmitting}
+                          onPress={props.handleSubmit}
+                          style={AddOrCreateEventStyles.fabRightWrapperStyles}
+                        >
+                          {Platform.OS === "ios" ? (
+                            <Image
+                              source={IconsMap.icon_next}
+                              style={AddOrCreateEventStyles.fabStyles}
+                            />
+                          ) : (
+                            <Image
+                              source={{ uri: AddEventSvg.btn_Next }}
+                              style={AddOrCreateEventStyles.fabStyles}
+                            />
+                          )}
+                        </TouchableOpacity>
+                      </Right>
+                    </Footer>
                   ) : (
-                    <Image
-                      source={{
-                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
-                                    <defs>
-                                      <style>
-                                        .cls-1 {
-                                          fill: none;
-                                        }
-                                  
-                                        .cls-2 {
-                                          fill: #2699fb;
-                                          fill-rule: evenodd;
-                                        }
-                                      </style>
-                                    </defs>
-                                    <g id="Places" transform="translate(-207 -596)">
-                                      <rect id="Rectangle_305" data-name="Rectangle 305" class="cls-1" width="16" height="16" transform="translate(207 596)"/>
-                                      <path id="Path_114" data-name="Path 114" class="cls-2" d="M6.58,9.47A2.786,2.786,0,0,0,9.371,6.679,2.872,2.872,0,0,0,6.58,3.788,2.786,2.786,0,0,0,3.788,6.579,2.942,2.942,0,0,0,6.58,9.47ZM1.894,1.894a6.626,6.626,0,0,1,9.371,9.371L6.58,15.95,1.894,11.265A6.807,6.807,0,0,1,1.894,1.894Z" transform="translate(207.975 596.05)"/>
-                                    </g>
-                                  </svg>
-                                  `
-                      }}
-                      style={{
-                        width: 30,
-                        height: 30,
-                        position: "absolute",
-                        left: 0,
-                        top: 4,
-                        zIndex: 9999
-                      }}
-                    />
+                    <View style={AddOrCreateEventStyles.bottomView_android}>
+                      <Left>
+                        {this.state.isEditMode ? (
+                          <View>
+                            <EventCancel isEditMode={this.state.isEditMode} />
+                            <EventOverview isEditMode={this.state.isEditMode} />
+                          </View>
+                        ) : (
+                          <EventCancel isEditMode={this.state.isEditMode} />
+                        )}
+                      </Left>
+                      <Body />
+                      <Right>
+                        <TouchableOpacity
+                          disabled={props.isSubmitting}
+                          onPress={props.handleSubmit}
+                          style={AddOrCreateEventStyles.fabRightWrapperStyles}
+                        >
+                          {Platform.OS === "ios" ? (
+                            <Image
+                              source={IconsMap.icon_next}
+                              style={AddOrCreateEventStyles.fabStyles}
+                            />
+                          ) : (
+                            <Image
+                              source={{ uri: AddEventSvg.btn_Next }}
+                              style={AddOrCreateEventStyles.fabStyles}
+                            />
+                          )}
+                        </TouchableOpacity>
+                      </Right>
+                    </View>
                   )}
-
-                  <TouchableOpacity
-                    style={{ height: 85, width: "100%", marginTop: -10 }}
-                    onPress={() => {
-                      RNGooglePlaces.openAutocompleteModal({
-                        type: "address"
-                      }).then(place => {
-                        this.setState(
-                          {
-                            location: place.address,
-                            evtCoords: {
-                              lat: place.latitude,
-                              lng: place.longitude
-                            }
-                          },
-                          () => {
-                            this.refs.eventLoc.focus();
-                            Keyboard.dismiss();
-                            this.refs.eventLoc.setNativeProps({
-                              selection: { start: 0, end: 0 }
-                            });
-                          }
-                        );
-                      }).catch(e => {
-                        console.log(e);
-                      });
-                    }}
-                  >
-                    <TextInput
-                      ref="eventLoc"
-                      selection={{ start: 0, end: 0 }}
-                      multiline={true}
-                      editable={false}
-                      value={this.state.location}
-                      onContentSizeChange={event => {
-                        this.setState({
-                          textInputHeight: event.nativeEvent.contentSize.height
-                        });
-                      }}
-                      style={{
-                        marginTop: 35,
-                        marginLeft: -5,
-                        fontSize: 17,
-                        color: "#707070",
-                        height: Math.max(45, this.state.textInputHeight)
-                      }}
-                      placeholder="Location"
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View
-                  ref="eventLocationBorder"
-                  style={{
-                    borderBottomColor: "#bcbcbc",
-                    borderBottomWidth: 1,
-                    paddingTop: 3
-                  }}
-                />
-              </View>
-              <View style={{ padding: 5, flexDirection: "row" }}>
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "flex-end",
-                    flexWrap: "nowrap",
-                    position: "relative"
-                  }}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_calendar}
-                      style={{
-                        width: 20,
-                        height: 20,
-                        position: "absolute",
-                        left: -10,
-                        top: 2
-                      }}
-                    />
-                  ) : (
-                    <Image
-                      source={{
-                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
-                                    <defs>
-                                      <style>
-                                        .cls-1 {
-                                          fill: none;
-                                        }
-                                  
-                                        .cls-2 {
-                                          fill: #2699fb;
-                                          fill-rule: evenodd;
-                                        }
-                                      </style>
-                                    </defs>
-                                    <g id="Calendar" transform="translate(-24 -242)">
-                                      <rect id="Rectangle_557" data-name="Rectangle 557" class="cls-1" width="16" height="16" transform="translate(24 242)"/>
-                                      <path id="Path_149" data-name="Path 149" class="cls-2" d="M2,5v9H14V5ZM13,2h2a.945.945,0,0,1,1,1V15a.945.945,0,0,1-1,1H1a.945.945,0,0,1-1-1V3A.945.945,0,0,1,1,2H3V1A.945.945,0,0,1,4,0,.945.945,0,0,1,5,1V2h6V1a1,1,0,0,1,2,0ZM12,12H10V10h2ZM9,12H7V10H9Zm3-3H10V7h2ZM9,9H7V7H9ZM6,12H4V10H6Z" transform="translate(24 242)"/>
-                                    </g>
-                                  </svg>
-                                  `
-                      }}
-                      style={{
-                        width: 30,
-                        height: 30,
-                        position: "absolute",
-                        left: 0,
-                        top: 2
-                      }}
-                    />
-                  )}
-                  <Text
-                    style={{
-                      fontFamily: "Lato",
-                      fontWeight: "400",
-                      marginLeft: 8
-                    }}
-                  >
-                    Begin
-                  </Text>
-                </View>
-                <View style={{ flex: 2, paddingLeft: 5 }}>
-                  <DatePicker
-                    style={{ width: 200 }}
-                    date={this.state.startDate}
-                    mode="date"
-                    placeholder="Date"
-                    format="YYYY-MM-DD"
-                    minDate="2016-05-01"
-                    maxDate="2050-06-01"
-                    confirmBtnText="Confirm"
-                    cancelBtnText="Cancel"
-                    showIcon={false}
-                    customStyles={{
-                      dateInput: { borderWidth: 0, alignItems: "flex-start" }
-                    }}
-                    onDateChange={date => {
-                      this.setState({ startDate: date });
-                    }}
-                    onCloseModal={() =>
-                      setTimeout(
-                        () =>
-                          this.validateDateField(this.state.startDate, [
-                            this.refs.startDateBorder,
-                            this.refs.endDateBorder
-                          ]),
-                        100
-                      )
-                    }
-                  />
-                  <View
-                    ref="startDateBorder"
-                    style={{
-                      borderBottomColor: "#bcbcbc",
-                      borderBottomWidth: 1,
-                      width: 100
-                    }}
-                  />
-                </View>
-                <View style={{ flex: 2 }}>
-                  <DatePicker
-                    style={{ width: 200 }}
-                    date={this.state.startTime}
-                    mode="time"
-                    placeholder="Time"
-                    format="hh:mm A"
-                    confirmBtnText="Confirm"
-                    cancelBtnText="Cancel"
-                    showIcon={false}
-                    customStyles={{
-                      dateInput: { borderWidth: 0, alignItems: "flex-start" }
-                    }}
-                    onDateChange={this.assignDateEnd}
-                    onCloseModal={() =>
-                      setTimeout(
-                        () =>
-                          this.validateDateField(this.state.startTime, [
-                            this.refs.startTimeBorder,
-                            this.refs.endTimeBorder
-                          ]),
-                        100
-                      )
-                    }
-                  />
-                  <View
-                    ref="startTimeBorder"
-                    style={{
-                      borderBottomColor: "#bcbcbc",
-                      borderBottomWidth: 1,
-                      width: 100
-                    }}
-                  />
-                </View>
-              </View>
-
-              <View style={{ padding: 5, flexDirection: "row" }}>
-                <View style={{ flex: 1, justifyContent: "flex-end" }}>
-                  <Text
-                    style={{
-                      marginLeft: 8,
-                      marginRight: 14,
-                      textAlign: "right"
-                    }}
-                  >
-                    End
-                  </Text>
-                </View>
-                <View style={{ flex: 2, paddingLeft: 5 }}>
-                  <DatePicker
-                    style={{ width: 200 }}
-                    date={this.state.endDate}
-                    mode="date"
-                    placeholder="Date"
-                    format="YYYY-MM-DD"
-                    minDate="2016-05-01"
-                    maxDate="2050-06-01"
-                    confirmBtnText="Confirm"
-                    cancelBtnText="Cancel"
-                    showIcon={false}
-                    customStyles={{
-                      dateInput: { borderWidth: 0, alignItems: "flex-start" }
-                    }}
-                    onDateChange={endDate => {
-                      this.setState({ endDate: endDate });
-                    }}
-                    onCloseModal={() =>
-                      setTimeout(
-                        () =>
-                          this.validateDateField(
-                            this.state.endDate,
-                            this.refs.endDateBorder
-                          ),
-                        100
-                      )
-                    }
-                  />
-                  <View
-                    ref="endDateBorder"
-                    style={{
-                      borderBottomColor: "#bcbcbc",
-                      borderBottomWidth: 1,
-                      width: 100
-                    }}
-                  />
-                </View>
-                <View style={{ flex: 2 }}>
-                  <DatePicker
-                    style={{ width: 200 }}
-                    date={this.state.endTime}
-                    mode="time"
-                    placeholder="Time"
-                    format="hh:mm A"
-                    confirmBtnText="Confirm"
-                    cancelBtnText="Cancel"
-                    showIcon={false}
-                    customStyles={{
-                      dateInput: { borderWidth: 0, alignItems: "flex-start" }
-                    }}
-                    onDateChange={endTime => {
-                      this.setState({ endTime: endTime });
-                    }}
-                    onCloseModal={() =>
-                      setTimeout(
-                        () =>
-                          this.validateDateField(
-                            this.state.endTime,
-                            this.refs.endTimeBorder
-                          ),
-                        100
-                      )
-                    }
-                  />
-                  <View
-                    ref="endTimeBorder"
-                    style={{
-                      borderBottomColor: "#bcbcbc",
-                      borderBottomWidth: 1,
-                      width: 100
-                    }}
-                  />
-                </View>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  paddingTop: 15,
-                  marginBottom: 50
-                }}
-              >
-                <View style={{ flex: 2 }}>
-                  <ListItem
-                    noIndent
-                    style={
-                      Platform.OS === "ios"
-                        ? AddOrCreateEventStyles.checkbox_ios
-                        : AddOrCreateEventStyles.checkbox_android
-                    }
-                  >
-                    <CheckBox
-                      checked={this.state.privateValue}
-                      onPress={() =>
-                        this.setState({
-                          privateValue: !this.state.privateValue
-                        })
-                      }
-                    />
-                    <Body style={{ marginLeft: 10 }}>
-                      <Text
-                        style={{
-                          fontFamily: "Lato",
-                          fontWeight: "400",
-                          fontSize: 18,
-                          color: "#004D9B"
-                        }}
-                      >
-                        This event is{" "}
-                        {this.state.privateValue ? "private" : "public"}
-                      </Text>
-                    </Body>
-                  </ListItem>
-                </View>
-              </View>
-            </View>
+                </React.Fragment>
+              )}
+            />
           </Content>
-
-          {Platform.OS === "ios" ? (
-            <Footer style={AddOrCreateEventStyles.bottomView_ios}>
-              <Left>
-                {this.state.isEditMode ? (
-                  <View>
-                    <TouchableOpacity
-                      onPress={() => this.onEventCancel()}
-                      style={AddOrCreateEventStyles.fabLeftWrapperStyles}
-                    >
-                      {Platform.OS === "ios" ? (
-                        <Image
-                          source={IconsMap.icon_close_red}
-                          style={AddOrCreateEventStyles.fabStyles}
-                        />
-                      ) : (
-                        <Image
-                          source={{
-                            uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
-                                    <defs>
-                                      <style>
-                                        .cls-1 {
-                                          fill: #ff003b;
-                                          stroke: #bcbcbc;
-                                        }
-                                  
-                                        .cls-2 {
-                                          fill: #fff;
-                                        }
-                                  
-                                        .cls-3 {
-                                          stroke: none;
-                                        }
-                                  
-                                        .cls-4 {
-                                          fill: none;
-                                        }
-                                  
-                                        .cls-5 {
-                                          filter: url(#Ellipse_111);
-                                        }
-                                      </style>
-                                      <filter id="Ellipse_111" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
-                                        <feOffset dy="3" input="SourceAlpha"/>
-                                        <feGaussianBlur stdDeviation="3" result="blur"/>
-                                        <feFlood flood-opacity="0.161"/>
-                                        <feComposite operator="in" in2="blur"/>
-                                        <feComposite in="SourceGraphic"/>
-                                      </filter>
-                                    </defs>
-                                    <g id="btn_Delete" transform="translate(-27 -616)">
-                                      <g id="Group_1359" data-name="Group 1359">
-                                        <g class="cls-5" transform="matrix(1, 0, 0, 1, 27, 616)">
-                                          <g id="Ellipse_111-2" data-name="Ellipse 111" class="cls-1" transform="translate(9 6)">
-                                            <circle class="cls-3" cx="21" cy="21" r="21"/>
-                                            <circle class="cls-4" cx="21" cy="21" r="20.5"/>
-                                          </g>
-                                        </g>
-                                      </g>
-                                      <g id="Symbol_85_1" data-name="Symbol 85 – 1" transform="translate(48.6 634.6)">
-                                        <path id="Union_3" data-name="Union 3" class="cls-2" d="M9,10.636,1.636,18,0,16.363,7.364,9,0,1.636,1.636,0,9,7.363,16.364,0,18,1.636,10.636,9,18,16.363,16.364,18Z"/>
-                                      </g>
-                                    </g>
-                                  </svg>
-                                  `
-                          }}
-                          style={AddOrCreateEventStyles.fabStyles}
-                        />
-                      )}
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => this.goBackToOverview()}
-                      style={{ position: "absolute", left: 80, bottom: -32 }}
-                    >
-                      {Platform.OS === "ios" ? (
-                        <Image
-                          source={IconsMap.icon_chevron_left}
-                          style={AddOrCreateEventStyles.fabStyles}
-                        />
-                      ) : (
-                        <Image
-                          source={{
-                            uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
-                                    <defs>
-                                      <style>
-                                        .cls-1 {
-                                          fill: #2699fb;
-                                        }
-                                  
-                                        .cls-2 {
-                                          fill: none;
-                                          stroke: #fff;
-                                          stroke-width: 4px;
-                                        }
-                                  
-                                        .cls-3 {
-                                          filter: url(#Search_Field);
-                                        }
-                                      </style>
-                                      <filter id="Search_Field" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
-                                        <feOffset dy="6" input="SourceAlpha"/>
-                                        <feGaussianBlur stdDeviation="3" result="blur"/>
-                                        <feFlood flood-opacity="0.161"/>
-                                        <feComposite operator="in" in2="blur"/>
-                                        <feComposite in="SourceGraphic"/>
-                                      </filter>
-                                    </defs>
-                                    <g id="Symbol_95_3" data-name="Symbol 95 – 3" transform="translate(-26 -619)">
-                                      <g class="cls-3" transform="matrix(1, 0, 0, 1, 26, 619)">
-                                        <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="42" height="42" rx="21" transform="translate(9 3)"/>
-                                      </g>
-                                      <g id="Group_328" data-name="Group 328" transform="translate(355.5 1254) rotate(180)">
-                                        <line id="Line_3" data-name="Line 3" class="cls-2" x1="14" y2="16" transform="translate(306.5 624) rotate(180)"/>
-                                        <line id="Line_4" data-name="Line 4" class="cls-2" x1="14" y1="13" transform="translate(306.5 611) rotate(180)"/>
-                                      </g>
-                                    </g>
-                                  </svg>
-                                  `
-                          }}
-                          style={AddOrCreateEventStyles.fabStyles}
-                        />
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => this.onEventCancel()}
-                    style={AddOrCreateEventStyles.fabLeftWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_close_gray}
-                        style={AddOrCreateEventStyles.fabStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{
-                          uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
-                                    <defs>
-                                      <style>
-                                        .cls-1 {
-                                          fill: #bcbcbc;
-                                          stroke: #bcbcbc;
-                                        }
-                                  
-                                        .cls-2 {
-                                          fill: #fff;
-                                        }
-                                  
-                                        .cls-3 {
-                                          stroke: none;
-                                        }
-                                  
-                                        .cls-4 {
-                                          fill: none;
-                                        }
-                                  
-                                        .cls-5 {
-                                          filter: url(#Ellipse_111);
-                                        }
-                                      </style>
-                                      <filter id="Ellipse_111" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
-                                        <feOffset dy="3" input="SourceAlpha"/>
-                                        <feGaussianBlur stdDeviation="3" result="blur"/>
-                                        <feFlood flood-opacity="0.161"/>
-                                        <feComposite operator="in" in2="blur"/>
-                                        <feComposite in="SourceGraphic"/>
-                                      </filter>
-                                    </defs>
-                                    <g id="Group_1204" data-name="Group 1204" transform="translate(-9 -621)">
-                                      <g class="cls-5" transform="matrix(1, 0, 0, 1, 9, 621)">
-                                        <g id="Ellipse_111-2" data-name="Ellipse 111" class="cls-1" transform="translate(9 6)">
-                                          <circle class="cls-3" cx="21" cy="21" r="21"/>
-                                          <circle class="cls-4" cx="21" cy="21" r="20.5"/>
-                                        </g>
-                                      </g>
-                                      <g id="Symbol_85_1" data-name="Symbol 85 – 1" transform="translate(30.6 639.6)">
-                                        <path id="Union_3" data-name="Union 3" class="cls-2" d="M9,10.636,1.636,18,0,16.363,7.364,9,0,1.636,1.636,0,9,7.363,16.364,0,18,1.636,10.636,9,18,16.363,16.364,18Z"/>
-                                      </g>
-                                    </g>
-                                  </svg>
-                                  `
-                        }}
-                        style={AddOrCreateEventStyles.fabStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
-                )}
-              </Left>
-              <Body />
-              <Right>
-                <TouchableOpacity
-                  onPress={() => this.onEventAddData()}
-                  style={AddOrCreateEventStyles.fabRightWrapperStyles}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_next}
-                      style={AddOrCreateEventStyles.fabStyles}
-                    />
-                  ) : (
-                    <Image
-                      source={{
-                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
-                                <defs>
-                                  <style>
-                                    .cls-1 {
-                                      fill: #2699fb;
-                                    }
-                              
-                                    .cls-2 {
-                                      fill: none;
-                                      stroke: #fff;
-                                      stroke-width: 4px;
-                                    }
-                              
-                                    .cls-3 {
-                                      filter: url(#Search_Field);
-                                    }
-                                  </style>
-                                  <filter id="Search_Field" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
-                                    <feOffset dy="6" input="SourceAlpha"/>
-                                    <feGaussianBlur stdDeviation="3" result="blur"/>
-                                    <feFlood flood-opacity="0.161"/>
-                                    <feComposite operator="in" in2="blur"/>
-                                    <feComposite in="SourceGraphic"/>
-                                  </filter>
-                                </defs>
-                                <g id="btn_Next" transform="translate(-312 -615)">
-                                  <g class="cls-3" transform="matrix(1, 0, 0, 1, 312, 615)">
-                                    <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="42" height="42" rx="21" transform="translate(51 45) rotate(180)"/>
-                                  </g>
-                                  <g id="Group_328" data-name="Group 328" transform="translate(42.5 28)">
-                                    <line id="Line_3" data-name="Line 3" class="cls-2" x1="14" y2="16" transform="translate(306.5 624) rotate(180)"/>
-                                    <line id="Line_4" data-name="Line 4" class="cls-2" x1="14" y1="13" transform="translate(306.5 611) rotate(180)"/>
-                                  </g>
-                                </g>
-                              </svg>
-                              `
-                      }}
-                      style={AddOrCreateEventStyles.fabStyles}
-                    />
-                  )}
-                </TouchableOpacity>
-              </Right>
-            </Footer>
-          ) : (
-            <View style={AddOrCreateEventStyles.bottomView_android}>
-              <Left>
-                {this.state.isEditMode ? (
-                  <View>
-                    <TouchableOpacity
-                      onPress={() => this.onEventCancel()}
-                      style={AddOrCreateEventStyles.fabLeftWrapperStyles}
-                    >
-                      {Platform.OS === "ios" ? (
-                        <Image
-                          source={IconsMap.icon_close_red}
-                          style={AddOrCreateEventStyles.fabStyles}
-                        />
-                      ) : (
-                        <Image
-                          source={{
-                            uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
-                                <defs>
-                                  <style>
-                                    .cls-1 {
-                                      fill: #ff003b;
-                                      stroke: #bcbcbc;
-                                    }
-                              
-                                    .cls-2 {
-                                      fill: #fff;
-                                    }
-                              
-                                    .cls-3 {
-                                      stroke: none;
-                                    }
-                              
-                                    .cls-4 {
-                                      fill: none;
-                                    }
-                              
-                                    .cls-5 {
-                                      filter: url(#Ellipse_111);
-                                    }
-                                  </style>
-                                  <filter id="Ellipse_111" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
-                                    <feOffset dy="3" input="SourceAlpha"/>
-                                    <feGaussianBlur stdDeviation="3" result="blur"/>
-                                    <feFlood flood-opacity="0.161"/>
-                                    <feComposite operator="in" in2="blur"/>
-                                    <feComposite in="SourceGraphic"/>
-                                  </filter>
-                                </defs>
-                                <g id="btn_Delete" transform="translate(-27 -616)">
-                                  <g id="Group_1359" data-name="Group 1359">
-                                    <g class="cls-5" transform="matrix(1, 0, 0, 1, 27, 616)">
-                                      <g id="Ellipse_111-2" data-name="Ellipse 111" class="cls-1" transform="translate(9 6)">
-                                        <circle class="cls-3" cx="21" cy="21" r="21"/>
-                                        <circle class="cls-4" cx="21" cy="21" r="20.5"/>
-                                      </g>
-                                    </g>
-                                  </g>
-                                  <g id="Symbol_85_1" data-name="Symbol 85 – 1" transform="translate(48.6 634.6)">
-                                    <path id="Union_3" data-name="Union 3" class="cls-2" d="M9,10.636,1.636,18,0,16.363,7.364,9,0,1.636,1.636,0,9,7.363,16.364,0,18,1.636,10.636,9,18,16.363,16.364,18Z"/>
-                                  </g>
-                                </g>
-                              </svg>
-                              `
-                          }}
-                          style={AddOrCreateEventStyles.fabStyles}
-                        />
-                      )}
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => this.goBackToOverview()}
-                      style={{ position: "absolute", left: 80, bottom: -32 }}
-                    >
-                      {Platform.OS === "ios" ? (
-                        <Image
-                          source={IconsMap.icon_chevron_left}
-                          style={AddOrCreateEventStyles.fabStyles}
-                        />
-                      ) : (
-                        <Image
-                          source={{
-                            uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
-                                <defs>
-                                  <style>
-                                    .cls-1 {
-                                      fill: #2699fb;
-                                    }
-                              
-                                    .cls-2 {
-                                      fill: none;
-                                      stroke: #fff;
-                                      stroke-width: 4px;
-                                    }
-                              
-                                    .cls-3 {
-                                      filter: url(#Search_Field);
-                                    }
-                                  </style>
-                                  <filter id="Search_Field" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
-                                    <feOffset dy="6" input="SourceAlpha"/>
-                                    <feGaussianBlur stdDeviation="3" result="blur"/>
-                                    <feFlood flood-opacity="0.161"/>
-                                    <feComposite operator="in" in2="blur"/>
-                                    <feComposite in="SourceGraphic"/>
-                                  </filter>
-                                </defs>
-                                <g id="Symbol_95_3" data-name="Symbol 95 – 3" transform="translate(-26 -619)">
-                                  <g class="cls-3" transform="matrix(1, 0, 0, 1, 26, 619)">
-                                    <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="42" height="42" rx="21" transform="translate(9 3)"/>
-                                  </g>
-                                  <g id="Group_328" data-name="Group 328" transform="translate(355.5 1254) rotate(180)">
-                                    <line id="Line_3" data-name="Line 3" class="cls-2" x1="14" y2="16" transform="translate(306.5 624) rotate(180)"/>
-                                    <line id="Line_4" data-name="Line 4" class="cls-2" x1="14" y1="13" transform="translate(306.5 611) rotate(180)"/>
-                                  </g>
-                                </g>
-                              </svg>
-                              `
-                          }}
-                          style={AddOrCreateEventStyles.fabStyles}
-                        />
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => this.onEventCancel()}
-                    style={AddOrCreateEventStyles.fabLeftWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_close_gray}
-                        style={AddOrCreateEventStyles.fabStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{
-                          uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
-                                <defs>
-                                  <style>
-                                    .cls-1 {
-                                      fill: #bcbcbc;
-                                      stroke: #bcbcbc;
-                                    }
-                              
-                                    .cls-2 {
-                                      fill: #fff;
-                                    }
-                              
-                                    .cls-3 {
-                                      stroke: none;
-                                    }
-                              
-                                    .cls-4 {
-                                      fill: none;
-                                    }
-                              
-                                    .cls-5 {
-                                      filter: url(#Ellipse_111);
-                                    }
-                                  </style>
-                                  <filter id="Ellipse_111" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
-                                    <feOffset dy="3" input="SourceAlpha"/>
-                                    <feGaussianBlur stdDeviation="3" result="blur"/>
-                                    <feFlood flood-opacity="0.161"/>
-                                    <feComposite operator="in" in2="blur"/>
-                                    <feComposite in="SourceGraphic"/>
-                                  </filter>
-                                </defs>
-                                <g id="Group_1204" data-name="Group 1204" transform="translate(-9 -621)">
-                                  <g class="cls-5" transform="matrix(1, 0, 0, 1, 9, 621)">
-                                    <g id="Ellipse_111-2" data-name="Ellipse 111" class="cls-1" transform="translate(9 6)">
-                                      <circle class="cls-3" cx="21" cy="21" r="21"/>
-                                      <circle class="cls-4" cx="21" cy="21" r="20.5"/>
-                                    </g>
-                                  </g>
-                                  <g id="Symbol_85_1" data-name="Symbol 85 – 1" transform="translate(30.6 639.6)">
-                                    <path id="Union_3" data-name="Union 3" class="cls-2" d="M9,10.636,1.636,18,0,16.363,7.364,9,0,1.636,1.636,0,9,7.363,16.364,0,18,1.636,10.636,9,18,16.363,16.364,18Z"/>
-                                  </g>
-                                </g>
-                              </svg>
-                              `
-                        }}
-                        style={AddOrCreateEventStyles.fabStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
-                )}
-              </Left>
-              <Body />
-              <Right>
-                <TouchableOpacity
-                  onPress={() => this.onEventAddData()}
-                  style={AddOrCreateEventStyles.fabRightWrapperStyles}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_next}
-                      style={AddOrCreateEventStyles.fabStyles}
-                    />
-                  ) : (
-                    <Image
-                      source={{
-                        uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60 60">
-                            <defs>
-                              <style>
-                                .cls-1 {
-                                  fill: #2699fb;
-                                }
-                          
-                                .cls-2 {
-                                  fill: none;
-                                  stroke: #fff;
-                                  stroke-width: 4px;
-                                }
-                          
-                                .cls-3 {
-                                  filter: url(#Search_Field);
-                                }
-                              </style>
-                              <filter id="Search_Field" x="0" y="0" width="60" height="60" filterUnits="userSpaceOnUse">
-                                <feOffset dy="6" input="SourceAlpha"/>
-                                <feGaussianBlur stdDeviation="3" result="blur"/>
-                                <feFlood flood-opacity="0.161"/>
-                                <feComposite operator="in" in2="blur"/>
-                                <feComposite in="SourceGraphic"/>
-                              </filter>
-                            </defs>
-                            <g id="btn_Next" transform="translate(-312 -615)">
-                              <g class="cls-3" transform="matrix(1, 0, 0, 1, 312, 615)">
-                                <rect id="Search_Field-2" data-name="Search Field" class="cls-1" width="42" height="42" rx="21" transform="translate(51 45) rotate(180)"/>
-                              </g>
-                              <g id="Group_328" data-name="Group 328" transform="translate(42.5 28)">
-                                <line id="Line_3" data-name="Line 3" class="cls-2" x1="14" y2="16" transform="translate(306.5 624) rotate(180)"/>
-                                <line id="Line_4" data-name="Line 4" class="cls-2" x1="14" y1="13" transform="translate(306.5 611) rotate(180)"/>
-                              </g>
-                            </g>
-                          </svg>
-                          `
-                      }}
-                      style={AddOrCreateEventStyles.fabStyles}
-                    />
-                  )}
-                </TouchableOpacity>
-              </Right>
-            </View>
-          )}
         </Container>
         {this.state.animating && (
           <View style={AddOrCreateEventStyles.overlay}>
