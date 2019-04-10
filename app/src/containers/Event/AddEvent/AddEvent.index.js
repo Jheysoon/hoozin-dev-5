@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import { Formik } from "formik";
-import { View, Text, TouchableOpacity, Alert, Platform } from "react-native";
-import Image from "react-native-remote-svg";
-import { Container, Content, Footer, Left, Body, Right } from "native-base";
+import { View, Text } from "react-native";
+import { Container, Content } from "native-base";
 import { connect } from "react-redux";
 import { UIActivityIndicator } from "react-native-indicators";
-import moment from "moment";
 
 import { upsertEventDataAction } from "../../../actions/event";
 import {
@@ -13,16 +11,12 @@ import {
   resetProfileUpdateAction
 } from "../../../actions/auth";
 import { EventServiceAPI } from "../../../api/index";
-import { IconsMap } from "assets/assetMap";
 import AppBarComponent from "../../../components/AppBar/appbar.index";
 
 // stylesheet
 import { AddOrCreateEventStyles } from "./addevent.style";
 import AddEventForm from "./AddEventForm";
 import { validate } from "./validate";
-import AddEventSvg from "../../../svgs/AddEvent";
-import EventCancel from "./EventCancel";
-import EventOverview from "./EventOverview";
 
 /* Redux container component to create a new event or edit a particular event */
 class CreateOrEditEventContainer extends Component {
@@ -50,8 +44,6 @@ class CreateOrEditEventContainer extends Component {
       evtCoords: null,
       textInputHeight: 0
     };
-
-    this.assignDateEnd = this.assignDateEnd.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
 
@@ -131,333 +123,6 @@ class CreateOrEditEventContainer extends Component {
       .catch(err => console.error(err));
   }
 
-  /**
-   * Description - validates date/time before proceding to add event
-   */
-
-  validateDateTime() {
-    const startDateTimeInUTC = moment.utc(
-      moment(
-        `${this.state.startDate} ${this.state.startTime}`,
-        "YYYY-MM-DD hh:mm A"
-      )
-    );
-    const endDateTimeInUTC = moment.utc(
-      moment(
-        `${this.state.endDate} ${this.state.endTime}`,
-        "YYYY-MM-DD hh:mm A"
-      )
-    );
-    const currentDateTimeInUTC = moment.utc();
-
-    const isSameDateTime = startDateTimeInUTC.isSame(endDateTimeInUTC);
-    const isValidFutureDateTime =
-      endDateTimeInUTC.isAfter(startDateTimeInUTC) &&
-      endDateTimeInUTC.isAfter(currentDateTimeInUTC);
-
-    if (isValidFutureDateTime) {
-      return true;
-    } else if (isSameDateTime) {
-      Alert.alert(
-        "Oops! wrong date time",
-        "An event cannot start and end exactly at the same time!",
-        [{ text: "GOT IT", style: "default" }]
-      );
-      return false;
-    } else if (!isValidFutureDateTime) {
-      Alert.alert(
-        "Oops! wrong date time",
-        "Event cannot start or end past from today and it should end after its starting date time",
-        [{ text: "GOT IT", style: "default" }]
-      );
-      return false;
-    }
-  }
-
-  /**
-   * @description validate each textinput field on blur
-   * @param {*} e - event
-   * @param {*} ref - DOM element reference
-   */
-  validateTextField(e, ref) {
-    if (!e.text) {
-      ref.setNativeProps({
-        borderBottomColor: "red"
-      });
-      return;
-    }
-    ref.setNativeProps({
-      borderBottomColor: "#cecece"
-    });
-    this.state.isEventFormEmpty
-      ? this.setState({ isEventFormEmpty: false })
-      : "";
-  }
-
-  /**
-   * @description validate each datetime field on modal dismiss
-   * @param {string} val value within state
-   * @param {Object|Array} ref single or multiple DOM element reference
-   */
-  validateDateField(val, ref) {
-    if (!val && !Array.isArray(ref)) {
-      ref.setNativeProps({
-        borderBottomColor: "red"
-      });
-      return;
-    } else if (!val && Array.isArray(ref)) {
-      ref.forEach(refItem => {
-        refItem.setNativeProps({
-          borderBottomColor: "red"
-        });
-      });
-      return;
-    } else if (val && !Array.isArray(ref)) {
-      ref.setNativeProps({
-        borderBottomColor: "#cecece"
-      });
-      return;
-    } else if (val && Array.isArray(ref)) {
-      ref.forEach(refItem => {
-        refItem.setNativeProps({
-          borderBottomColor: "#cecece"
-        });
-      });
-      return;
-    }
-    this.state.isEventFormEmpty
-      ? this.setState({ isEventFormEmpty: false })
-      : "";
-  }
-
-  /**
-   * @description validate all the fields at once
-   */
-  validateAllFields() {
-    if (!this.state.eventTitle) {
-      this.refs.eventTitleBorder.setNativeProps({ borderBottomColor: "red" });
-    }
-    if (!this.state.eventType) {
-      this.refs.eventTypeBorder.setNativeProps({ borderBottomColor: "red" });
-    }
-    if (!this.state.location) {
-      this.refs.eventLocationBorder.setNativeProps({
-        borderBottomColor: "red"
-      });
-    }
-    if (!this.state.startDate) {
-      this.refs.startDateBorder.setNativeProps({ borderBottomColor: "red" });
-    }
-    if (!this.state.endDate) {
-      this.refs.endDateBorder.setNativeProps({ borderBottomColor: "red" });
-    }
-    if (!this.state.startTime) {
-      this.refs.startTimeBorder.setNativeProps({ borderBottomColor: "red" });
-    }
-    if (!this.state.endTime) {
-      this.refs.endTimeBorder.setNativeProps({ borderBottomColor: "red" });
-    }
-    this.setState({ isEventFormEmpty: true });
-  }
-
-  /**
-   * @description Create or Update new / existing event
-   */
-  onEventAddData() {
-    let startTime = this.state.startTime;
-    let startDate = this.state.startDate;
-    let endDate = this.state.endDate || this.state.startDate;
-    let endTime = this.state.endTime || this.state.startTime;
-    let eventTitle = this.state.eventTitle;
-    let eventType = this.state.eventType;
-    let location = this.state.location;
-    let privateValue = this.state.privateValue;
-    let socialUID = this.props.user.socialUID;
-    let evtStatus = this.state.isEditMode ? "Editing" : this.state.status;
-    let eventId = this.state.eventId ? this.state.eventId : "";
-    let evtCoords = this.state.evtCoords;
-
-    /* Alert.alert("Error", "No Internet Connection you want to try again ?",
-      [{
-        text: 'Cancel'
-      }, {
-        text: 'Try Again'
-      }] 
-    ); */
-
-    if (
-      !!eventTitle &&
-      !!eventType &&
-      !!location &&
-      !!startDate &&
-      !!startTime &&
-      !!endDate &&
-      !!endTime &&
-      this.validateDateTime()
-    ) {
-      this.props.onShowIndicator(true);
-      this.setState({ animating: true });
-      this.props.upsertEventDataAction(
-        startDate,
-        startTime,
-        endDate,
-        endTime,
-        eventTitle,
-        eventType,
-        location,
-        privateValue,
-        socialUID,
-        evtStatus,
-        eventId,
-        evtCoords
-      );
-    } else {
-      this.state.isEventFormEmpty
-        ? Alert.alert("Please fill in the required information first")
-        : this.validateAllFields();
-    }
-  }
-
-  /**
-   * @description removes an event or simply navigates to previous activity
-   */
-
-  onEventCancel() {
-    if (!this.state.isEditMode) {
-      this.props.navigation.goBack();
-      return;
-    }
-    Alert.alert(
-      "Yikes, you are about to cancel your event!",
-      "If you cancel, the invited people will be notified of this cancellation",
-      [
-        { text: "Go Back!", onPress: () => {}, style: "cancel" },
-        {
-          text: "Cancel It!",
-          onPress: () => {
-            this.removeEvent(this.state.eventId);
-          }
-        }
-      ],
-      { cancelable: false }
-    );
-  }
-
-  /**
-   * @description Removes the event. Has 2 dependencies - delete eventId from friends and the user who is friend
-   * @param {string} evtKey
-   */
-  removeEvent(evtKey) {
-    const eventSvc = new EventServiceAPI();
-    eventSvc
-      .getEventInviteesDetailsAPI(evtKey, this.props.user.socialUID)
-      .then(async snapshot => {
-        if (snapshot._value) {
-          const removedResultFromFriend = await this.removeEventFromFriends(
-            snapshot,
-            evtKey
-          );
-          const removedResultFromUser = await this.removeEventFromUser(
-            snapshot,
-            evtKey
-          );
-          if (removedResultFromFriend && removedResultFromUser) {
-            //safe to delete the entire event
-            eventSvc
-              .removeEventFromHostAndInviteeAPI(
-                evtKey,
-                this.props.user.socialUID
-              )
-              .then(() => {
-                // redirect to event list
-                this.props.navigation.navigate({
-                  routeName: "NearbyEvents",
-                  key: "NearbyEvents"
-                });
-              });
-          }
-        }
-      });
-  }
-
-  /**
-   * @description removes current event Id from the friends list
-   * @param {*} snapshot
-   * @param {string} evtKey
-   */
-  removeEventFromFriends(snapshot, evtKey) {
-    const eventSvc = new EventServiceAPI();
-    return Promise.all(
-      Object.keys(snapshot._value).map(async inviteeId => {
-        return eventSvc
-          .getUsersFriendDetailsAPI(this.props.user.socialUID, inviteeId)
-          .then(friendSnapshot => {
-            if (friendSnapshot._value) {
-              let evtList = friendSnapshot._value["eventList"];
-              if (evtList.includes(evtKey)) {
-                evtList.splice(evtList.indexOf(evtKey), 1);
-                if (evtList.length == 0) {
-                  evtList = [];
-                }
-
-                // safe to update the particular user
-                return eventSvc.updateUsersFriendEventListAPI(
-                  this.props.user.socialUID,
-                  inviteeId,
-                  evtList
-                );
-              }
-            }
-          });
-      })
-    );
-  }
-
-  /**
-   * @description removes current event Id from the user who is friend
-   * @param {*} snapshot
-   * @param {string} evtKey
-   */
-  removeEventFromUser(snapshot, evtKey) {
-    const eventSvc = new EventServiceAPI();
-    return Promise.all(
-      Object.keys(snapshot._value).map(async inviteeId => {
-        return eventSvc.getUserDetailsAPI(inviteeId).then(userSnapshot => {
-          if (userSnapshot._value) {
-            let evtList = userSnapshot._value["eventList"];
-            if (evtList.includes(evtKey)) {
-              evtList.splice(evtList.indexOf(evtKey), 1);
-              if (evtList.length == 0) {
-                evtList = [];
-              }
-
-              // safe to update the particular user
-              return eventSvc.updateUserEventListAPI(inviteeId);
-            }
-          }
-        });
-      })
-    );
-  }
-
-  showStartTime(time) {}
-  selectStartDate(date) {}
-  setDate(newDate) {
-    let fullYear =
-      newDate.getFullYear() +
-      "-" +
-      newDate.getMonth() +
-      "-" +
-      newDate.getDate();
-    this.setState({ chosenDate: newDate });
-  }
-  onMenuPressed() {
-    this.props.navigation.navigate({
-      routeName: "Menu",
-      key: "Menu"
-    });
-  }
-
   goBackToOverview() {
     const eventSvc = new EventServiceAPI();
 
@@ -468,10 +133,23 @@ class CreateOrEditEventContainer extends Component {
       .then(result => this.props.navigation.goBack());
   }
 
-  onSubmit(values, actions) {}
+  /**
+   * @description Create or Update new / existing event
+   */
+  onSubmit(values, actions) {
+    this.props.onShowIndicator(true);
+    this.setState({ animating: true });
+    values = {
+      ...values,
+      status: this.state.isEditMode ? "Editing" : this.state.status,
+      socialUID: this.props.user.socialUID,
+      eventId: this.state.eventId ? this.state.eventId : ""
+    };
+
+    this.props.upsertEventDataAction(values);
+  }
 
   render() {
-
     const initialValues = {
       privateValue: this.state.privateValue,
       eventTitle: this.state.eventTitle,
@@ -498,78 +176,13 @@ class CreateOrEditEventContainer extends Component {
               initialValues={initialValues}
               validate={validate}
               onSubmit={this.onSubmit}
+              enableReinitialize={true}
               render={props => (
-                <React.Fragment>
-                  <AddEventForm form={props} />
-
-                  {Platform.OS === "ios" ? (
-                    <Footer style={AddOrCreateEventStyles.bottomView_ios}>
-                      <Left>
-                        {this.state.isEditMode ? (
-                          <View>
-                            <EventCancel isEditMode={this.state.isEditMode} />
-                            <EventOverview isEditMode={this.state.isEditMode} />
-                          </View>
-                        ) : (
-                          <EventCancel isEditMode={this.state.isEditMode} />
-                        )}
-                      </Left>
-                      <Body />
-                      <Right>
-                        <TouchableOpacity
-                          disabled={props.isSubmitting}
-                          onPress={props.handleSubmit}
-                          style={AddOrCreateEventStyles.fabRightWrapperStyles}
-                        >
-                          {Platform.OS === "ios" ? (
-                            <Image
-                              source={IconsMap.icon_next}
-                              style={AddOrCreateEventStyles.fabStyles}
-                            />
-                          ) : (
-                            <Image
-                              source={{ uri: AddEventSvg.btn_Next }}
-                              style={AddOrCreateEventStyles.fabStyles}
-                            />
-                          )}
-                        </TouchableOpacity>
-                      </Right>
-                    </Footer>
-                  ) : (
-                    <View style={AddOrCreateEventStyles.bottomView_android}>
-                      <Left>
-                        {this.state.isEditMode ? (
-                          <View>
-                            <EventCancel isEditMode={this.state.isEditMode} />
-                            <EventOverview isEditMode={this.state.isEditMode} />
-                          </View>
-                        ) : (
-                          <EventCancel isEditMode={this.state.isEditMode} />
-                        )}
-                      </Left>
-                      <Body />
-                      <Right>
-                        <TouchableOpacity
-                          disabled={props.isSubmitting}
-                          onPress={props.handleSubmit}
-                          style={AddOrCreateEventStyles.fabRightWrapperStyles}
-                        >
-                          {Platform.OS === "ios" ? (
-                            <Image
-                              source={IconsMap.icon_next}
-                              style={AddOrCreateEventStyles.fabStyles}
-                            />
-                          ) : (
-                            <Image
-                              source={{ uri: AddEventSvg.btn_Next }}
-                              style={AddOrCreateEventStyles.fabStyles}
-                            />
-                          )}
-                        </TouchableOpacity>
-                      </Right>
-                    </View>
-                  )}
-                </React.Fragment>
+                <AddEventForm
+                  form={props}
+                  isEditMode={this.state.isEditMode}
+                  eventId={this.state.eventId}
+                />
               )}
             />
           </Content>
@@ -599,36 +212,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    upsertEventDataAction: (
-      startDate,
-      startTime,
-      endDate,
-      endTime,
-      eventTitle,
-      eventType,
-      location,
-      privateValue,
-      socialUID,
-      status,
-      eventId,
-      eventCoords
-    ) => {
-      dispatch(
-        upsertEventDataAction(
-          startDate,
-          startTime,
-          endDate,
-          endTime,
-          eventTitle,
-          eventType,
-          location,
-          privateValue,
-          socialUID,
-          status,
-          eventId,
-          eventCoords
-        )
-      );
+    upsertEventDataAction: values => {
+      dispatch(upsertEventDataAction(values));
     },
     onShowIndicator: bShow => {
       dispatch(setVisibleIndicatorAction(bShow));

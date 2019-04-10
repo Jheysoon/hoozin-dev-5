@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "react-native-remote-svg";
 import { withNavigation } from "react-navigation";
-import { View, Text, TouchableOpacity, Alert, Platform } from "react-native";
+import { TouchableOpacity, Platform } from "react-native";
 
 import { IconsMap } from "assets/assetMap";
 import AddEventSvg from "../../../svgs/AddEvent";
@@ -15,13 +15,20 @@ class EventOverview extends React.Component {
   }
 
   goBackToOverview() {
-
+    /**
+     * @TODO verify why it needs the event to be confirmed
+     */
+    /* eventSvc
+      .updateEventAPI(this.props.user.socialUID, this.state.eventId, {
+        status: "confirmed"
+      }) */
+    this.props.navigation.goBack();
   }
 
   render() {
     return (
       <TouchableOpacity
-        onPress={() => this.goBackToOverview()}
+        onPress={this.goBackToOverview}
         style={{
           position: "absolute",
           left: 80,
