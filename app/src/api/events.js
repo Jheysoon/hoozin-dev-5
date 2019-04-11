@@ -233,7 +233,7 @@ export class EventServiceAPI {
       if (val.val()) {
         return firebase
           .database()
-          .ref(`users/${userId}/event/${eventId}/invitee`)
+          .ref(`invitees/${eventId}`)
           .once("value")
           .then(inviteeSnapshot => {
             if (inviteeSnapshot._value) {
@@ -671,6 +671,13 @@ export class EventServiceAPI {
         .ref(`invitees/${eventId}/${inviteeId}`)
         .remove();
     }
+  }
+
+  updateEvent(eventId, payload, hostUserId) {
+    return firebase
+      .database()
+      .ref(`users/${hostUserId}/event/${eventId}`)
+      .update(payload);
   }
 
   async getEventInvitees(eventId) {

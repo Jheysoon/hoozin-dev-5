@@ -9,6 +9,7 @@ import {
   Alert
 } from "react-native";
 import Image from "react-native-remote-svg";
+import { withNavigation } from "react-navigation";
 import {
   Container,
   Content,
@@ -140,9 +141,10 @@ class EventList extends Component {
     console.log("[EventList] event id", keyNode);
 
     if (isHostEvent && !isActive && !isPastEvent) {
+      console.log('eventOVerview here ########')
       this.props.navigation.navigate({
         routeName: "EventOverview",
-        key: "EventOverview",
+        key: "EventOverview_" + keyNode,
         params: {
           eventId: keyNode
         }
@@ -155,7 +157,6 @@ class EventList extends Component {
     ) {
       this.props.navigation.navigate({
         routeName: "TabScreen",
-        key: "TabScreen",
         params: {
           eventId: keyNode,
           hostId: hostId,
@@ -174,7 +175,6 @@ class EventList extends Component {
     ) {
       this.props.navigation.navigate({
         routeName: "EventDetail",
-        key: "EventDetail",
         params: {
           eventId: keyNode,
           hostId: hostId,
@@ -525,4 +525,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(EventList);
+)(withNavigation(EventList));

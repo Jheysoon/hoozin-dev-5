@@ -21,23 +21,18 @@ class CustomDatePicker extends React.Component {
       let hour = moment(p, "YYYY-MM-DD h:mm A").format("h");
       let amPm = moment(p, "YYYY-MM-DD h:mm A").format("A");
       let ampm = amPm;
+      let endTime = moment(m).add(1, "h");
+      let endDate = moment(p, "YYYY-MM-DD");
 
-      if (hour == 12 && amPm == "AM") {
+      if ((hour == 12 || endTime.format("h") == 12) && amPm == "AM") {
         ampm = "PM";
-      } else if (hour == 12 && amPm == "PM") {
+      } else if ((hour == 12 || endTime.format("h") == 12) && amPm == "PM") {
         ampm = "AM";
+        endDate = endDate.add(1, "d");
       }
 
-      form.setFieldValue(
-        "endTime",
-        moment(m)
-          .add(1, "h")
-          .format("hh:mm") + ampm
-      );
-      form.setFieldValue(
-        "endDate",
-        moment(p, "YYYY-MM-DD").format("YYYY-MM-DD")
-      );
+      form.setFieldValue("endTime", endTime.format("hh:mm") + ampm);
+      form.setFieldValue("endDate", endDate.format("YYYY-MM-DD"));
     }
   }
 

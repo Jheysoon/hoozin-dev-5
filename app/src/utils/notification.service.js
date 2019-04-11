@@ -72,6 +72,7 @@ export default class NotificationService {
       const thisNotification = new firebase.notifications.Notification()
         .setNotificationId(notification._notificationId)
         .setTitle(notification._title)
+        .setBody(notification._body)
         .setData(notification._data)
         .android.setLargeIcon('ic_launcher')
         .android.setChannelId('channel');

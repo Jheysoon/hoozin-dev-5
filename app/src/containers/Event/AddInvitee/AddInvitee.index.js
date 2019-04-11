@@ -113,7 +113,7 @@ class AddInviteeContainer extends Component {
     const friendsList = await userSvc.getUsersFriendListAPI(
       this.props.user.socialUID
     );
-    console.log("[AddInvitee] User's Friend List", friendsList);
+    //console.log("[AddInvitee] User's Friend List", friendsList);
     userSvc = null;
     if (!friendsList) {
       this.setState({ emptyListOf: "friend(s)" });
@@ -242,15 +242,48 @@ class AddInviteeContainer extends Component {
    * @description prompts the user to have the event deleted
    */
   discardEvent() {
+    let eventSrv = new EventServiceAPI();
+
     Alert.alert(
       "Yikes, you are about to cancel your event!",
       "If you cancel, the invited people will be notified of this cancellation",
       [
         {
-          text: "Cancel It!",
-          onPress: () => this.removeEventData(this.state.eventId)
+          text: "Back To Event Overview",
+          onPress: () => {
+            eventSrv
+              .updateEvent(
+                this.state.eventId,
+                { status: "confirmed" },
+                this.props.user.socialUID
+              )
+              .then(() => {
+                this.props.navigation.goBack();
+              });
+          }
         },
-        { text: "Go Back!", onPress: () => {}, style: "cancel" }
+        { text: "Go Back!", onPress: () => {}, style: "cancel" },
+        {
+          text: "Cancel Event!",
+          onPress: () => {
+            const removeEvent = firebase
+              .functions()
+              .httpsCallable("removeEvent");
+
+              this.setState({ animating: true });
+
+            removeEvent({
+              id: this.state.eventId
+            }).then(() => {
+              this.setState({ animating: false });
+              this.props.navigation.navigate({
+                routeName: "EventList",
+                key: "EventList"
+              });
+            });
+          }
+          //onPress: () => this.removeEventData(this.state.eventId)
+        }
       ],
       { cancelable: false }
     );
@@ -422,6 +455,7 @@ class AddInviteeContainer extends Component {
       this.props.user.socialUID,
       true
     );
+
     if (inviteeList) {
       const friendsList = await userSvc.getUsersFriendListAPI(
         this.props.user.socialUID
@@ -1457,7 +1491,12 @@ class AddInviteeContainer extends Component {
                 )}
                 {this.state.editMode ? (
                   <TouchableOpacity
-                    onPress={() => this.props.navigation.goBack()}
+                    onPress={() => {
+                      this.props.navigation.replace("AddEvent", {
+                        isEditMode: true,
+                        eventId: this.state.eventId
+                      });
+                    }}
                     style={{ position: "absolute", left: 80, bottom: -32 }}
                   >
                     {Platform.OS === "ios" ? (

@@ -133,7 +133,6 @@ class ConfirmEventContainer extends Component {
   }
 
   updateinviteList() {
-
     /**
      * @TODO Update to to new invitee node
      */
@@ -253,6 +252,9 @@ class ConfirmEventContainer extends Component {
     const eventKey = this.state.eventId;
     this.setState({ animating: true });
 
+    console.log("eventId ##########");
+    console.log(eventKey);
+
     firebase
       .database()
       .ref(`users/${socialUID}/event/${eventKey}`)
@@ -261,13 +263,16 @@ class ConfirmEventContainer extends Component {
         this.createAndSyncFriends(this.state.eventData.invitee, socialUID).then(
           result => {
             this.setState({ animating: false });
-            return result
-              ? this.props.navigation.navigate({
-                  routeName: "EventOverview",
-                  key: "EventOverview",
-                  params: { eventId: eventKey }
-                })
-              : this.feedbackToUser("SYNC_FRIENDS");
+
+            if (result) {
+              this.props.navigation.navigate({
+                routeName: "EventOverview",
+                key: "EventOverview",
+                params: { eventId: eventKey }
+              });
+            } else {
+              this.feedbackToUser("SYNC_FRIENDS");
+            }
           }
         );
       })

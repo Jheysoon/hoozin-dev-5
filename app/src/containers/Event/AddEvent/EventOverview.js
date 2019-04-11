@@ -1,11 +1,15 @@
 import React from "react";
+import { connect } from "react-redux";
 import Image from "react-native-remote-svg";
 import { withNavigation } from "react-navigation";
 import { TouchableOpacity, Platform } from "react-native";
 
 import { IconsMap } from "assets/assetMap";
 import AddEventSvg from "../../../svgs/AddEvent";
+import { EventServiceAPI } from "../../../api/index";
 import { AddOrCreateEventStyles } from "./addevent.style";
+
+const eventSrv = new EventServiceAPI();
 
 class EventOverview extends React.Component {
   constructor(props) {
@@ -15,14 +19,13 @@ class EventOverview extends React.Component {
   }
 
   goBackToOverview() {
-    /**
-     * @TODO verify why it needs the event to be confirmed
-     */
-    /* eventSvc
-      .updateEventAPI(this.props.user.socialUID, this.state.eventId, {
-        status: "confirmed"
-      }) */
-    this.props.navigation.goBack();
+    const { id, user } = this.props;
+
+    eventSrv
+      .updateEvent(id, { status: "confirmed" }, user.socialUID)
+      .then(() => {
+        this.props.navigation.goBack();
+      });
   }
 
   render() {
@@ -51,4 +54,13 @@ class EventOverview extends React.Component {
   }
 }
 
-export default withNavigation(EventOverview);
+const mapStateToProps = state => {
+  return {
+    user: state.auth.user
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  null
+)(withNavigation(EventOverview));

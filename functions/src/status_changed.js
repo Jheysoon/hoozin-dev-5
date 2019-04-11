@@ -15,11 +15,20 @@ exports.status_changed = functions.database
 
     if (old.status === "inProgress" && newer.status === "confirmed") {
       if (!newer.invite_sent) {
+        let eventD;
 
         admin
           .database()
-          .ref(`invitees/${context.params.eventId}`)
+          .ref(`users/${context.params.userId}`)
           .once("value")
+          .then(eventDetail => {
+            eventD = eventDetail.val();
+
+            return admin
+              .database()
+              .ref(`invitees/${context.params.eventId}`)
+              .once("value");
+          })
           .then(user => {
             user = user.val();
 
@@ -39,16 +48,11 @@ exports.status_changed = functions.database
                 .then(deviceTokens => {
                   deviceTokens = deviceTokens.val();
 
-                  console.log('devicesTokens');
-                  console.log(deviceTokens);
-
                   if (deviceTokens) {
                     // prettier-ignore
-                    var msg = "You have been invited by " + user.name + " for an event " + newer.eventTitle + ", of type " +
+                    var msg = "You have been invited by " + eventD.name + " for an event " + newer.eventTitle + ", of type " +
                       newer.eventType + " which starts on " + newer.startDate +  " at" + newer.startTime + " and will end on " +
                       newer.endDate + " at" + newer.endTime;
-
-                      console.log('FCM here');
 
                     var message = {
                       registration_ids: deviceTokens, // required fill with device token or topics
@@ -82,14 +86,14 @@ exports.status_changed = functions.database
                      * @TODO change the 2nd val.name
                      */
                     // prettier-ignore
-                    let msg = "Hi! " + val.name + ", you have been invited by " + val.name + " for an event " +
+                    let msg = "Hi! " + val.name + ", you have been invited by " + eventD.name + " for an event " +
                       newer.eventTitle + ", of type " + newer.eventType + " which starts on " + newer.startDate + " at" +
                       newer.startTime + " and will end on " + newer.endDate +  " at" + newer.endTime;
 
                     sendSMS(val.phone, msg);
                   } else {
                     // prettier-ignore
-                    let txt = "Nice, " +  userRecord.name + " has invited you to " +
+                    let txt = "Nice, " +  eventD.name + " has invited you to " +
                       newer.eventTitle + " on " + newer.startDate + " at " + newer.startTime +
                       " via the hoozin app! You can respond by clicking here. \n If you have not downloaded the hoozin app and logged in, please do so before  clicking the link to respond. You can download the Hoozin app from the app store by clicking {link to app in Apple app store}, or from the Google Play store by clicking {link to app in Google Play}. \n Please keep in mind that this invite is intended for you only and should not be forwarded.";
 
@@ -97,8 +101,6 @@ exports.status_changed = functions.database
                   }
                 });
             });
-
-            return true;
           })
           .catch(error => {
             console.log("Error fetching user data:", error);

@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import Image from "react-native-remote-svg";
+import firebase from "react-native-firebase";
 import { withNavigation } from "react-navigation";
 import { TouchableOpacity, Alert, Platform } from "react-native";
 
@@ -8,6 +9,8 @@ import { IconsMap } from "assets/assetMap";
 import AddEventSvg from "../../../svgs/AddEvent";
 import { EventServiceAPI } from "../../../api/index";
 import { AddOrCreateEventStyles } from "./addevent.style";
+
+const eventSrv = new EventServiceAPI();
 
 class EventCancel extends React.Component {
   constructor(props) {
@@ -18,7 +21,7 @@ class EventCancel extends React.Component {
   }
 
   onEventCancel() {
-    const { isEditMode, navigation } = this.props;
+    const { isEditMode, navigation, id, user } = this.props;
 
     if (!isEditMode) {
       navigation.goBack();
@@ -29,11 +32,33 @@ class EventCancel extends React.Component {
       "Yikes, you are about to cancel your event!",
       "If you cancel, the invited people will be notified of this cancellation",
       [
+        {
+          text: "Back To Event Overview",
+          onPress: () => {
+            eventSrv
+              .updateEvent(id, { status: "confirmed" }, user.socialUID)
+              .then(() => {
+                this.props.navigation.goBack();
+              });
+          }
+        },
         { text: "Go Back!", onPress: () => {}, style: "cancel" },
         {
-          text: "Cancel It!",
+          text: "Cancel Event!",
           onPress: () => {
-            this.removeEvent();
+            const removeEvent = firebase
+              .functions()
+              .httpsCallable("removeEvent");
+
+            removeEvent({
+              id: id,
+              userId: user.socialUID
+            }).then(() => {
+              this.props.navigation.navigate({
+                routeName: "EventList",
+                key: "EventList"
+              });
+            });
           }
         }
       ],
@@ -69,8 +94,8 @@ class EventCancel extends React.Component {
               .then(() => {
                 // redirect to event list
                 this.props.navigation.navigate({
-                  routeName: "NearbyEvents",
-                  key: "NearbyEvents"
+                  routeName: "EventList",
+                  key: "EventList"
                 });
               });
           }

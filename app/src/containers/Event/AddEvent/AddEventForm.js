@@ -282,8 +282,8 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
           <Left>
             {isEditMode ? (
               <View>
-                <EventCancel id={eventId} isEditMode={this.state.isEditMode} />
-                <EventOverview isEditMode={isEditMode} />
+                <EventCancel id={eventId} isEditMode={isEditMode} />
+                <EventOverview id={eventId} isEditMode={isEditMode} />
               </View>
             ) : (
               <EventCancel id={this.state.eventId} isEditMode={isEditMode} />
@@ -316,7 +316,7 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
             {isEditMode ? (
               <View>
                 <EventCancel id={eventId} isEditMode={isEditMode} />
-                <EventOverview isEditMode={isEditMode} />
+                <EventOverview id={eventId} isEditMode={isEditMode} />
               </View>
             ) : (
               <EventCancel id={eventId} isEditMode={isEditMode} />

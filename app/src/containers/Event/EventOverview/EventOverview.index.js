@@ -64,7 +64,7 @@ class EventOverviewContainer extends Component {
       }
     };
   }
-  componentWillMount() {
+  componentDidMount() {
     const { params } = this.props.navigation.state;
 
     if (params.notification) {
@@ -99,23 +99,14 @@ class EventOverviewContainer extends Component {
    * @param {string} userId
    */
   async getEventInformation(eventKey, userId) {
-    const eventSvc = new EventServiceAPI();
-    const userSvc = new UserManagementServiceAPI();
+    const eventDetail = firebase.functions().httpsCallable("eventDetail");
 
-    let eventData = await eventSvc.getEventDetailsAPI2(eventKey, userId);
-    const currentUserData = await userSvc.getUserDetailsAPI(userId);
-    const currentUserFriends = await userSvc.getUsersFriendListAPI(userId);
-    let invitees = await eventSvc.getEventInvitees(eventKey);
+    try {
+      const { data } = await eventDetail({ id: eventKey });
 
-    if (eventData && currentUserData && currentUserFriends) {
-      invitees = Object.keys(invitees).map(inviteeUserKey => {
-        invitees[inviteeUserKey]["inviteeId"] = inviteeUserKey;
-        return invitees[inviteeUserKey];
-      });
+      let eventData = data.event;
 
-      eventData.invitee = invitees;
-
-      const currentUsrFrnds = currentUserFriends.filter(friend => {
+      const currentUsrFrnds = data.friends.filter(friend => {
         if (friend.eventList) {
           return (
             friend.eventList.filter(event => {
@@ -133,7 +124,6 @@ class EventOverviewContainer extends Component {
         }
       });
 
-      eventData["eventId"] = eventKey;
       const coords = eventData.evtCoords
         ? {
             latitude: eventData.evtCoords.lat,
@@ -142,23 +132,27 @@ class EventOverviewContainer extends Component {
             longitudeDelta: 0.0421
           }
         : this.state.defaultOrEventLocation;
+
       this.filterEventInviteesByRSVP(
         "all",
         this.refs.textForStatusAll,
         this.refs.activeBarForStatusAll,
         "hsla(207, 97%, 75%, 1)"
       );
+
+      eventData['eventId'] = eventKey;
+
       this.setState({
         eventData: eventData,
-        unfilteredInviteeList: eventData.invitee,
-        filteredInvitedList: eventData.invitee,
+        unfilteredInviteeList: data.invitees,
+        filteredInvitedList: data.invitees,
         currentUserFriends: currentUsrFrnds,
         defaultOrEventLocation: coords,
-        currentUserName: currentUserData.name,
-        currentUserProfileImgUrl: currentUserData.profileImgUrl || "",
+        currentUserName: data.user.name,
+        currentUserProfileImgUrl: data.user.profileImgUrl || "",
         animating: false
       });
-    } else {
+    } catch {
       this.setState({ animating: false });
       Alert.alert(
         "Content unavailable!",
@@ -185,6 +179,9 @@ class EventOverviewContainer extends Component {
   }
 
   onEditEvent() {
+    console.log("eventId here onEditEvent ########");
+    console.log(this.state.eventData.eventId);
+
     firebase
       .database()
       .ref(
@@ -358,9 +355,7 @@ class EventOverviewContainer extends Component {
                         color: "#000000"
                       }}
                     >
-                      {this.props.event.startTime ||
-                        this.state.eventData.startTime}{" "}
-                      -{" "}
+                      {this.state.eventData.startTime} -{" "}
                       {this.props.event.endTime || this.state.eventData.endTime}
                     </Text>
                     <Text
@@ -372,8 +367,7 @@ class EventOverviewContainer extends Component {
                         marginTop: 10
                       }}
                     >
-                      {this.props.event.location ||
-                        this.state.eventData.location}
+                      {this.state.eventData.location}
                     </Text>
                     <Text
                       style={{
@@ -384,8 +378,7 @@ class EventOverviewContainer extends Component {
                         marginTop: 30
                       }}
                     >
-                      {this.props.event.eventType ||
-                        this.state.eventData.eventType}
+                      {this.state.eventData.eventType}
                     </Text>
                   </View>
                   <View style={{ flex: 1.5, marginLeft: 10, marginTop: 0 }}>
