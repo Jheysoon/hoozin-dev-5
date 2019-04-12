@@ -16,6 +16,10 @@ class EventCancel extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      loading: false
+    };
+
     this.onEventCancel = this.onEventCancel.bind(this);
     this.removeEvent = this.removeEvent.bind(this);
   }
@@ -50,10 +54,13 @@ class EventCancel extends React.Component {
               .functions()
               .httpsCallable("removeEvent");
 
+            this.setState({ loading: true });
+
             removeEvent({
               id: id,
               userId: user.socialUID
             }).then(() => {
+              this.setState({ loading: false });
               this.props.navigation.navigate({
                 routeName: "EventList",
                 key: "EventList"

@@ -15,6 +15,7 @@ const { event_update } = require("./src/event_update");
 const { chat } = require("./src/chat");
 const { removeEvent } = require("./src/removeEvent");
 const { eventDetail } = require("./src/eventDetail");
+const { eventInvitee } = require("./src/eventInvitee");
 
 exports.event_created = event_created;
 exports.invitee_updated = invitee_updated;
@@ -26,6 +27,7 @@ exports.event_update = event_update;
 exports.chat = chat;
 exports.removeEvent = removeEvent;
 exports.eventDetail = eventDetail;
+exports.eventInvitee = eventInvitee;
 
 /**
  * @TODO organize code

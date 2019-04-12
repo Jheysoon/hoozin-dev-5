@@ -12,8 +12,6 @@ class CustomDatePicker extends React.Component {
   setFieldValue(date) {
     const { field, form } = this.props;
 
-    form.setFieldValue(field.name, date);
-
     if (field.name == "startTime" && form.values["startDate"] != "") {
       let p = form.values["startDate"] + " " + date;
 
@@ -31,8 +29,14 @@ class CustomDatePicker extends React.Component {
         endDate = endDate.add(1, "d");
       }
 
-      form.setFieldValue("endTime", endTime.format("hh:mm") + ampm);
-      form.setFieldValue("endDate", endDate.format("YYYY-MM-DD"));
+      form.setValues({
+        ...form.values,
+        startTime: date,
+        endTime: endTime.format("hh:mm") + ampm,
+        endDate: endDate.format("YYYY-MM-DD")
+      });
+    } else {
+      form.setFieldValue(field.name, date);
     }
   }
 

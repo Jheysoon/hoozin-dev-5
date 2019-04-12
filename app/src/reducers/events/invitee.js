@@ -1,10 +1,13 @@
+import _ from "lodash";
+
 const initialState = {
   locations: [],
   host_location: {
     lat: 0,
     lng: 0,
-    profileImgUrl: ''
-  }
+    profileImgUrl: ""
+  },
+  addedInvitees: []
 };
 
 export default (state = initialState, action) => {
@@ -14,6 +17,24 @@ export default (state = initialState, action) => {
 
     case "HOST_LOCATIONS":
       return { ...state, ...action.payload };
+
+    case "ADD_INVITEES":
+      let invitees = state.addedInvitees;
+      invitees.push({ userId: action.payload });
+      return {
+        ...state,
+        addedInvitees: invitees
+      };
+    case "REMOVE_INVITEES":
+      return {
+        ...state,
+        addedInvitees: _.filter(state.addedInvitees, val => {
+          return val.userId != action.payload;
+        })
+      };
+
+    case "EMPTY_INVITEE":
+      return { ...state, addedInvitees: [] };
 
     default:
       return { ...state };

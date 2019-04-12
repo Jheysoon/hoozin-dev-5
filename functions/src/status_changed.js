@@ -4,6 +4,7 @@ const functions = require("firebase-functions");
 const _ = require("lodash");
 const { sendSMS, sendWelcomeEmail } = require("./utils");
 const { serverKey } = require("./constants");
+const { sendEventNotification } = require("./sendEventNotification");
 
 const fcm = new FCM(serverKey);
 
@@ -54,33 +55,9 @@ exports.status_changed = functions.database
                       newer.eventType + " which starts on " + newer.startDate +  " at" + newer.startTime + " and will end on " +
                       newer.endDate + " at" + newer.endTime;
 
-                    var message = {
-                      registration_ids: deviceTokens, // required fill with device token or topics
-                      notification: {
-                        title: "Event Invitation",
-                        body: msg
-                      },
-                      data: {
-                        type: "EVENT_INVITED",
-                        event_id: context.params.eventId,
-                        host_id: context.params.userId
-                      }
-                    };
+                    const { eventId, userId } = context.params;
 
-                    fcm
-                      .send(message)
-                      .then(response => {
-                        console.log(
-                          "Successfully sent with response: ",
-                          response
-                        );
-                        return true;
-                      })
-                      .catch(err => {
-                        console.log("FCM err, Something has gone wrong!");
-                        console.error(err);
-                        return false;
-                      });
+                    sendEventNotification(msg, deviceTokens, eventId, userId);
                   } else if (val.phone) {
                     /**
                      * @TODO change the 2nd val.name

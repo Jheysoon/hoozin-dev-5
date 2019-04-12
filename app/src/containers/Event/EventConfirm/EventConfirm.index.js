@@ -1,3 +1,4 @@
+import _ from "lodash";
 import React, { Component } from "react";
 import {
   View,
@@ -252,19 +253,29 @@ class ConfirmEventContainer extends Component {
     const eventKey = this.state.eventId;
     this.setState({ animating: true });
 
-    console.log("eventId ##########");
-    console.log(eventKey);
-
     firebase
       .database()
       .ref(`users/${socialUID}/event/${eventKey}`)
       .update({ status: "confirmed" })
       .then(() => {
         this.createAndSyncFriends(this.state.eventData.invitee, socialUID).then(
-          result => {
+          async result => {
             this.setState({ animating: false });
 
             if (result) {
+              if (_.size(this.props.addedInvitees) > 0 && this.state.isEditMode) {
+                let eventInvitee = firebase
+                  .functions()
+                  .httpsCallable("eventInvitee");
+
+                await eventInvitee({
+                  invitees: this.props.addedInvitees,
+                  eventId: eventKey
+                });
+              }
+
+              this.props.emptyInvitee();
+
               this.props.navigation.navigate({
                 routeName: "EventOverview",
                 key: "EventOverview",
@@ -1180,7 +1191,8 @@ const mapStateToProps = (state, ownProps) => {
     event: state.event.details,
     indicatorShow: state.auth.indicatorShow,
     contactList: state.contactList,
-    detail: state.eventList.detail
+    detail: state.eventList.detail,
+    addedInvitees: state.invitee.addedInvitees
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -1193,6 +1205,11 @@ const mapDispatchToProps = dispatch => {
     },
     getEventInformation: (eventId, userId) => {
       dispatch(getEventInformation(eventId, userId));
+    },
+    emptyInvitee: () => {
+      dispatch({
+        type: "EMPTY_INVITEE"
+      });
     }
   };
 };

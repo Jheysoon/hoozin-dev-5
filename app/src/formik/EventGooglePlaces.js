@@ -16,11 +16,13 @@ class EventGooglePlaces extends React.Component {
 
     return (
       <TouchableOpacity
-        style={{ height: 85, width: "100%", marginTop: -10 }}
+        style={{
+          height: Math.max(85, this.state.textInputHeight + 30),
+          width: "100%",
+          marginTop: -10
+        }}
         onPress={() => {
-          RNGooglePlaces.openAutocompleteModal({
-            type: "address"
-          })
+          RNGooglePlaces.openAutocompleteModal()
             .then(place => {
               form.setFieldValue(field.name, place.address);
               form.setFieldValue("evtCoords", {

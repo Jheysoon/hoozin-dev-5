@@ -1,8 +1,9 @@
-import React, { Component } from "react";
+import _ from "lodash";
 import { Formik } from "formik";
+import { connect } from "react-redux";
+import React, { Component } from "react";
 import { View, Text } from "react-native";
 import { Container, Content } from "native-base";
-import { connect } from "react-redux";
 import { UIActivityIndicator } from "react-native-indicators";
 
 import { upsertEventDataAction } from "../../../actions/event";
@@ -12,8 +13,6 @@ import {
 } from "../../../actions/auth";
 import { EventServiceAPI } from "../../../api/index";
 import AppBarComponent from "../../../components/AppBar/appbar.index";
-
-// stylesheet
 import { AddOrCreateEventStyles } from "./addevent.style";
 import AddEventForm from "./AddEventForm";
 import { validate } from "./validate";
@@ -110,6 +109,7 @@ class CreateOrEditEventContainer extends Component {
    */
   fetchEventInfo(eventId) {
     const eventSvc = new EventServiceAPI();
+    this.setState({ animating: true });
     eventSvc
       .getEventDetailsAPI(eventId, this.props.user.socialUID)
       .then(eventData => {
@@ -117,20 +117,10 @@ class CreateOrEditEventContainer extends Component {
         delete eventData.invite_sent;
         delete eventData.status;
         eventData["eventId"] = eventId;
-        this.setState(eventData);
+        this.setState({ ...eventData, animating: false });
         // TODO - This is where result will be cached later
       })
       .catch(err => console.error(err));
-  }
-
-  goBackToOverview() {
-    const eventSvc = new EventServiceAPI();
-
-    eventSvc
-      .updateEventAPI(this.props.user.socialUID, this.state.eventId, {
-        status: "confirmed"
-      })
-      .then(result => this.props.navigation.goBack());
   }
 
   /**
@@ -139,6 +129,7 @@ class CreateOrEditEventContainer extends Component {
   onSubmit(values, actions) {
     this.props.onShowIndicator(true);
     this.setState({ animating: true });
+
     values = {
       ...values,
       status: this.state.isEditMode ? "Editing" : this.state.status,

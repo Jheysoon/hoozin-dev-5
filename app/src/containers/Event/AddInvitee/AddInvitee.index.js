@@ -1,3 +1,4 @@
+import _ from "lodash";
 import React, { Component } from "react";
 import {
   View,
@@ -71,6 +72,7 @@ class AddInviteeContainer extends Component {
       eventId: params.eventKey,
       editMode: params.editMode || this.state.editMode
     });
+    this.props.emptyInvitee();
 
     userSvc.getAllUsersList().then(userData => {
       const userList = userData
@@ -138,7 +140,7 @@ class AddInviteeContainer extends Component {
     let inviteesOrFriendsList = await this.getInvitedUsersOrFriendsAPI(
       eventKey
     );
-    console.log("[AddInvitee] Invitee and Friends List", inviteesOrFriendsList);
+    //console.log("[AddInvitee] Invitee and Friends List", inviteesOrFriendsList);
     this.setState({
       contactList: inviteesOrFriendsList,
       unfilteredInviteeAndFriendsList: inviteesOrFriendsList,
@@ -258,6 +260,7 @@ class AddInviteeContainer extends Component {
                 this.props.user.socialUID
               )
               .then(() => {
+                this.props.emptyInvitee();
                 this.props.navigation.goBack();
               });
           }
@@ -270,12 +273,13 @@ class AddInviteeContainer extends Component {
               .functions()
               .httpsCallable("removeEvent");
 
-              this.setState({ animating: true });
+            this.setState({ animating: true });
 
             removeEvent({
               id: this.state.eventId
             }).then(() => {
               this.setState({ animating: false });
+              this.props.emptyInvitee();
               this.props.navigation.navigate({
                 routeName: "EventList",
                 key: "EventList"
@@ -336,6 +340,8 @@ class AddInviteeContainer extends Component {
       status: "invited",
       newMsgCount: 0
     };
+
+    this.props.addInvitee(data.id || data.inviteeId);
 
     let eventSrv = new EventServiceAPI();
 
@@ -398,6 +404,7 @@ class AddInviteeContainer extends Component {
    */
   removeUserAsInviteeFromEvent(data) {
     this.setState({ animating: true });
+    this.props.removeInvitee(data.id || data.inviteeId);
     this.removeUserFromEventAPI(data.id || data.inviteeId).then(result => {
       data.preselect = false;
       this.setState({
@@ -696,7 +703,21 @@ class AddInviteeContainer extends Component {
       .once("value");
   }
 
+  minusIcon(data) {
+    if (
+      _.has(data, "status") &&
+      (data.status == "going" || data.status == "maybe")
+    ) {
+      return null;
+    }
+
+    return (
+      <Icon type="FontAwesome" name="minus" style={{ color: "#FC3764" }} />
+    );
+  }
+
   render() {
+
     return (
       <React.Fragment>
         <Container style={{ backgroundColor: "#ffffff" }}>
@@ -901,16 +922,19 @@ class AddInviteeContainer extends Component {
                             <Button
                               transparent
                               icon
+                              disabled={
+                                _.has(data, "status") &&
+                                (data.status == "going" ||
+                                  data.status == "maybe")
+                                  ? true
+                                  : false
+                              }
                               style={{ alignSelf: "center" }}
                               onPress={() =>
                                 this.removeUserAsInviteeFromEvent(data)
                               }
                             >
-                              <Icon
-                                type="FontAwesome"
-                                name="minus"
-                                style={{ color: "#FC3764" }}
-                              />
+                              {this.minusIcon(data)}
                             </Button>
                           ) : (
                             <Button
@@ -1695,7 +1719,8 @@ const mapStateToProps = (state, ownProps) => {
     user: state.auth.user,
     event: state.event.details,
     eventAdded: false,
-    indicatorShow: state.auth.indicatorShow
+    indicatorShow: state.auth.indicatorShow,
+    addedInvitees: state.invitee.addedInvitees
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -1705,6 +1730,23 @@ const mapDispatchToProps = dispatch => {
     },
     removeEventDataAction: evtKey => {
       dispatch(removeEventDataAction(evtKey));
+    },
+    addInvitee: id => {
+      dispatch({
+        type: "ADD_INVITEES",
+        payload: id
+      });
+    },
+    removeInvitee: id => {
+      dispatch({
+        type: "REMOVE_INVITEES",
+        payload: id
+      });
+    },
+    emptyInvitee: () => {
+      dispatch({
+        type: "EMPTY_INVITEE"
+      });
     }
   };
 };

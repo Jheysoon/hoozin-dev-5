@@ -11,7 +11,8 @@
     "bundle-android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/",
     "bundle-ios": "react-native bundle --dev false --entry-file index.js --bundle-output ios/main.jsbundle --platform ios",
     "release-android": "cd android && gradlew assembleRelease && cd ..",
-    "clean-android": "cd android && gradlew clean && cd .."
+    "clean-android": "cd android && gradlew clean && cd ..",
+    "postinstall": "rndebugger-open"
   },
   "dependencies": {
     "@types/moment": "2.13.0",
@@ -71,6 +72,7 @@
     "babel-jest": "22.4.3",
     "babel-preset-react-native": "4.0.0",
     "jest": "22.4.3",
+    "react-native-debugger-open": "^0.3.19",
     "react-test-renderer": "16.3.1"
   },
   "jest": {
