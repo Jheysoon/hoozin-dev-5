@@ -83,7 +83,8 @@ class CreateOrEditEventContainer extends Component {
         replace("AddInvitee", {
           searchType: "start",
           account: getParam("account"),
-          eventKey: eventId
+          eventKey: eventId,
+          isPrivate: this.state.privateValue
         });
         return;
       } else if (
@@ -96,7 +97,8 @@ class CreateOrEditEventContainer extends Component {
         replace("AddInvitee", {
           includeInvitees: true,
           eventKey: this.state.eventId,
-          editMode: this.state.isEditMode
+          editMode: this.state.isEditMode,
+          isPrivate: this.state.privateValue
         });
         return;
       }
@@ -128,7 +130,7 @@ class CreateOrEditEventContainer extends Component {
    */
   onSubmit(values, actions) {
     this.props.onShowIndicator(true);
-    this.setState({ animating: true });
+    this.setState({ animating: true, privateValue: values['privateValue'] });
 
     values = {
       ...values,

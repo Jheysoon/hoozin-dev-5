@@ -24,7 +24,7 @@ class EventGooglePlaces extends React.Component {
         onPress={() => {
           RNGooglePlaces.openAutocompleteModal()
             .then(place => {
-              form.setFieldValue(field.name, place.address);
+              form.setFieldValue(field.name, place.name);
               form.setFieldValue("evtCoords", {
                 lat: place.latitude,
                 lng: place.longitude

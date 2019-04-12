@@ -161,14 +161,18 @@ class AddInviteeContainer extends Component {
       "++ current invitee list check ++",
       this.state.inviteeAddedCounter
     );
-    if (this.state.inviteeAddedCounter > 0) {
+
+    const { params } = this.props.navigation.state;
+
+    if (this.state.inviteeAddedCounter > 0 || params.isPrivate == false) {
       this.props.navigation.navigate({
         routeName: "ConfirmEvent",
         key: "ConfirmEvent",
         params: {
           eventId: this.state.eventId,
           isEditMode: this.state.editMode,
-          willReload: this.reload.bind(this, this.state.eventId)
+          willReload: this.reload.bind(this, this.state.eventId),
+          isPrivate: params.isPrivate
         }
       });
       return;

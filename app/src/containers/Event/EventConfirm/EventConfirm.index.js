@@ -231,12 +231,16 @@ class ConfirmEventContainer extends Component {
     );
   }
   onConfirmEvent(msg) {
-    if (this.state.eventData.invitee.length == 0) {
+
+    const { params } = this.props.navigation.state;
+
+    if (this.state.eventData.invitee.length == 0 && params.isPrivate == true) {
       Alert.alert(
         "Event requires at least 1 invitee before it could be created"
       );
       return;
     }
+    
     Alert.alert(
       `Awesome, your event’s been ${msg}!`,
       "Just select your event from your event list if you need to update it.",
