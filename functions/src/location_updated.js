@@ -83,7 +83,7 @@ exports.location_updated = functions.database
       message = {
         registration_ids: "", // required fill with device token or topics
         notification: {
-          title: "Event Title updated",
+          title: "Event Time updated",
           body: msg
         },
         data: {
