@@ -137,8 +137,8 @@ export class UserManagementServiceAPI {
                     name: friendData.name,
                     email: friendData.email,
                     phone: friendData.phone,
-                    eventList: friendData.eventList,
-                    event: friendData.event,
+                    //eventList: friendData.eventList,
+                    //event: friendData.event,
                     profileImgUrl: friendData.profileImgUrl || "",
                     preselect: shouldPreselect || false
                   };

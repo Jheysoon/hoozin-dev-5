@@ -1,16 +1,17 @@
 import React from "react";
-import { TextInput } from "react-native";
+import { Textarea } from "react-native";
 
-const TextInput = props => {
+const CustomTextarea = props => {
   const { field, form } = props;
 
   return (
-    <TextInput
+    <Textarea
+      autoCorrect={false}
       onChangeText={text => form.setFieldValue(field.name, text)}
       value={field.value}
+      underlineColorAndroid="transparent"
       {...props}
     />
   );
 };
-
-export default TextInput;
+export default CustomTextarea;

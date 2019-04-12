@@ -1,3 +1,4 @@
+import _ from "lodash";
 import React, { Component } from "react";
 import {
   View,
@@ -71,6 +72,7 @@ class AddInviteeContainer extends Component {
       eventId: params.eventKey,
       editMode: params.editMode || this.state.editMode
     });
+    this.props.emptyInvitee();
 
     userSvc.getAllUsersList().then(userData => {
       const userList = userData
@@ -113,7 +115,7 @@ class AddInviteeContainer extends Component {
     const friendsList = await userSvc.getUsersFriendListAPI(
       this.props.user.socialUID
     );
-    console.log("[AddInvitee] User's Friend List", friendsList);
+    //console.log("[AddInvitee] User's Friend List", friendsList);
     userSvc = null;
     if (!friendsList) {
       this.setState({ emptyListOf: "friend(s)" });
@@ -138,7 +140,7 @@ class AddInviteeContainer extends Component {
     let inviteesOrFriendsList = await this.getInvitedUsersOrFriendsAPI(
       eventKey
     );
-    console.log("[AddInvitee] Invitee and Friends List", inviteesOrFriendsList);
+    //console.log("[AddInvitee] Invitee and Friends List", inviteesOrFriendsList);
     this.setState({
       contactList: inviteesOrFriendsList,
       unfilteredInviteeAndFriendsList: inviteesOrFriendsList,
@@ -159,14 +161,18 @@ class AddInviteeContainer extends Component {
       "++ current invitee list check ++",
       this.state.inviteeAddedCounter
     );
-    if (this.state.inviteeAddedCounter > 0) {
+
+    const { params } = this.props.navigation.state;
+
+    if (this.state.inviteeAddedCounter > 0 || params.isPrivate == false) {
       this.props.navigation.navigate({
         routeName: "ConfirmEvent",
         key: "ConfirmEvent",
         params: {
           eventId: this.state.eventId,
           isEditMode: this.state.editMode,
-          willReload: this.reload.bind(this, this.state.eventId)
+          willReload: this.reload.bind(this, this.state.eventId),
+          isPrivate: params.isPrivate
         }
       });
       return;
@@ -242,15 +248,50 @@ class AddInviteeContainer extends Component {
    * @description prompts the user to have the event deleted
    */
   discardEvent() {
+    let eventSrv = new EventServiceAPI();
+
     Alert.alert(
       "Yikes, you are about to cancel your event!",
       "If you cancel, the invited people will be notified of this cancellation",
       [
         {
-          text: "Cancel It!",
-          onPress: () => this.removeEventData(this.state.eventId)
+          text: "Back To Event Overview",
+          onPress: () => {
+            eventSrv
+              .updateEvent(
+                this.state.eventId,
+                { status: "confirmed" },
+                this.props.user.socialUID
+              )
+              .then(() => {
+                this.props.emptyInvitee();
+                this.props.navigation.goBack();
+              });
+          }
         },
-        { text: "Go Back!", onPress: () => {}, style: "cancel" }
+        { text: "Go Back!", onPress: () => {}, style: "cancel" },
+        {
+          text: "Cancel Event!",
+          onPress: () => {
+            const removeEvent = firebase
+              .functions()
+              .httpsCallable("removeEvent");
+
+            this.setState({ animating: true });
+
+            removeEvent({
+              id: this.state.eventId
+            }).then(() => {
+              this.setState({ animating: false });
+              this.props.emptyInvitee();
+              this.props.navigation.navigate({
+                routeName: "EventList",
+                key: "EventList"
+              });
+            });
+          }
+          //onPress: () => this.removeEventData(this.state.eventId)
+        }
       ],
       { cancelable: false }
     );
@@ -303,6 +344,8 @@ class AddInviteeContainer extends Component {
       status: "invited",
       newMsgCount: 0
     };
+
+    this.props.addInvitee(data.id || data.inviteeId);
 
     let eventSrv = new EventServiceAPI();
 
@@ -365,6 +408,7 @@ class AddInviteeContainer extends Component {
    */
   removeUserAsInviteeFromEvent(data) {
     this.setState({ animating: true });
+    this.props.removeInvitee(data.id || data.inviteeId);
     this.removeUserFromEventAPI(data.id || data.inviteeId).then(result => {
       data.preselect = false;
       this.setState({
@@ -422,6 +466,7 @@ class AddInviteeContainer extends Component {
       this.props.user.socialUID,
       true
     );
+
     if (inviteeList) {
       const friendsList = await userSvc.getUsersFriendListAPI(
         this.props.user.socialUID
@@ -662,7 +707,21 @@ class AddInviteeContainer extends Component {
       .once("value");
   }
 
+  minusIcon(data) {
+    if (
+      _.has(data, "status") &&
+      (data.status == "going" || data.status == "maybe")
+    ) {
+      return null;
+    }
+
+    return (
+      <Icon type="FontAwesome" name="minus" style={{ color: "#FC3764" }} />
+    );
+  }
+
   render() {
+
     return (
       <React.Fragment>
         <Container style={{ backgroundColor: "#ffffff" }}>
@@ -867,16 +926,19 @@ class AddInviteeContainer extends Component {
                             <Button
                               transparent
                               icon
+                              disabled={
+                                _.has(data, "status") &&
+                                (data.status == "going" ||
+                                  data.status == "maybe")
+                                  ? true
+                                  : false
+                              }
                               style={{ alignSelf: "center" }}
                               onPress={() =>
                                 this.removeUserAsInviteeFromEvent(data)
                               }
                             >
-                              <Icon
-                                type="FontAwesome"
-                                name="minus"
-                                style={{ color: "#FC3764" }}
-                              />
+                              {this.minusIcon(data)}
                             </Button>
                           ) : (
                             <Button
@@ -1457,7 +1519,12 @@ class AddInviteeContainer extends Component {
                 )}
                 {this.state.editMode ? (
                   <TouchableOpacity
-                    onPress={() => this.props.navigation.goBack()}
+                    onPress={() => {
+                      this.props.navigation.replace("AddEvent", {
+                        isEditMode: true,
+                        eventId: this.state.eventId
+                      });
+                    }}
                     style={{ position: "absolute", left: 80, bottom: -32 }}
                   >
                     {Platform.OS === "ios" ? (
@@ -1656,7 +1723,8 @@ const mapStateToProps = (state, ownProps) => {
     user: state.auth.user,
     event: state.event.details,
     eventAdded: false,
-    indicatorShow: state.auth.indicatorShow
+    indicatorShow: state.auth.indicatorShow,
+    addedInvitees: state.invitee.addedInvitees
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -1666,6 +1734,23 @@ const mapDispatchToProps = dispatch => {
     },
     removeEventDataAction: evtKey => {
       dispatch(removeEventDataAction(evtKey));
+    },
+    addInvitee: id => {
+      dispatch({
+        type: "ADD_INVITEES",
+        payload: id
+      });
+    },
+    removeInvitee: id => {
+      dispatch({
+        type: "REMOVE_INVITEES",
+        payload: id
+      });
+    },
+    emptyInvitee: () => {
+      dispatch({
+        type: "EMPTY_INVITEE"
+      });
     }
   };
 };

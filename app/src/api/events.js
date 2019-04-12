@@ -23,34 +23,26 @@ export class EventServiceAPI {
    * @param {string} status
    * @param {string} eventId
    */
-  async upsertEventData(
-    startDate,
-    startTime,
-    endDate,
-    endTime,
-    eventTitle,
-    eventType,
-    location,
-    privateValue,
-    socialUID,
-    status,
-    eventId,
-    evtCoords
-  ) {
+  async upsertEventData(values) {
+    const {
+      startDate,
+      startTime,
+      endDate,
+      endTime,
+      eventTitle,
+      eventType,
+      location,
+      privateValue,
+      socialUID,
+      status,
+      eventId,
+      evtCoords
+    } = values;
+
     /**
      * @TODO change the path to new events table/node
      */
     const path = "users/" + socialUID + "/event";
-    //let evtCoords = {};
-    //console.log("[Event API] Location Request For", location);
-
-    // Geocode location first
-    /* await Geocoder.geocodeAddress(location)
-      .then(res => {
-        console.log("[Event API] Geodecoded Location", res);
-        evtCoords = res[0].position;
-      })
-      .catch(err => (evtCoords = {})); */
 
     if (eventId) {
       // just update event data
@@ -241,7 +233,7 @@ export class EventServiceAPI {
       if (val.val()) {
         return firebase
           .database()
-          .ref(`users/${userId}/event/${eventId}/invitee`)
+          .ref(`invitees/${eventId}`)
           .once("value")
           .then(inviteeSnapshot => {
             if (inviteeSnapshot._value) {
@@ -575,7 +567,9 @@ export class EventServiceAPI {
   }
 
   watchForEventDataByFieldAPI(hostUserId, eventId, fieldName) {
-    return firebase.database().ref(`users/${hostUserId}/event/${eventId}/${fieldName}`);
+    return firebase
+      .database()
+      .ref(`users/${hostUserId}/event/${eventId}/${fieldName}`);
   }
 
   watchForEventInviteeDataAPI(hostUserId, eventId, inviteeId) {
@@ -677,6 +671,13 @@ export class EventServiceAPI {
         .ref(`invitees/${eventId}/${inviteeId}`)
         .remove();
     }
+  }
+
+  updateEvent(eventId, payload, hostUserId) {
+    return firebase
+      .database()
+      .ref(`users/${hostUserId}/event/${eventId}`)
+      .update(payload);
   }
 
   async getEventInvitees(eventId) {

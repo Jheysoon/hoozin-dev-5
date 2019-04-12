@@ -1,7 +1,7 @@
 import { EventServiceAPI } from "../api";
 import { EVENT } from "../constants";
 import userDefaults from "../lib/userDefaults";
-import { getEventList } from './events/list';
+import { getEventList } from "./events/list";
 
 /**
  * @description Action creator to handle new event creation
@@ -17,37 +17,25 @@ import { getEventList } from './events/list';
  * @param {string} status
  * @param {string} eventId
  */
-export const upsertEventDataAction = (
-  startDate,
-  startTime,
-  endDate,
-  endTime,
-  eventTitle,
-  eventType,
-  location,
-  privateValue,
-  socialUID,
-  status,
-  eventId,
-  evtCoords
-) => {
+export const upsertEventDataAction = values => {
   return (dispatch, getStore) => {
+    const {
+      startDate,
+      startTime,
+      endDate,
+      endTime,
+      eventTitle,
+      eventType,
+      location,
+      privateValue,
+      socialUID,
+      status,
+      eventId
+    } = values;
+
     const eventSvc = new EventServiceAPI();
     eventSvc
-      .upsertEventData(
-        startDate,
-        startTime,
-        endDate,
-        endTime,
-        eventTitle,
-        eventType,
-        location,
-        privateValue,
-        socialUID,
-        status,
-        eventId,
-        evtCoords
-      )
+      .upsertEventData(values)
       .then(data => {
         let eventDetails = {
           startDate: startDate,
@@ -63,12 +51,13 @@ export const upsertEventDataAction = (
           status: status,
           eventId: eventId
         };
+
         dispatch({
           type: EVENT.ADD,
           data: data,
           eventDetails: eventDetails
         });
-        
+
         dispatch(getEventList(socialUID));
       })
       .catch(err => {

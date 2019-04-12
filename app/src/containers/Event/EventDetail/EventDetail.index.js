@@ -70,6 +70,7 @@ class EventDetailContainer extends Component {
   }
   componentWillMount() {
     const { params } = this.props.navigation.state;
+
     if (!!params && !!params.eventId && !!params.hostId) {
       this.getEventInformation(params.eventId, params.hostId);
     }

@@ -1,3 +1,4 @@
+import _ from "lodash";
 import React, { Component } from "react";
 import {
   View,
@@ -133,7 +134,6 @@ class ConfirmEventContainer extends Component {
   }
 
   updateinviteList() {
-
     /**
      * @TODO Update to to new invitee node
      */
@@ -231,12 +231,16 @@ class ConfirmEventContainer extends Component {
     );
   }
   onConfirmEvent(msg) {
-    if (this.state.eventData.invitee.length == 0) {
+
+    const { params } = this.props.navigation.state;
+
+    if (this.state.eventData.invitee.length == 0 && params.isPrivate == true) {
       Alert.alert(
         "Event requires at least 1 invitee before it could be created"
       );
       return;
     }
+    
     Alert.alert(
       `Awesome, your event’s been ${msg}!`,
       "Just select your event from your event list if you need to update it.",
@@ -259,15 +263,31 @@ class ConfirmEventContainer extends Component {
       .update({ status: "confirmed" })
       .then(() => {
         this.createAndSyncFriends(this.state.eventData.invitee, socialUID).then(
-          result => {
+          async result => {
             this.setState({ animating: false });
-            return result
-              ? this.props.navigation.navigate({
-                  routeName: "EventOverview",
-                  key: "EventOverview",
-                  params: { eventId: eventKey }
-                })
-              : this.feedbackToUser("SYNC_FRIENDS");
+
+            if (result) {
+              if (_.size(this.props.addedInvitees) > 0 && this.state.isEditMode) {
+                let eventInvitee = firebase
+                  .functions()
+                  .httpsCallable("eventInvitee");
+
+                await eventInvitee({
+                  invitees: this.props.addedInvitees,
+                  eventId: eventKey
+                });
+              }
+
+              this.props.emptyInvitee();
+
+              this.props.navigation.navigate({
+                routeName: "EventOverview",
+                key: "EventOverview",
+                params: { eventId: eventKey }
+              });
+            } else {
+              this.feedbackToUser("SYNC_FRIENDS");
+            }
           }
         );
       })
@@ -1175,7 +1195,8 @@ const mapStateToProps = (state, ownProps) => {
     event: state.event.details,
     indicatorShow: state.auth.indicatorShow,
     contactList: state.contactList,
-    detail: state.eventList.detail
+    detail: state.eventList.detail,
+    addedInvitees: state.invitee.addedInvitees
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -1188,6 +1209,11 @@ const mapDispatchToProps = dispatch => {
     },
     getEventInformation: (eventId, userId) => {
       dispatch(getEventInformation(eventId, userId));
+    },
+    emptyInvitee: () => {
+      dispatch({
+        type: "EMPTY_INVITEE"
+      });
     }
   };
 };
