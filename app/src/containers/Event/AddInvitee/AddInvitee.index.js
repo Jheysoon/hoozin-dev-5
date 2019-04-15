@@ -61,6 +61,11 @@ class AddInviteeContainer extends Component {
       inviteeAddedCounter: 0,
       animating: true
     };
+
+    this.addUserAsInviteeToEvent = this.addUserAsInviteeToEvent.bind(this);
+    this.removeUserAsInviteeFromEvent = this.removeUserAsInviteeFromEvent.bind(
+      this
+    );
   }
 
   /**
@@ -251,49 +256,51 @@ class AddInviteeContainer extends Component {
   discardEvent() {
     let eventSrv = new EventServiceAPI();
 
+    let alertOptions = [];
+
+    if (this.state.isEditMode) {
+      alertOptions.push({
+        text: "Back To Event Overview",
+        onPress: () => {
+          eventSrv
+            .updateEvent(
+              this.state.eventId,
+              { status: "confirmed" },
+              this.props.user.socialUID
+            )
+            .then(() => {
+              this.props.emptyInvitee();
+              this.props.navigation.goBack();
+            });
+        }
+      });
+    }
+
+    alertOptions.push({ text: "Go Back!", onPress: () => {}, style: "cancel" });
+    alertOptions.push({
+      text: "Cancel Event!",
+      onPress: () => {
+        const removeEvent = firebase.functions().httpsCallable("removeEvent");
+
+        this.setState({ animating: true });
+
+        removeEvent({
+          id: this.state.eventId
+        }).then(() => {
+          this.setState({ animating: false });
+          this.props.emptyInvitee();
+          this.props.navigation.navigate({
+            routeName: "EventList",
+            key: "EventList"
+          });
+        });
+      }
+    });
+
     Alert.alert(
       "Yikes, you are about to cancel your event!",
       "If you cancel, the invited people will be notified of this cancellation",
-      [
-        {
-          text: "Back To Event Overview",
-          onPress: () => {
-            eventSrv
-              .updateEvent(
-                this.state.eventId,
-                { status: "confirmed" },
-                this.props.user.socialUID
-              )
-              .then(() => {
-                this.props.emptyInvitee();
-                this.props.navigation.goBack();
-              });
-          }
-        },
-        { text: "Go Back!", onPress: () => {}, style: "cancel" },
-        {
-          text: "Cancel Event!",
-          onPress: () => {
-            const removeEvent = firebase
-              .functions()
-              .httpsCallable("removeEvent");
-
-            this.setState({ animating: true });
-
-            removeEvent({
-              id: this.state.eventId
-            }).then(() => {
-              this.setState({ animating: false });
-              this.props.emptyInvitee();
-              this.props.navigation.navigate({
-                routeName: "EventList",
-                key: "EventList"
-              });
-            });
-          }
-          //onPress: () => this.removeEventData(this.state.eventId)
-        }
-      ],
+      alertOptions,
       { cancelable: false }
     );
   }

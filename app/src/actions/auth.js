@@ -1,5 +1,6 @@
 import { AuthServiceAPI } from "../api";
 import { LOGIN, LOGOUT, SIGNUP, USER, FEEDBACK } from "../constants";
+import firebase from "react-native-firebase";
 
 /**
  * @description Action creator to handle custom login using email/password
@@ -9,6 +10,7 @@ import { LOGIN, LOGOUT, SIGNUP, USER, FEEDBACK } from "../constants";
 export const loginAction = (email, password) => {
   return (dispatch, getStore) => {
     const authSvc = new AuthServiceAPI();
+
     return authSvc
       .signInWithEmail(email, password)
       .then(data => {
@@ -405,14 +407,13 @@ export const clearCreateStatusAction = () => {
 
 export const fetchProfileForLogin = (socialUID, asyncData) => {
   return (dispatch, getStore) => {
-    const authSvc = new AuthServiceAPI();
+    const getUser = firebase.functions().httpsCallable("getUser");
 
-    authSvc
-      .fetchUserData(socialUID)
-      .then(data => {
+    getUser({ id: socialUID })
+      .then(val => {
         dispatch({
           type: USER.DTATFETCH,
-          data: { socialUID, ...data.val(), ...asyncData }
+          data: { socialUID, ...val.data, ...asyncData }
         });
       })
       .catch(err => {
