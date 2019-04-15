@@ -16,6 +16,7 @@ const { chat } = require("./src/chat");
 const { removeEvent } = require("./src/removeEvent");
 const { eventDetail } = require("./src/eventDetail");
 const { eventInvitee } = require("./src/eventInvitee");
+const { getUser } = require("./src/getUser");
 
 exports.event_created = event_created;
 exports.invitee_updated = invitee_updated;
@@ -28,6 +29,7 @@ exports.chat = chat;
 exports.removeEvent = removeEvent;
 exports.eventDetail = eventDetail;
 exports.eventInvitee = eventInvitee;
+exports.getUser = getUser;
 
 /**
  * @TODO organize code

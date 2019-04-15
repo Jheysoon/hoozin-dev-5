@@ -74,13 +74,14 @@ class InviteeMarker extends React.Component {
     if (connected.val()) {
       reference = firebase.database().ref(`invitees/${this.props.eventId}`);
       listener = reference.on("value", inviteeSnapshot => {
-        console.log("wathcing here");
-        let invitee = Object.keys(inviteeSnapshot._value).map(key => {
-          inviteeSnapshot._value[key]["inviteeId"] = key;
-          return inviteeSnapshot._value[key];
-        });
+        if (inviteeSnapshot.val()) {
+          let invitee = Object.keys(inviteeSnapshot._value).map(key => {
+            inviteeSnapshot._value[key]["inviteeId"] = key;
+            return inviteeSnapshot._value[key];
+          });
 
-        this.subInvitee(invitee);
+          this.subInvitee(invitee);
+        }
       });
     }
   }
