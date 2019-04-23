@@ -1,7 +1,6 @@
 import { AsyncStorage } from "react-native";
 import firebase from "react-native-firebase";
 import { AccessToken, LoginManager } from "react-native-fbsdk";
-import GoogleSignIn from "react-native-google-sign-in";
 import { LocationServiceAPI } from "./location.api";
 import { GoogleSignin, statusCodes } from "react-native-google-signin";
 
@@ -298,7 +297,7 @@ export class AuthServiceAPI {
         .then(result => {
           // set initial userLocation of user
           firebase
-            .database() 
+            .database()
             .ref("userLocation/" + socialUID)
             .update({
               lat: 0,

@@ -286,7 +286,7 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
                 <EventOverview id={eventId} isEditMode={isEditMode} />
               </View>
             ) : (
-              <EventCancel id={this.state.eventId} isEditMode={isEditMode} />
+              <EventCancel id={eventId} isEditMode={isEditMode} />
             )}
           </Left>
           <Body />

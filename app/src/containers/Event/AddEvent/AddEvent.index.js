@@ -130,7 +130,7 @@ class CreateOrEditEventContainer extends Component {
    */
   onSubmit(values, actions) {
     this.props.onShowIndicator(true);
-    this.setState({ animating: true, privateValue: values['privateValue'] });
+    this.setState({ animating: true, privateValue: values["privateValue"] });
 
     values = {
       ...values,
