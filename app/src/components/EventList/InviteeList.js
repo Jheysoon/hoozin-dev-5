@@ -34,10 +34,7 @@ class InviteeList extends React.Component {
           <ListItem
             key={key}
             style={{
-              paddingRight: 0,
-              paddingLeft: 0,
-              paddingTop: 0,
-              paddingBottom: 0,
+              padding: 0,
               marginLeft: 5,
               borderBottomWidth: 0
             }}

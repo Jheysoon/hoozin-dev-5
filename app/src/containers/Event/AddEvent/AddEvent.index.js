@@ -172,7 +172,7 @@ class CreateOrEditEventContainer extends Component {
               enableReinitialize={true}
               render={props => (
                 <AddEventForm
-                  form={props}
+                  {...props}
                   isEditMode={this.state.isEditMode}
                   eventId={this.state.eventId}
                 />

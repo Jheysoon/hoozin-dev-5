@@ -1,6 +1,16 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+  activeText: {
+    fontSize: 13,
+    fontFamily: "Lato",
+    color: "white",
+    padding: 4,
+    backgroundColor: "#FF003B",
+    textAlign: "center",
+    position: "relative",
+    left: -5
+  },
   eventDetailCard: {
     borderBottomWidth: 2,
     borderBottomColor: "#D8D8D8"

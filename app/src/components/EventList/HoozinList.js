@@ -1,15 +1,13 @@
 import React from "react";
-import { Text, View, TouchableOpacity, Alert } from "react-native";
-import Image from "react-native-remote-svg";
-import { List, ListItem } from "native-base";
 import moment from "moment";
+import Image from "react-native-remote-svg";
 import { withNavigation } from "react-navigation";
-
-import { IconsMap } from "../../../assets/assetMap";
-
 import { CachedImage } from "react-native-cached-image";
+import { Text, View, TouchableOpacity } from "react-native";
 
+import styles from "./style";
 import InviteeList from "./InviteeList";
+import { IconsMap } from "../../../assets/assetMap";
 
 const eventStatusColor = {
   goingOrHost: "#6EB25A",
@@ -17,15 +15,13 @@ const eventStatusColor = {
   declined: "#FF003B"
 };
 
-import styles from "./style";
-
 class HoozinList extends React.Component {
   constructor(props) {
     super(props);
   }
 
   render() {
-    const { eventData, key, loadImagesStart, loadImagesComplete } = this.props;
+    const { eventData, key } = this.props;
 
     // destructure event attributes for ease
     const {
@@ -190,20 +186,7 @@ class HoozinList extends React.Component {
                     )}`}</Text>
                   )}
                   {isActive ? (
-                    <Text
-                      style={{
-                        fontSize: 13,
-                        fontFamily: "Lato",
-                        color: "white",
-                        padding: 4,
-                        backgroundColor: "#FF003B",
-                        textAlign: "center",
-                        position: "relative",
-                        left: -5
-                      }}
-                    >
-                      Active!
-                    </Text>
+                    <Text style={styles.activeText}>Active!</Text>
                   ) : null}
                   <Text
                     style={{
@@ -223,7 +206,10 @@ class HoozinList extends React.Component {
             </View>
           </View>
           <View style={styles.invitees}>
-            <InviteeList eventId={eventData.keyNode} style={{ marginTop: 20 }} />
+            <InviteeList
+              eventId={eventData.keyNode}
+              style={{ marginTop: 20 }}
+            />
           </View>
         </View>
       </TouchableOpacity>
