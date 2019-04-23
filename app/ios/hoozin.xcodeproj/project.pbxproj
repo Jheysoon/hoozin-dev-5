@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -12,8 +13,8 @@
 		00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302DC1ABCB9D200DB3ED1 /* libRCTNetwork.a */; };
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* hoozinTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* hoozinTests.m */; };
+		017741CE094B4B7E8661E6E8 /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 62AD5792B7FE46E18E857A2E /* Lato-Bold.ttf */; };
 		0487604F20BD697D00835DAA /* libRCTContacts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0487602C20BD696A00835DAA /* libRCTContacts.a */; };
-		10DB7BA7DCD84A43B7EF21CE /* libRNSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D150E7F40864517BAEE705A /* libRNSettings.a */; };
 		133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
 		139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139105C11AF99BAD00B5F7CC /* libRCTSettings.a */; };
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
@@ -24,7 +25,6 @@
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		141046DC270D42AEB57DAB3D /* libRNTextInputMask.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AABDC9C6B1D41559CCE8350 /* libRNTextInputMask.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
-		20A6CA28F9EB4E8F8B02826D /* libRNOpenAppSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E57537EB445F45E0AD3EBC82 /* libRNOpenAppSettings.a */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -56,8 +56,8 @@
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		85CFA09E5AE4B0F8007D8B0E /* libPods-hoozin-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 132236DE8820EC832FA33327 /* libPods-hoozin-tvOSTests.a */; };
 		8D132E4E012C46E39A4C4043 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 87C18206F7D64DB4B67DED71 /* Foundation.ttf */; };
-		98F12F24D4874DBDB83BAD88 /* libRCTFBSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EB14A95E0404A46A5CFABD1 /* libRCTFBSDK.a */; };
 		9E26E742B0B645DA993286A2 /* rubicon-icon-font.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 847AEFE7DDAF462CB7C96E7E /* rubicon-icon-font.ttf */; };
+		AD56418F0E1746319BD7BDE7 /* libRNGooglePlaces.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 678F7B1BB1FA4E3088E4194E /* libRNGooglePlaces.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		B2F84FAB0217418EA876BF7A /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 22C7B32DA2E54961A4ADB520 /* AntDesign.ttf */; };
 		B57DD9B0621D46F89D5090DC /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 28CEB4752BC34803939F56B9 /* FontAwesome5_Regular.ttf */; };
@@ -84,11 +84,13 @@
 		D78ACB94209AB65900AE16EF /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D78ACB90209AB65900AE16EF /* FBSDKCoreKit.framework */; };
 		D78ACB95209AB65900AE16EF /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D78ACB91209AB65900AE16EF /* Bolts.framework */; };
 		D78ACC40209AC0BD00AE16EF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D78ACC19209AC0BD00AE16EF /* GoogleService-Info.plist */; };
+		D7AACAFE226D5347000BE64C /* libfishhook.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6841FA4F8DC00B85C8A /* libfishhook.a */; };
+		D7AACB01226D5DE7000BE64C /* InputMask.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7AACAFF226D5B2C000BE64C /* InputMask.framework */; };
+		D7AACB02226D5DE7000BE64C /* InputMask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D7AACAFF226D5B2C000BE64C /* InputMask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D7B3504B209B0C52001A8374 /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D78ACC46209AC55200AE16EF /* libRNFirebase.a */; };
 		DF60AC7A0B7148C28E157698 /* Roboto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 56F006DBAF554ED58970A14F /* Roboto.ttf */; };
 		F06700E296F44D4EBE292CDD /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E7238DCA68641A4A2C97EFA /* Feather.ttf */; };
-		81BC5FD318754466AC731188 /* libRCTBackgroundGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5E1F1FD1054B2F8A7BF94D /* libRCTBackgroundGeolocation.a */; };
-		302F014023094E29A6E40CB5 /* libRNGooglePlaces.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5FE178BFF0748C0AFA8FCD3 /* libRNGooglePlaces.a */; };
+		FBD1A4D3864E4505964A72B9 /* libRCTBackgroundGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2EC4782C8F1F4CD1B9F39A83 /* libRCTBackgroundGeolocation.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -428,6 +430,20 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RNFirebase;
 		};
+		D7AACB4E226D72AD000BE64C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6EA81030011A404EA9C1133A /* RCTBackgroundGeolocation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 418F75461D02DC3D0045FEA0;
+			remoteInfo = RCTBackgroundGeolocation;
+		};
+		D7AACB9C226D72FE000BE64C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01BB3EBB126C4450881C9519 /* RNGooglePlaces.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNGooglePlaces;
+		};
 		D7B0D18C22156FF000005FF0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9D65FFE462CD4DE283402765 /* RNTextInputMask.xcodeproj */;
@@ -436,6 +452,20 @@
 			remoteInfo = RNTextInputMask;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D7AACB03226D5DE7000BE64C /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D7AACB02226D5DE7000BE64C /* InputMask.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
@@ -447,6 +477,7 @@
 		00E356EE1AD99517003FC87E /* hoozinTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = hoozinTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* hoozinTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = hoozinTests.m; sourceTree = "<group>"; };
+		01BB3EBB126C4450881C9519 /* RNGooglePlaces.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNGooglePlaces.xcodeproj; path = "../node_modules/react-native-google-places/ios/RNGooglePlaces.xcodeproj"; sourceTree = "<group>"; };
 		040A0C5E2D28493D84BF52D1 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/native-base/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		0487602220BD696A00835DAA /* RCTContacts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTContacts.xcodeproj; path = "../node_modules/react-native-contacts/ios/RCTContacts.xcodeproj"; sourceTree = "<group>"; };
 		07AB585AD07F8477D5C540D1 /* Pods-hoozin-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hoozin-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-hoozin-tvOS/Pods-hoozin-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -470,6 +501,7 @@
 		2D02E4901E0B4A5D006451C7 /* hoozin-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "hoozin-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E7238DCA68641A4A2C97EFA /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
+		2EC4782C8F1F4CD1B9F39A83 /* libRCTBackgroundGeolocation.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTBackgroundGeolocation.a; sourceTree = "<group>"; };
 		32A6D1DA20EC1CF100B548AC /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
 		32A6D20D20EC1D4800B548AC /* GoogleMaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = Pods/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
 		32C5DF482142979D00611B94 /* hoozin.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = hoozin.entitlements; path = hoozin/hoozin.entitlements; sourceTree = "<group>"; };
@@ -486,7 +518,10 @@
 		4FDD7574999A7BAE245C3EC6 /* Pods-hoozin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hoozin.debug.xcconfig"; path = "Pods/Target Support Files/Pods-hoozin/Pods-hoozin.debug.xcconfig"; sourceTree = "<group>"; };
 		56F006DBAF554ED58970A14F /* Roboto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Roboto.ttf; path = "../node_modules/native-base/Fonts/Roboto.ttf"; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
+		62AD5792B7FE46E18E857A2E /* Lato-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Bold.ttf"; path = "../assets/fonts/Lato-Bold.ttf"; sourceTree = "<group>"; };
 		64769FE88B214D7A9E644911 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
+		678F7B1BB1FA4E3088E4194E /* libRNGooglePlaces.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGooglePlaces.a; sourceTree = "<group>"; };
+		6EA81030011A404EA9C1133A /* RCTBackgroundGeolocation.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTBackgroundGeolocation.xcodeproj; path = "../node_modules/react-native-mauron85-background-geolocation/ios/RCTBackgroundGeolocation.xcodeproj"; sourceTree = "<group>"; };
 		721781523A8B424B97D5A540 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/native-base/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		7DA799B82DA4BE9771234462 /* Pods-hoozin-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hoozin-tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-hoozin-tvOS/Pods-hoozin-tvOS.release.xcconfig"; sourceTree = "<group>"; };
@@ -512,6 +547,7 @@
 		CCE4C1CF4E1642CA84378610 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/native-base/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		D46B43F9079E465D8033787F /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/native-base/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		D4DE088993557673CCA3B32A /* Pods-hoozin-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hoozin-tvOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-hoozin-tvOSTests/Pods-hoozin-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		D723CDA3226451FB0085B23D /* libboringssl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libboringssl.tbd; path = usr/lib/libboringssl.tbd; sourceTree = SDKROOT; };
 		D72D455D209C117800B8A44B /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
 		D72D4586209C11AD00B8A44B /* hoozin-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "hoozin-Bridging-Header.h"; sourceTree = "<group>"; };
 		D72D4587209C143300B8A44B /* GoogleSignIn.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleSignIn.bundle; path = ../GoogleSignIn.bundle; sourceTree = "<group>"; };
@@ -532,16 +568,13 @@
 		D78ACB91209AB65900AE16EF /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = Frameworks/Bolts.framework; sourceTree = "<group>"; };
 		D78ACC19209AC0BD00AE16EF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D78ACC41209AC55200AE16EF /* RNFirebase.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNFirebase.xcodeproj; path = "../node_modules/react-native-firebase/ios/RNFirebase.xcodeproj"; sourceTree = "<group>"; };
+		D7AACAFF226D5B2C000BE64C /* InputMask.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = InputMask.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7D22345B8164454AEF09F18 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/native-base/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		DB0B7FDC6FC145DD94947790 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/native-base/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		E57537EB445F45E0AD3EBC82 /* libRNOpenAppSettings.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNOpenAppSettings.a; sourceTree = "<group>"; };
 		E5F113E6384844FE8E4A769D /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		EFE4FCD6362E2894AB1CA990 /* Pods-hoozin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hoozin.release.xcconfig"; path = "Pods/Target Support Files/Pods-hoozin/Pods-hoozin.release.xcconfig"; sourceTree = "<group>"; };
 		F17D19B9BB444DFE9C3F8A98 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/native-base/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
-		25D7B7D0087547939873360D /* RCTBackgroundGeolocation.xcodeproj */ = {isa = PBXFileReference; name = "RCTBackgroundGeolocation.xcodeproj"; path = "../node_modules/react-native-mauron85-background-geolocation/ios/RCTBackgroundGeolocation.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		6F5E1F1FD1054B2F8A7BF94D /* libRCTBackgroundGeolocation.a */ = {isa = PBXFileReference; name = "libRCTBackgroundGeolocation.a"; path = "libRCTBackgroundGeolocation.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		2962D345132A4C3388C33655 /* RNGooglePlaces.xcodeproj */ = {isa = PBXFileReference; name = "RNGooglePlaces.xcodeproj"; path = "../node_modules/react-native-google-places/ios/RNGooglePlaces.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		F5FE178BFF0748C0AFA8FCD3 /* libRNGooglePlaces.a */ = {isa = PBXFileReference; name = "libRNGooglePlaces.a"; path = "libRNGooglePlaces.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -557,8 +590,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7AACAFE226D5347000BE64C /* libfishhook.a in Frameworks */,
 				32A6D20C20EC1CF200B548AC /* GoogleMaps.framework in Frameworks */,
 				CA69F5FD20E5228A008002A3 /* libRNGeocoder.a in Frameworks */,
+				D7AACB01226D5DE7000BE64C /* InputMask.framework in Frameworks */,
 				CAED045120E5111100CF0629 /* libRNOpenAppSettings.a in Frameworks */,
 				CAED040820E4F8CA00CF0629 /* libRNSettings.a in Frameworks */,
 				0487604F20BD697D00835DAA /* libRCTContacts.a in Frameworks */,
@@ -587,13 +622,10 @@
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				D78ACB95209AB65900AE16EF /* Bolts.framework in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
-				98F12F24D4874DBDB83BAD88 /* libRCTFBSDK.a in Frameworks */,
-				10DB7BA7DCD84A43B7EF21CE /* libRNSettings.a in Frameworks */,
-				20A6CA28F9EB4E8F8B02826D /* libRNOpenAppSettings.a in Frameworks */,
 				141046DC270D42AEB57DAB3D /* libRNTextInputMask.a in Frameworks */,
 				D232F7C9F85F0749618D35DB /* libPods-hoozin.a in Frameworks */,
-				81BC5FD318754466AC731188 /* libRCTBackgroundGeolocation.a in Frameworks */,
-				302F014023094E29A6E40CB5 /* libRNGooglePlaces.a in Frameworks */,
+				FBD1A4D3864E4505964A72B9 /* libRCTBackgroundGeolocation.a in Frameworks */,
+				AD56418F0E1746319BD7BDE7 /* libRNGooglePlaces.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -755,6 +787,8 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D7AACAFF226D5B2C000BE64C /* InputMask.framework */,
+				D723CDA3226451FB0085B23D /* libboringssl.tbd */,
 				32A6D1DA20EC1CF100B548AC /* GoogleMaps.framework */,
 				D72D459E209C67B200B8A44B /* libz.tbd */,
 				D72D4591209C148300B8A44B /* AddressBook.framework */,
@@ -834,6 +868,7 @@
 				DB0B7FDC6FC145DD94947790 /* Octicons.ttf */,
 				D46B43F9079E465D8033787F /* SimpleLineIcons.ttf */,
 				2E7238DCA68641A4A2C97EFA /* Feather.ttf */,
+				62AD5792B7FE46E18E857A2E /* Lato-Bold.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -871,8 +906,8 @@
 				C715256C3CAC46D59DA59116 /* RNSettings.xcodeproj */,
 				11F042F031234E79B8EDE4F9 /* RNOpenAppSettings.xcodeproj */,
 				9D65FFE462CD4DE283402765 /* RNTextInputMask.xcodeproj */,
-				25D7B7D0087547939873360D /* RCTBackgroundGeolocation.xcodeproj */,
-				2962D345132A4C3388C33655 /* RNGooglePlaces.xcodeproj */,
+				6EA81030011A404EA9C1133A /* RCTBackgroundGeolocation.xcodeproj */,
+				01BB3EBB126C4450881C9519 /* RNGooglePlaces.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -989,6 +1024,8 @@
 				E57537EB445F45E0AD3EBC82 /* libRNOpenAppSettings.a */,
 				4AABDC9C6B1D41559CCE8350 /* libRNTextInputMask.a */,
 				92B9440297C54F39A7F7E5FA /* libWorkers.a */,
+				2EC4782C8F1F4CD1B9F39A83 /* libRCTBackgroundGeolocation.a */,
+				678F7B1BB1FA4E3088E4194E /* libRNGooglePlaces.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -1005,6 +1042,22 @@
 			isa = PBXGroup;
 			children = (
 				D78ACC46209AC55200AE16EF /* libRNFirebase.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D7AACB4B226D72AD000BE64C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D7AACB4F226D72AD000BE64C /* libRCTBackgroundGeolocation.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D7AACB99226D72FD000BE64C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D7AACB9D226D72FE000BE64C /* libRNGooglePlaces.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1048,6 +1101,8 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				9FD40D75CA80CCB972B960A3 /* [CP] Copy Pods Resources */,
+				D7AACB03226D5DE7000BE64C /* Embed Frameworks */,
+				D7AACBB8226D8762000BE64C /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1107,13 +1162,13 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = PQG34P6MG4;
+						DevelopmentTeam = B7885V7269;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = 55TZGK6LQD;
+						DevelopmentTeam = B7885V7269;
 						LastSwiftMigration = 930;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -1125,10 +1180,12 @@
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = B7885V7269;
 						ProvisioningStyle = Automatic;
 					};
 					2D02E48F1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = B7885V7269;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 2D02E47A1E0B4A5D006451C7;
 					};
@@ -1153,6 +1210,10 @@
 				{
 					ProductGroup = 5E91572E1DD0AC6500FF2AA8 /* Products */;
 					ProjectRef = 5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */;
+				},
+				{
+					ProductGroup = D7AACB4B226D72AD000BE64C /* Products */;
+					ProjectRef = 6EA81030011A404EA9C1133A /* RCTBackgroundGeolocation.xcodeproj */;
 				},
 				{
 					ProductGroup = ADBDB9201DFEBF0600ED6528 /* Products */;
@@ -1209,6 +1270,10 @@
 				{
 					ProductGroup = CA69F5CB20E5226E008002A3 /* Products */;
 					ProjectRef = CA69F5CA20E5226E008002A3 /* RNGeocoder.xcodeproj */;
+				},
+				{
+					ProductGroup = D7AACB99226D72FD000BE64C /* Products */;
+					ProjectRef = 01BB3EBB126C4450881C9519 /* RNGooglePlaces.xcodeproj */;
 				},
 				{
 					ProductGroup = CAED044620E5105200CF0629 /* Products */;
@@ -1568,6 +1633,20 @@
 			remoteRef = D78ACC45209AC55200AE16EF /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		D7AACB4F226D72AD000BE64C /* libRCTBackgroundGeolocation.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTBackgroundGeolocation.a;
+			remoteRef = D7AACB4E226D72AD000BE64C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D7AACB9D226D72FE000BE64C /* libRNGooglePlaces.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNGooglePlaces.a;
+			remoteRef = D7AACB9C226D72FE000BE64C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		D7B0D18D22156FF000005FF0 /* libRNTextInputMask.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1612,6 +1691,7 @@
 				633FA0D11C73495597FC61C7 /* Octicons.ttf in Resources */,
 				D397A316DD4C4ADD9720AA38 /* SimpleLineIcons.ttf in Resources */,
 				F06700E296F44D4EBE292CDD /* Feather.ttf in Resources */,
+				017741CE094B4B7E8661E6E8 /* Lato-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1705,6 +1785,9 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-hoozin/Pods-hoozin-resources.sh",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GooglePlacePicker/Frameworks/GooglePlacePicker.framework/Resources/GooglePlacePicker.bundle",
+				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/QBImagePickerController/QBImagePicker.bundle",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
@@ -1723,6 +1806,9 @@
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlacePicker.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlaces.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QBImagePicker.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",
@@ -1760,6 +1846,23 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		D7AACBB8226D8762000BE64C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/Fabric/run\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1836,7 +1939,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = PQG34P6MG4;
+				DEVELOPMENT_TEAM = B7885V7269;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -1848,16 +1951,16 @@
 					"$(SRCROOT)/../node_modules/react-native-app-settings/ios",
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
-					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
-					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
+					"$(SRCROOT)..\node_modules\neact-native-mauron85-background-geolocationiosRCTBackgroundGeolocation/**",
+					"$(SRCROOT)..\node_modules\neact-native-google-placesios",
+					"$(SRCROOT)/../node_modules/react-native-mauron85-background-geolocation/ios/RCTBackgroundGeolocation/**",
+					"$(SRCROOT)/../node_modules/react-native-google-places/ios",
 				);
 				INFOPLIST_FILE = hoozinTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
@@ -1877,7 +1980,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = PQG34P6MG4;
+				DEVELOPMENT_TEAM = B7885V7269;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-fbsdk/ios/RCTFBSDK/**",
@@ -1885,16 +1988,16 @@
 					"$(SRCROOT)/../node_modules/react-native-app-settings/ios",
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
-					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
-					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
+					"$(SRCROOT)..\node_modules\neact-native-mauron85-background-geolocationiosRCTBackgroundGeolocation/**",
+					"$(SRCROOT)..\node_modules\neact-native-google-placesios",
+					"$(SRCROOT)/../node_modules/react-native-mauron85-background-geolocation/ios/RCTBackgroundGeolocation/**",
+					"$(SRCROOT)/../node_modules/react-native-google-places/ios",
 				);
 				INFOPLIST_FILE = hoozinTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
@@ -1915,11 +2018,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = hoozin/hoozin.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Aboitizland Inc. (55TZGK6LQD)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 55TZGK6LQD;
+				DEVELOPMENT_TEAM = B7885V7269;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1937,8 +2040,10 @@
 					"$(SRCROOT)/../node_modules/react-native-app-settings/ios",
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
-					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
-					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
+					"$(SRCROOT)..\node_modules\neact-native-mauron85-background-geolocationiosRCTBackgroundGeolocation/**",
+					"$(SRCROOT)..\node_modules\neact-native-google-placesios",
+					"$(SRCROOT)/../node_modules/react-native-mauron85-background-geolocation/ios/RCTBackgroundGeolocation/**",
+					"$(SRCROOT)/../node_modules/react-native-google-places/ios",
 				);
 				INFOPLIST_FILE = hoozin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
@@ -1949,10 +2054,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.app.hoozin.devtac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hoozin;
 				PRODUCT_NAME = hoozin;
 				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "Devtac Hoozin";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "hoozin-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
@@ -1967,10 +2072,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = hoozin/hoozin.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Aboitizland Inc. (55TZGK6LQD)";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 55TZGK6LQD;
+				DEVELOPMENT_TEAM = B7885V7269;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1988,8 +2093,10 @@
 					"$(SRCROOT)/../node_modules/react-native-app-settings/ios",
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
-					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
-					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
+					"$(SRCROOT)..\node_modules\neact-native-mauron85-background-geolocationiosRCTBackgroundGeolocation/**",
+					"$(SRCROOT)..\node_modules\neact-native-google-placesios",
+					"$(SRCROOT)/../node_modules/react-native-mauron85-background-geolocation/ios/RCTBackgroundGeolocation/**",
+					"$(SRCROOT)/../node_modules/react-native-google-places/ios",
 				);
 				INFOPLIST_FILE = hoozin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
@@ -2000,10 +2107,10 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.app.hoozin.devtac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hoozin;
 				PRODUCT_NAME = hoozin;
 				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "Devtac Hoozin";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "hoozin-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -2021,6 +2128,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = B7885V7269;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
@@ -2030,8 +2138,10 @@
 					"$(SRCROOT)/../node_modules/react-native-app-settings/ios",
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
-					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
-					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
+					"$(SRCROOT)..\node_modules\neact-native-mauron85-background-geolocationiosRCTBackgroundGeolocation/**",
+					"$(SRCROOT)..\node_modules\neact-native-google-placesios",
+					"$(SRCROOT)/../node_modules/react-native-mauron85-background-geolocation/ios/RCTBackgroundGeolocation/**",
+					"$(SRCROOT)/../node_modules/react-native-google-places/ios",
 				);
 				INFOPLIST_FILE = "hoozin-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -2039,14 +2149,12 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.hoozin-tvOS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.hoozin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -2066,6 +2174,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = B7885V7269;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2074,8 +2183,10 @@
 					"$(SRCROOT)/../node_modules/react-native-app-settings/ios",
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
-					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
-					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
+					"$(SRCROOT)..\node_modules\neact-native-mauron85-background-geolocationiosRCTBackgroundGeolocation/**",
+					"$(SRCROOT)..\node_modules\neact-native-google-placesios",
+					"$(SRCROOT)/../node_modules/react-native-mauron85-background-geolocation/ios/RCTBackgroundGeolocation/**",
+					"$(SRCROOT)/../node_modules/react-native-google-places/ios",
 				);
 				INFOPLIST_FILE = "hoozin-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -2083,14 +2194,12 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.hoozin-tvOS";
+				PRODUCT_BUNDLE_IDENTIFIER = com.hoozin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -2108,6 +2217,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = B7885V7269;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
@@ -2117,15 +2227,15 @@
 					"$(SRCROOT)/../node_modules/react-native-app-settings/ios",
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
-					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
-					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
+					"$(SRCROOT)..\node_modules\neact-native-mauron85-background-geolocationiosRCTBackgroundGeolocation/**",
+					"$(SRCROOT)..\node_modules\neact-native-google-placesios",
+					"$(SRCROOT)/../node_modules/react-native-mauron85-background-geolocation/ios/RCTBackgroundGeolocation/**",
+					"$(SRCROOT)/../node_modules/react-native-google-places/ios",
 				);
 				INFOPLIST_FILE = "hoozin-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
@@ -2152,6 +2262,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = B7885V7269;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2160,15 +2271,15 @@
 					"$(SRCROOT)/../node_modules/react-native-app-settings/ios",
 					"$(SRCROOT)/../node_modules/react-native-text-input-mask/ios/RNTextInputMask/RNTextInputMask/**",
 					"$(SRCROOT)/../node_modules/react-native-workers/ios/Workers",
-					"$(SRCROOT)\..\node_modules\react-native-mauron85-background-geolocation\ios\RCTBackgroundGeolocation/**",
-					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
+					"$(SRCROOT)..\node_modules\neact-native-mauron85-background-geolocationiosRCTBackgroundGeolocation/**",
+					"$(SRCROOT)..\node_modules\neact-native-google-placesios",
+					"$(SRCROOT)/../node_modules/react-native-mauron85-background-geolocation/ios/RCTBackgroundGeolocation/**",
+					"$(SRCROOT)/../node_modules/react-native-google-places/ios",
 				);
 				INFOPLIST_FILE = "hoozin-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);

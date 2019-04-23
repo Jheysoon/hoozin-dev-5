@@ -32,11 +32,11 @@
     "react-native-cached-image": "1.4.3",
     "react-native-camera": "1.1.4",
     "react-native-check-box": "2.1.0",
-    "react-native-contacts": "2.2.1",
+    "react-native-contacts": "4.0.0",
     "react-native-datepicker": "1.7.2",
     "react-native-datepicker-dialog": "0.0.9",
     "react-native-double-click": "1.0.5",
-    "react-native-fbsdk": "0.7.0",
+    "react-native-fbsdk": "0.8.0",
     "react-native-fetch-blob": "0.10.8",
     "react-native-firebase": "4.3.8",
     "react-native-flags": "1.0.0",
@@ -77,5 +77,10 @@
   },
   "jest": {
     "preset": "react-native"
+  },
+  "rnpm": {
+    "assets": [
+      "assets/fonts"
+    ]
   }
 }

@@ -10,6 +10,9 @@ target 'hoozin' do
   pod 'Firebase/Firestore'
   pod 'Firebase/Storage'
   pod 'Firebase/Messaging'
+  pod 'Firebase/Functions'
+  pod 'Fabric', '~> 1.7.5'
+  pod 'Crashlytics', '~> 3.10.4'
   pod 'GoogleToolboxForMac'
   pod 'react-native-fetch-blob', :path => '../node_modules/react-native-fetch-blob'
   pod 'RNImageCropPicker', :path =>  '../node_modules/react-native-image-crop-picker'
@@ -51,6 +54,9 @@ target 'hoozin' do
     pod 'react-native-google-maps', path: rn_maps_path  # Remove this line if you don't want to support GoogleMaps on iOS
     pod 'GoogleMaps'  # Remove this line if you don't want to support GoogleMaps on iOS
     pod 'Google-Maps-iOS-Utils' # Remove this line if you don't want to support GoogleMaps on iOS
+
+    pod 'GooglePlaces'
+    pod 'GooglePlacePicker'
 
 
       pod 'react-native-camera', :path => '../node_modules/react-native-camera'

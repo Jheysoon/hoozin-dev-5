@@ -1,1 +1,1 @@
-../../../FirebaseFirestore/Firestore/core/src/firebase/firestore/local/document_reference.h
+../../../FirebaseFirestore/Firestore/core/src/firebase/firestore/api/document_reference.h
