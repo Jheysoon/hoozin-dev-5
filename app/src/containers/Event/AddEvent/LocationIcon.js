@@ -3,6 +3,7 @@ import { Platform } from "react-native";
 import Image from "react-native-remote-svg";
 
 import AddEventSvg from "../../../svgs/AddEvent";
+import { IconsMap } from "../../../../assets/assetMap";
 
 const LocationIcon = () => {
   return (

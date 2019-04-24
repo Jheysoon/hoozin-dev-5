@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import Image from "react-native-remote-svg";
 import { withNavigation } from "react-navigation";
-import { IconsMap, ImageMap } from "assets/assetMap";
+import { IconsMap, ImageMap } from "../../../assets/assetMap";
 import { Header, Left, Right, Icon, Body, Button } from "native-base";
 import GeoFire from "geofire";
 import BackgroundGeolocation from "react-native-mauron85-background-geolocation";
@@ -110,7 +110,7 @@ class AppBarComponent extends Component {
 
     BackgroundGeolocation.on("stationary", stationaryLocation => {
       // handle stationary locations here
-      Actions.sendLocation(stationaryLocation);
+      //Actions.sendLocation(stationaryLocation);
     });
 
     BackgroundGeolocation.on("error", error => {
@@ -567,15 +567,19 @@ class AppBarComponent extends Component {
                   }
                   onPress={() => this.handleBackNavigation()}
                 >
-                  {Platform.OS === "ios" ? (
-                    <Image source={IconsMap.icon_back_circle} />
-                  ) : (
+                  {
                     <Image
+                      style={{
+                        height: Platform.select({
+                          ios: 40,
+                          default: null
+                        })
+                      }}
                       source={{
                         uri: AppBar.Search_Field
                       }}
                     />
-                  )}
+                  }
                 </TouchableOpacity>
               ) : null}
             </Left>

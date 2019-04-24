@@ -20,7 +20,6 @@
 #include <queue>
 #include <utility>
 
-#import "Firestore/Source/Local/FSTMutationQueue.h"
 #import "Firestore/Source/Local/FSTPersistence.h"
 #include "Firestore/core/include/firebase/firestore/timestamp.h"
 #include "Firestore/core/src/firebase/firestore/model/document_key.h"
@@ -32,6 +31,7 @@ using firebase::firestore::local::LruParams;
 using firebase::firestore::local::LruResults;
 using firebase::firestore::model::DocumentKey;
 using firebase::firestore::model::ListenSequenceNumber;
+using firebase::firestore::model::TargetId;
 
 const int64_t kFIRFirestoreCacheSizeUnlimited = LruParams::CacheSizeUnlimited;
 const ListenSequenceNumber kFSTListenSequenceNumberInvalid = -1;
@@ -93,7 +93,8 @@ class RollingSequenceNumberBuffer {
   return self;
 }
 
-- (LruResults)collectWithLiveTargets:(NSDictionary<NSNumber *, FSTQueryData *> *)liveTargets {
+- (LruResults)collectWithLiveTargets:
+    (const std::unordered_map<TargetId, FSTQueryData *> &)liveTargets {
   if (_params.minBytesThreshold == kFIRFirestoreCacheSizeUnlimited) {
     LOG_DEBUG("Garbage collection skipped; disabled");
     return LruResults::DidNotRun();
@@ -111,7 +112,8 @@ class RollingSequenceNumberBuffer {
   }
 }
 
-- (LruResults)runGCWithLiveTargets:(NSDictionary<NSNumber *, FSTQueryData *> *)liveTargets {
+- (LruResults)runGCWithLiveTargets:
+    (const std::unordered_map<TargetId, FSTQueryData *> &)liveTargets {
   Timestamp start = Timestamp::Now();
   int sequenceNumbers = [self queryCountForPercentile:_params.percentileToCollect];
   // Cap at the configured max
@@ -157,21 +159,20 @@ class RollingSequenceNumberBuffer {
     return kFSTListenSequenceNumberInvalid;
   }
   RollingSequenceNumberBuffer buffer(queryCount);
-  // Pointer is necessary to access stack-allocated buffer from a block.
-  RollingSequenceNumberBuffer *ptr_to_buffer = &buffer;
-  [_delegate enumerateTargetsUsingBlock:^(FSTQueryData *queryData, BOOL *stop) {
-    ptr_to_buffer->AddElement(queryData.sequenceNumber);
+
+  [_delegate enumerateTargetsUsingCallback:[&buffer](FSTQueryData *queryData) {
+    buffer.AddElement(queryData.sequenceNumber);
   }];
-  [_delegate enumerateMutationsUsingBlock:^(const DocumentKey &docKey,
-                                            ListenSequenceNumber sequenceNumber, BOOL *stop) {
-    ptr_to_buffer->AddElement(sequenceNumber);
+  [_delegate enumerateMutationsUsingCallback:[&buffer](const DocumentKey &docKey,
+                                                       ListenSequenceNumber sequenceNumber) {
+    buffer.AddElement(sequenceNumber);
   }];
   return buffer.max_value();
 }
 
 - (int)removeQueriesUpThroughSequenceNumber:(ListenSequenceNumber)sequenceNumber
-                                liveQueries:
-                                    (NSDictionary<NSNumber *, FSTQueryData *> *)liveQueries {
+                                liveQueries:(const std::unordered_map<TargetId, FSTQueryData *> &)
+                                                liveQueries {
   return [_delegate removeTargetsThroughSequenceNumber:sequenceNumber liveQueries:liveQueries];
 }
 

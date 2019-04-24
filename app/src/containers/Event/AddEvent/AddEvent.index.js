@@ -130,7 +130,7 @@ class CreateOrEditEventContainer extends Component {
    */
   onSubmit(values, actions) {
     this.props.onShowIndicator(true);
-    this.setState({ animating: true, privateValue: values['privateValue'] });
+    this.setState({ animating: true, privateValue: values["privateValue"] });
 
     values = {
       ...values,
@@ -172,7 +172,7 @@ class CreateOrEditEventContainer extends Component {
               enableReinitialize={true}
               render={props => (
                 <AddEventForm
-                  form={props}
+                  {...props}
                   isEditMode={this.state.isEditMode}
                   eventId={this.state.eventId}
                 />

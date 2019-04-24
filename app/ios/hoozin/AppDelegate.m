@@ -7,6 +7,10 @@
 
 #import "AppDelegate.h"
 
+@import GooglePlaces;
+@import GoogleMaps;
+
+#import <Firebase.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <React/RCTLinkingManager.h>
@@ -19,13 +23,15 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [FIRApp configure];
   // ADD THE FOLLOWING CODE
   NSString *filePath = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
   NSDictionary *plistDict = [NSDictionary dictionaryWithContentsOfFile:filePath];
   [GIDSignIn sharedInstance].clientID = [plistDict objectForKey:@"CLIENT_ID"];
+
+  [GMSPlacesClient provideAPIKey:@"AIzaSyDIzVCrCMmnxoP43EVIh-9COB1uHaE1Qds"];
   
   [GMSServices provideAPIKey:@"AIzaSyBWyQKJQwSArlCZbXcfGCfPKUSJHm5gYWU"];
-  [FIRApp configure];
   [RNFirebaseNotifications configure];
   [[FBSDKApplicationDelegate sharedInstance] application:application
                            didFinishLaunchingWithOptions:launchOptions];
@@ -53,6 +59,11 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+
+  UIView* launchScreenView = [[[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil] objectAtIndex:0];
+  launchScreenView.frame = self.window.bounds;
+  rootView.loadingView = launchScreenView;
+
   return YES;
 }
 

@@ -5868,10 +5868,10 @@ react-native-communications@2.2.1:
   resolved "https://registry.yarnpkg.com/react-native-communications/-/react-native-communications-2.2.1.tgz#7883b56b20a002eeb790c113f8616ea8692ca795"
   integrity sha1-eIO1ayCgAu63kMET+GFuqGksp5U=
 
-react-native-contacts@2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/react-native-contacts/-/react-native-contacts-2.2.1.tgz#afc8745c4c04d1a551f2bd939d52536006fbfaa9"
-  integrity sha1-r8h0XEwE0aVR8r2TnVJTYAb7+qk=
+react-native-contacts@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-contacts/-/react-native-contacts-4.0.0.tgz#5fa41527ca37cb3382890d3d867765c1ea4fb7e7"
+  integrity sha512-SkO4AiuiDkVKmL9+VotwLbiesp0EzcWstVWTM4K+eU7Bh+y/aAWkqCB0FyCm5kSNi6xHcZJr62ATh9S7blaZQg==
 
 react-native-datepicker-dialog@0.0.9:
   version "0.0.9"
@@ -5936,10 +5936,10 @@ react-native-easy-grid@0.2.0:
   dependencies:
     lodash "^4.11.1"
 
-react-native-fbsdk@0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/react-native-fbsdk/-/react-native-fbsdk-0.7.0.tgz#263dfe5845205de7b80efb0f18ed5c1ded025291"
-  integrity sha512-wM+S+NGaqn437H6IYebLhBy2612aIXNPPxunvN5SdJVIIQZdGhkdDZUDbZmgmFnMRY3wQpQatzp+vRjEmAcEmg==
+react-native-fbsdk@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/react-native-fbsdk/-/react-native-fbsdk-0.8.0.tgz#4ee95ebb7be4b00fa9f871ca594f068c9782c7de"
+  integrity sha512-odqSTgvXtw9f84iU0THTjK+Z9Lvy14aP5Yd0fdfHCXFpb/Q0WrpwsSyjPFXG1AsWIe+FtpzzgJsjOu6E2xqgMQ==
   dependencies:
     adm-zip "^0.4.7"
     fastfall "^1.5.1"

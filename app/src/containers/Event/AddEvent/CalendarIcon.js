@@ -2,6 +2,8 @@ import React from "react";
 import { Platform } from "react-native";
 import Image from "react-native-remote-svg";
 
+import { IconsMap } from "../../../../assets/assetMap";
+
 const CalendarIcon = () => {
   return (
     <React.Fragment>

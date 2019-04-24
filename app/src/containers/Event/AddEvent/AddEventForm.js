@@ -16,7 +16,15 @@ import CustomDatePicker from "../../../formik/CustomDatePicker";
 import EventGooglePlaces from "../../../formik/EventGooglePlaces";
 import CustomCheckBox from "./../../../formik/CustomCheckBox";
 
-const AddEventForm = ({ form, isEditMode, eventId }) => {
+const AddEventForm = ({
+  values,
+  errors,
+  touched,
+  isSubmitting,
+  handleSubmit,
+  isEditMode,
+  eventId
+}) => {
   return (
     <React.Fragment>
       <View
@@ -41,7 +49,7 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
           <View
             style={{
               borderBottomColor:
-                form.touched["eventTitle"] && form.errors["eventTitle"]
+                touched["eventTitle"] && errors["eventTitle"]
                   ? "red"
                   : "#bcbcbc",
               borderBottomWidth: 1,
@@ -63,9 +71,7 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
           <View
             style={{
               borderBottomColor:
-                form.touched["eventType"] && form.errors["eventType"]
-                  ? "red"
-                  : "#bcbcbc",
+                touched["eventType"] && errors["eventType"] ? "red" : "#bcbcbc",
               borderBottomWidth: 1,
               paddingTop: 3
             }}
@@ -87,9 +93,7 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
           <View
             style={{
               borderBottomColor:
-                form.touched["location"] && form.errors["location"]
-                  ? "red"
-                  : "#bcbcbc",
+                touched["location"] && errors["location"] ? "red" : "#bcbcbc",
               borderBottomWidth: 1,
               paddingTop: 3
             }}
@@ -135,7 +139,7 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
             <View
               style={{
                 borderBottomColor:
-                  form.touched["startDate"] && form.errors["startDate"]
+                  touched["startDate"] && errors["startDate"]
                     ? "red"
                     : "#bcbcbc",
                 borderBottomWidth: 1,
@@ -161,7 +165,7 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
             <View
               style={{
                 borderBottomColor:
-                  form.touched["startTime"] && form.errors["startTime"]
+                  touched["startTime"] && errors["startTime"]
                     ? "red"
                     : "#bcbcbc",
                 borderBottomWidth: 1,
@@ -203,9 +207,7 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
             <View
               style={{
                 borderBottomColor:
-                  form.touched["endDate"] && form.errors["endDate"]
-                    ? "red"
-                    : "#bcbcbc",
+                  touched["endDate"] && errors["endDate"] ? "red" : "#bcbcbc",
                 borderBottomWidth: 1,
                 width: 100
               }}
@@ -229,9 +231,7 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
             <View
               style={{
                 borderBottomColor:
-                  form.touched["endTime"] && form.errors["endTime"]
-                    ? "red"
-                    : "#bcbcbc",
+                  touched["endTime"] && errors["endTime"] ? "red" : "#bcbcbc",
                 borderBottomWidth: 1,
                 width: 100
               }}
@@ -257,7 +257,7 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
               <Field
                 name="privateValue"
                 component={CustomCheckBox}
-                value={form.values["privateValue"]}
+                value={values["privateValue"]}
               />
 
               <Body style={{ marginLeft: 10 }}>
@@ -270,7 +270,7 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
                   }}
                 >
                   This event is
-                  {form.values["privateValue"] ? " private" : " public"}
+                  {values["privateValue"] ? " private" : " public"}
                 </Text>
               </Body>
             </ListItem>
@@ -286,14 +286,14 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
                 <EventOverview id={eventId} isEditMode={isEditMode} />
               </View>
             ) : (
-              <EventCancel id={this.state.eventId} isEditMode={isEditMode} />
+              <EventCancel id={eventId} isEditMode={isEditMode} />
             )}
           </Left>
           <Body />
           <Right>
             <TouchableOpacity
-              disabled={form.isSubmitting}
-              onPress={form.handleSubmit}
+              disabled={isSubmitting}
+              onPress={handleSubmit}
               style={AddOrCreateEventStyles.fabRightWrapperStyles}
             >
               {Platform.OS === "ios" ? (
@@ -325,8 +325,8 @@ const AddEventForm = ({ form, isEditMode, eventId }) => {
           <Body />
           <Right>
             <TouchableOpacity
-              disabled={form.isSubmitting}
-              onPress={form.handleSubmit}
+              disabled={isSubmitting}
+              onPress={handleSubmit}
               style={AddOrCreateEventStyles.fabRightWrapperStyles}
             >
               {Platform.OS === "ios" ? (
