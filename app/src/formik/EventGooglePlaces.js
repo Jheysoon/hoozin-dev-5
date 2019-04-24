@@ -46,7 +46,7 @@ class EventGooglePlaces extends React.Component {
           });
         }}
         style={{
-          marginTop: 35,
+          marginTop: -7,
           marginLeft: -1,
           fontSize: 17,
           color: "#707070",

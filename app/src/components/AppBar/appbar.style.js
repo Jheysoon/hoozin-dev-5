@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import * as Theme from "../../theme/hoozin-theme";
 import * as Mixins from "../../theme/mixins";
 
@@ -24,7 +24,8 @@ export const AppBarStyles = StyleSheet.create({
   title_android: {
     marginTop: -5,
     alignSelf: "flex-end",
-    width: "50%"
+    width: "100%",
+    marginRight: -40
   },
   menuBack: {
     position: "absolute",
@@ -38,7 +39,10 @@ export const AppBarStyles = StyleSheet.create({
     width: 36,
     height: 36,
     //marginTop: 10,
-    marginTop: -10,
+    marginTop: Platform.select({
+      ios: -10,
+      android: 0
+    }),
     marginRight: -5
   },
   textStyle: {
@@ -59,7 +63,8 @@ export const AppBarStyles = StyleSheet.create({
     marginLeft: 5
   },
   btnGroups: {
-    paddingTop: 6,
+    paddingTop: 5,
+    paddingBottom: 5,
     paddingLeft: 10,
     paddingRight: 10,
     backgroundColor: "#ffffff"

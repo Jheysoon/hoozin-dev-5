@@ -13,7 +13,7 @@ import ForgotPasswordPage from "./ForgotPasswordPage";
 import ProfilePage from "./Profile/create-profile/create-profile.index";
 import EditProfile from "./Profile/edit-profile/edit-profile.index";
 import ShowProfile from "./Profile/view-profile/view-profile.index";
-import AboutPage from "./Menu/AboutPage";
+//import AboutPage from "./Menu/AboutPage";
 import Feedback from "./Menu/FeedbackPage";
 import AddEvent from "./Event/AddEvent/AddEvent.index";
 import AddInvitee from "./Event/AddInvitee/AddInvitee.index";
@@ -33,6 +33,9 @@ import AddDeviceUserContainer from "./AddUser/AddDeviceUser";
 import AddFacebookUserContainer from "./AddUser/AddFacebookUser";
 import AddNewUserContainer from "./AddUser/AddNewUser";
 import TabScreen from "./TabScreen";
+import FriendsComponent from "./Friends/FriendsComponent";
+import MenuTabContainer from "./Menu/TabContainer";
+import FriendView from "./Friends/FriendView";
 
 firebase.initializeApp(FIREBASE_DEV_CONF);
 
@@ -45,7 +48,7 @@ const MainAppContainer = StackNavigator(
     Profile: { screen: ProfilePage },
     EditProfile: { screen: EditProfile },
     ShowProfile: { screen: ShowProfile },
-    About: { screen: AboutPage },
+    //About: { screen: AboutPage },
     Feedback: { screen: Feedback },
     AddEvent: { screen: AddEvent },
     AddInvitee: { screen: AddInvitee },
@@ -64,7 +67,10 @@ const MainAppContainer = StackNavigator(
     AddDeviceUser: { screen: AddDeviceUserContainer },
     AddFacebookUser: { screen: AddFacebookUserContainer },
     AddNewUser: { screen: AddNewUserContainer },
-    TabScreen: { screen: TabScreen }
+    TabScreen: { screen: TabScreen },
+    Friends: { screen: FriendsComponent },
+    MenuTabContainer: { screen: MenuTabContainer },
+    FriendView: { screen: FriendView }
   },
   {
     initialRouteName: "Login",

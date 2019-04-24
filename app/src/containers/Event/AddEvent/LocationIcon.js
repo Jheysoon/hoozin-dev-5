@@ -26,7 +26,7 @@ const LocationIcon = () => {
             width: 30,
             height: 30,
             position: "absolute",
-            left: 0,
+            left: -10,
             top: 4,
             zIndex: 9999
           }}

@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import { Container, Button, Spinner } from "native-base";
 import { connect } from "react-redux";
+import ImageSvg from "react-native-remote-svg";
+
 import { strings } from "../../locales/i18n";
 import {
   loginAction,
@@ -27,7 +29,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 // Stylesheet
 import { LoginStyles } from "./login.style";
-import { LocationServiceAPI } from '../../api/location.api';
+import { LocationServiceAPI } from "../../api/location.api";
+import SvgImages from "../../svgs/SvgImages";
 
 /**
  * Redux Container component to host Login functionalities
@@ -52,7 +55,6 @@ class LoginContainer extends Component {
         console.error(err.message);
       }
       if (result) {
-
         let parseResult = JSON.parse(result);
         const { accountType, uid } = parseResult;
 
@@ -186,10 +188,19 @@ class LoginContainer extends Component {
           source={ImageMap.brand_auth_bg}
         >
           {/*  logo part */}
-          <View style={LoginStyles.logo}>
-            <Text style={LoginStyles.logoText}>
-              {strings("common.logo_text")}
-            </Text>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              height: 200
+            }}
+          >
+            <ImageSvg
+              style={{ height: 100, width: 180 }}
+              source={{
+                uri: SvgImages.hoozin_logo_login
+              }}
+            />
           </View>
 
           {/* input part */}
@@ -240,13 +251,19 @@ class LoginContainer extends Component {
                   </Text>
                 </Button>
               </View>
-              <View style={LoginStyles.rowItem}>
+              <View style={[LoginStyles.rowItem, { marginTop: 10 }]}>
                 <Text style={LoginStyles.commonText}>
                   {" "}
                   {strings("login.continue_with")}{" "}
                 </Text>
               </View>
-              <View style={[LoginStyles.socialLogin, LoginStyles.rowItem]}>
+              <View
+                style={[
+                  LoginStyles.socialLogin,
+                  LoginStyles.rowItem,
+                  { marginTop: 10 }
+                ]}
+              >
                 <Button
                   transparent
                   light
@@ -266,6 +283,7 @@ class LoginContainer extends Component {
               </View>
             </View>
           </KeyboardAwareScrollView>
+          
           {/* footer part */}
           <View style={LoginStyles.footer}>
             <TouchableOpacity

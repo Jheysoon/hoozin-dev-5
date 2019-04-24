@@ -99,13 +99,13 @@ const AddEventForm = ({
             }}
           />
         </View>
-        <View style={{ padding: 5, flexDirection: "row" }}>
+        <View style={{ padding: 5, flexDirection: "row", marginTop: -15 }}>
           <View
             style={{
               flex: 1,
               justifyContent: "flex-end",
               flexWrap: "nowrap",
-              position: "relative"
+              position: "relative",
             }}
           >
             <CalendarIcon />
@@ -113,7 +113,7 @@ const AddEventForm = ({
               style={{
                 fontFamily: "Lato",
                 fontWeight: "400",
-                marginLeft: 8
+                marginLeft: 8,
               }}
             >
               Begin

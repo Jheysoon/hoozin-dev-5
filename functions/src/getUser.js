@@ -18,7 +18,13 @@ exports.getUser = functions.https.onCall((data, context) => {
         name: user.name,
         phone: user.phone,
         profileImgUrl: user.profileImgUrl,
-        status: user.status
+        status: user.status,
+        facebook: user.facebook || "",
+        instagram: user.instagram || "",
+        linkedin: user.linkedin || "",
+        twitter: user.twitter || "",
+        snapchat: user.snapchat || "",
+        strava: user.strava || ""
       };
     });
 });

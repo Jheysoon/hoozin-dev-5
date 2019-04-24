@@ -3,6 +3,8 @@ package org.app.hoozin;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.swmansion.reanimated.ReanimatedPackage;
 import com.arttitude360.reactnative.rngoogleplaces.RNGooglePlacesPackage;
 //import com.bugsnag.BugsnagReactNative;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
@@ -65,6 +67,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
+            new RNGestureHandlerPackage(),
+            new ReanimatedPackage(),
             new RNGooglePlacesPackage(),
             //BugsnagReactNative.getPackage(),
             new RNGoogleSigninPackage(),

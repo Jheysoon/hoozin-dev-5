@@ -2,36 +2,29 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import {
   View,
-  ScrollView,
   Text,
   TouchableOpacity,
   AsyncStorage,
   AppState,
   Platform
 } from "react-native";
+import GeoFire from "geofire";
 import Image from "react-native-remote-svg";
 import { withNavigation } from "react-navigation";
-import { IconsMap, ImageMap } from "../../../assets/assetMap";
 import { Header, Left, Right, Icon, Body, Button } from "native-base";
-import GeoFire from "geofire";
 import BackgroundGeolocation from "react-native-mauron85-background-geolocation";
-import {
-  extractHostAndInvitedEventsInfo,
-  filterEventsByRSVP,
-  recalculateFutureEvents
-} from "../../utils/eventListFilter";
 
-import { UserManagementServiceAPI, EventServiceAPI } from "../../api";
-import NotificationService from "../../utils/notification.service";
-
-// styles
-import { AppBarStyles } from "./appbar.style";
 import AppBar from "../../svgs/AppBar";
-import OfflineNotice from "../../components/OfflineNotice";
-import { getEventList } from "../../actions/events/list";
+import AppBarFilter from "./AppBarFilter";
+import { AppBarStyles } from "./appbar.style";
 import { changeUserLocation } from "../../actions/user";
+import { getEventList } from "../../actions/events/list";
+import OfflineNotice from "../../components/OfflineNotice";
+import { IconsMap, ImageMap } from "../../../assets/assetMap";
+import NotificationService from "../../utils/notification.service";
+import { UserManagementServiceAPI, EventServiceAPI } from "../../api";
+import { extractHostAndInvitedEventsInfo } from "../../utils/eventListFilter";
 
-let hostAndInvitedEvents = [];
 /**
  * Component to hold the app bar (top navigation plus tab filter bar)
  */
@@ -51,7 +44,8 @@ class AppBarComponent extends Component {
       userId: null,
       currentFilterType: "all",
       existingInvitedEvents: [],
-      first: true
+      first: true,
+      filter: "all"
     };
 
     this.handleEventStatusFilter = this.handleEventStatusFilter.bind(this);
@@ -106,23 +100,6 @@ class AppBarComponent extends Component {
         // IMPORTANT: task has to be ended by endTask
         BackgroundGeolocation.endTask(taskKey);
       });
-    });
-
-    BackgroundGeolocation.on("stationary", stationaryLocation => {
-      // handle stationary locations here
-      //Actions.sendLocation(stationaryLocation);
-    });
-
-    BackgroundGeolocation.on("error", error => {
-      console.log("[ERROR] BackgroundGeolocation error:", error);
-    });
-
-    BackgroundGeolocation.on("start", () => {
-      console.log("[INFO] BackgroundGeolocation service has been started");
-    });
-
-    BackgroundGeolocation.on("stop", () => {
-      console.log("[INFO] BackgroundGeolocation service has been stopped");
     });
 
     BackgroundGeolocation.on("authorization", status => {
@@ -187,14 +164,6 @@ class AppBarComponent extends Component {
         });
       }); */
       //console.log(navigator.geolocation);
-    });
-
-    BackgroundGeolocation.on("abort_requested", () => {
-      console.log("[INFO] Server responded with 285 Updates Not Required");
-    });
-
-    BackgroundGeolocation.on("http_authorization", () => {
-      console.log("[INFO] App needs to authorize the http requests");
     });
 
     BackgroundGeolocation.checkStatus(status => {
@@ -352,16 +321,6 @@ class AppBarComponent extends Component {
         hasNoEvent: false,
         userId
       });
-      setTimeout(
-        () =>
-          this.handleEventStatusFilter(
-            "all",
-            this.refs.textForStatusAll,
-            this.refs.activeBarForStatusAll,
-            "hsla(207, 97%, 75%, 1)"
-          ),
-        1000
-      );
     } else {
       this.setState({ userId });
     }
@@ -455,34 +414,6 @@ class AppBarComponent extends Component {
   }
 
   /**
-   * @description Highlight tabs for filtering while reset the previous active tab
-   * @param {Object} textElemRef
-   * @param {Object} barElemRef
-   * @param {string} currentColor
-   */
-  highlightTabToFilter(textElemRef, barElemRef, currentColor) {
-    textElemRef.setNativeProps({
-      style: { fontWeight: "700" }
-    });
-    barElemRef.setNativeProps({
-      style: { backgroundColor: this.calculateActiveColor(currentColor) }
-    });
-    if (
-      this.state.prevTextElemRef != this.state.textElemRef &&
-      this.state.prevBarElemRef != barElemRef &&
-      this.state.prevBarElemColor
-    ) {
-      this.state.prevTextElemRef.setNativeProps({
-        style: { fontWeight: "400" }
-      });
-
-      this.state.prevBarElemRef.setNativeProps({
-        style: { backgroundColor: this.state.prevBarElemColor }
-      });
-    }
-  }
-
-  /**
    * @description determines whether the invitee to an active event is nearby to the event
    * @param {Array<any>} eventList
    */
@@ -536,10 +467,12 @@ class AppBarComponent extends Component {
    * @param {string} type
    * @param {Object} textElemRef
    */
-  async handleEventStatusFilter(type, textElemRef, barElemRef, currentColor) {
+  async handleEventStatusFilter(type) {
     this.props.getEventList(this.props.user.socialUID, type);
 
-    this.highlightTabToFilter(textElemRef, barElemRef, currentColor);
+    this.setState({
+      filter: type
+    });
   }
 
   render() {
@@ -547,7 +480,7 @@ class AppBarComponent extends Component {
       <React.Fragment>
         <OfflineNotice />
         <View style={{ position: "relative", zIndex: 99 }}>
-          <Header style={AppBarStyles.header}>
+          <Header style={[AppBarStyles.header]}>
             <Left>
               {this.props.showBackBtn ? (
                 <Button
@@ -615,244 +548,20 @@ class AppBarComponent extends Component {
               )}
             </Right>
           </Header>
-          {this.props.headerTitle ? (
-            <View style={{ paddingTop: 10, backgroundColor: "#ffffff" }}>
-              <Text style={AppBarStyles.textStyle}>
-                {this.props.headerTitle}
-              </Text>
-            </View>
-          ) : null}
-          {this.props.isRibbonVisible ? (
-            <View>
-              <ScrollView horizontal={true}>
-                <View>
-                  <TouchableOpacity
-                    style={AppBarStyles.btnGroups}
-                    onPress={() =>
-                      this.handleEventStatusFilter(
-                        "all",
-                        this.refs.textForStatusAll,
-                        this.refs.activeBarForStatusAll,
-                        "hsla(207, 97%, 75%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusAll"
-                      style={AppBarStyles.btnGroupTxt}
-                    >
-                      All
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusAll"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(207, 97%, 75%, 1)"
-                    }}
-                  />
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={AppBarStyles.btnGroups}
-                    onPress={() =>
-                      this.handleEventStatusFilter(
-                        "active",
-                        this.refs.textForStatusActive,
-                        this.refs.activeBarForStatusActive,
-                        "hsla(346, 96%, 60%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusActive"
-                      style={AppBarStyles.btnGroupTxt}
-                    >
-                      Active
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusActive"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(346, 96%, 60%, 1)"
-                    }}
-                  />
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={AppBarStyles.btnGroups}
-                    onPress={() =>
-                      this.handleEventStatusFilter(
-                        "accepted",
-                        this.refs.textForStatusAccepted,
-                        this.refs.activeBarForStatusAccepted,
-                        "hsla(106, 36%, 52%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusAccepted"
-                      style={AppBarStyles.btnGroupTxt}
-                    >
-                      Accepted
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusAccepted"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(106, 36%, 52%, 1)"
-                    }}
-                  />
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={AppBarStyles.btnGroups}
-                    onPress={() =>
-                      this.handleEventStatusFilter(
-                        "invited",
-                        this.refs.textForStatusInvited,
-                        this.refs.activeBarForStatusInvited,
-                        "hsla(37, 87%, 50%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusInvited"
-                      style={AppBarStyles.btnGroupTxt}
-                    >
-                      Invited
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusInvited"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(37, 87%, 50%, 1)"
-                    }}
-                  />
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={AppBarStyles.btnGroups}
-                    onPress={() =>
-                      this.handleEventStatusFilter(
-                        "public",
-                        this.refs.textForStatusPublic,
-                        this.refs.activeBarForStatusPublic,
-                        "hsla(208, 96%, 57%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusPublic"
-                      style={AppBarStyles.btnGroupTxt}
-                    >
-                      Public
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusPublic"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(208, 96%, 57%, 1)"
-                    }}
-                  />
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={AppBarStyles.btnGroups}
-                    onPress={() =>
-                      this.handleEventStatusFilter(
-                        "myevents",
-                        this.refs.textForStatusMyevents,
-                        this.refs.activeBarForStatusMyevents,
-                        "hsla(266, 74%, 42%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusMyevents"
-                      style={AppBarStyles.btnGroupTxt}
-                    >
-                      My Events
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusMyevents"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(266, 74%, 42%, 1)"
-                    }}
-                  />
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={AppBarStyles.btnGroups}
-                    onPress={() =>
-                      this.handleEventStatusFilter(
-                        "declined",
-                        this.refs.textForStatusDeclined,
-                        this.refs.activeBarForStatusDeclined,
-                        "hsla(208, 96%, 57%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusDeclined"
-                      style={AppBarStyles.btnGroupTxt}
-                    >
-                      Declined
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusDeclined"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(208, 96%, 57%, 1)"
-                    }}
-                  />
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={AppBarStyles.btnGroups}
-                    onPress={() =>
-                      this.handleEventStatusFilter(
-                        "history",
-                        this.refs.textForStatusHistory,
-                        this.refs.activeBarForStatusHistory,
-                        "hsla(0, 0%, 44%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusHistory"
-                      style={AppBarStyles.btnGroupTxt}
-                    >
-                      History
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusHistory"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(0, 0%, 44%, 1)"
-                    }}
-                  />
-                </View>
-              </ScrollView>
-            </View>
-          ) : null}
         </View>
+
+        {this.props.headerTitle ? (
+          <View style={{ paddingTop: 10, backgroundColor: "#ffffff" }}>
+            <Text style={AppBarStyles.textStyle}>{this.props.headerTitle}</Text>
+          </View>
+        ) : null}
+
+        {this.props.isRibbonVisible && (
+          <AppBarFilter
+            filterEvent={this.handleEventStatusFilter}
+            active={this.state.filter}
+          />
+        )}
       </React.Fragment>
     );
   }

@@ -75,6 +75,10 @@ target 'hoozin' do
 
       pod 'BugsnagReactNative', :path => '../node_modules/bugsnag-react-native'
 
+      pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
+
+      pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
     end
 
     post_install do |installer|

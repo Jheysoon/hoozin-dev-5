@@ -123,58 +123,6 @@ class ViewUserProfileContainer extends Component {
 
     return (
       <React.Fragment>
-        <Container style={{ backgroundColor: "#ffffff" }}>
-          <AppBarComponent />
-          <View style={ViewUserProfileStyles.tabBarView}>
-            {/* <TouchableOpacity onPress={() => this.onAbout()}>
-              <Image source={images.img_btn_about} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.onProfile()}>
-              <Image source={images.img_btn_profile_infocus} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.onFriends()}>
-              <Image source={images.img_btn_friends} />
-            </TouchableOpacity> */}
-
-            <Grid>
-              <Col
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center"
-                }}
-              >
-                <TouchableOpacity onPress={() => this.onAbout()}>
-                  <Image source={images.img_btn_about} />
-                </TouchableOpacity>
-              </Col>
-
-              <Col
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center"
-                }}
-              >
-                <TouchableOpacity onPress={() => this.onProfile()}>
-                  <Image source={images.img_btn_profile_infocus} />
-                </TouchableOpacity>
-              </Col>
-
-              <Col
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center"
-                }}
-              >
-                <TouchableOpacity onPress={() => this.onFriends()}>
-                  <Image source={images.img_btn_friends} />
-                </TouchableOpacity>
-              </Col>
-            </Grid>
-          </View>
-
           <Content>
             <View style={ViewUserProfileStyles.avatarView}>
               <TouchableOpacity onPress={() => null}>
@@ -747,7 +695,6 @@ class ViewUserProfileContainer extends Component {
               <Right />
             </View>
           )}
-        </Container>
         {animating && (
           <View style={ViewUserProfileStyles.overlay}>
             <Spinner

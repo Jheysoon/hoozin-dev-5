@@ -1,8 +1,6 @@
-import { AsyncStorage } from "react-native";
 import { UserManagementServiceAPI } from "./users.api";
 import firebase from "react-native-firebase";
 import moment from "moment";
-import Geocoder from "react-native-geocoder";
 
 /**
  * Handles all the event related tasks such as new event creation, edit/update event information, add/remove invitee,
@@ -65,6 +63,7 @@ export class EventServiceAPI {
         privateValue,
         status
       };
+
       return firebase
         .database()
         .ref(`${path}/${eventId}`)
@@ -78,46 +77,39 @@ export class EventServiceAPI {
         });
     } else {
       // create new event
-      return firebase
+
+      let insertData = {
+        startDate,
+        startTime,
+        startDateTimeInUTC: moment.utc(
+          moment(`${startDate} ${startTime}`, "YYYY-MM-DD hh:mm A")
+        ),
+        endDate,
+        endTime,
+        endDateTimeInUTC: moment.utc(
+          moment(`${endDate} ${endTime}`, "YYYY-MM-DD hh:mm A")
+        ),
+        eventTitle,
+        eventType,
+        location,
+        evtCoords,
+        privateValue,
+        status,
+        eventCreationTime: moment.utc(),
+        hostID: socialUID
+      };
+
+      let ref = firebase
         .database()
-        .ref()
-        .child("users")
-        .child(socialUID)
-        .once("value")
-        .then(function(snapshot) {
-          let insertData = {
-            startDate,
-            startTime,
-            startDateTimeInUTC: moment.utc(
-              moment(`${startDate} ${startTime}`, "YYYY-MM-DD hh:mm A")
-            ),
-            endDate,
-            endTime,
-            endDateTimeInUTC: moment.utc(
-              moment(`${endDate} ${endTime}`, "YYYY-MM-DD hh:mm A")
-            ),
-            eventTitle,
-            eventType,
-            location,
-            evtCoords,
-            privateValue,
-            status,
-            eventCreationTime: moment.utc(),
-            hostID: socialUID
-          };
+        .ref(path)
+        .push(insertData);
+      if (ref) {
+        let retData = { key: ref.key };
 
-          let ref = firebase
-            .database()
-            .ref(path)
-            .push(insertData);
-          if (ref) {
-            let retData = { userData: snapshot._value, key: ref.key };
-
-            return retData;
-          } else {
-            return Promise.reject(new Error(error));
-          }
-        });
+        return retData;
+      } else {
+        return Promise.reject(new Error(error));
+      }
     }
   }
 

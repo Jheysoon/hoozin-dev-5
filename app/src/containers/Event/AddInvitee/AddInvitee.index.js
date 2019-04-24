@@ -31,6 +31,7 @@ import AppBarComponent from "../../../components/AppBar/appbar.index";
 import { IconsMap } from "assets/assetMap";
 import { UserManagementServiceAPI, EventServiceAPI } from "../../../api";
 import AddInviteeSvg from "../../../svgs/AddInvitee";
+import InviteeItem from "../../../components/InviteeItem";
 
 // stylesheet
 import { AddInviteeStyles } from "./addinvitee.style";
@@ -512,72 +513,6 @@ class AddInviteeContainer extends Component {
         return inviteeList;
       }
     }
-
-    // return firebase.database().ref(`users/${this.props.user.socialUID}/event/${eventId}/invitee`)
-    //     .orderByChild("name")
-    //     .once("value")
-    //     .then(snapshot => {
-    //         if (snapshot._value) {
-    //             console.log("++ [AddInvitee] invitee found ++", snapshot);
-    //             return this.fetchUsersAllFriendsAPI(eventId)
-    //                 .then(friendsArr => {
-    //                     if (friendsArr.length > 0) {
-    //                         console.log("++ [AddInvitee] friends found ++");
-    //                         const inviteesArr = Object.keys(snapshot._value).map(key => {
-    //                             let retArray = snapshot._value[key];
-    //                             retArray.key = key;
-
-    //                             return {
-    //                                 name: retArray.name,
-    //                                 email: retArray.email,
-    //                                 phone: retArray.phone,
-    //                                 id: retArray.key,
-    //                                 preselect: true
-    //                             };
-
-    //                         });
-
-    //                         console.log("++ invitee array ++", inviteesArr);
-    //                         const joinedArr = inviteesArr.concat(friendsArr);
-    //                         console.log("++ joined array ++", joinedArr);
-
-    //                         const flag = [];
-    //                         const newArr = joinedArr.filter(item => {
-    //                             if (flag.includes(item.email)) {
-    //                                 return false;
-    //                             }
-    //                             flag.push(item.email);
-    //                             return true;
-    //                         });
-    //                         const addedInviteeCounter = newArr.filter(item => item.preselect).length;
-    //                         console.log("++ new array ++", newArr);
-    //                         this.setState({ inviteeAddedCounter: addedInviteeCounter });
-    //                         return newArr;
-    //                     }
-    //                     else {
-    //                         console.log("++ [AddInvitee] no friend(s) found ++");
-    //                         const arr = Object.keys(snapshot._value).map(key => {
-    //                             let retArray = snapshot._value[key];
-    //                             retArray.key = key;
-
-    //                             return {
-    //                                 name: retArray.name,
-    //                                 email: retArray.email,
-    //                                 phone: retArray.phone,
-    //                                 id: retArray.key,
-    //                                 preselect: true
-    //                             };
-    //                         });
-    //                         this.setState({ inviteeAddedCounter: arr.length });
-    //                         return arr;
-    //                     }
-    //                 });
-    //         }
-    //         else {
-    //             this.setState({ inviteeAddedCounter: 0 });
-    //             return this.fetchUsersAllFriendsAPI(eventId);
-    //         }
-    //     });
   }
 
   /**
@@ -849,91 +784,13 @@ class AddInviteeContainer extends Component {
                 {this.state.contactList && this.state.contactList.length > 0 ? (
                   this.state.contactList.map((data, key) => {
                     return (
-                      <View style={{ paddingTop: 3 }} key={key}>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "center",
-                            backgroundColor: "white",
-                            borderRadius: 40,
-                            marginLeft: 2,
-                            shadowColor: "#707070",
-                            shadowOffset: { width: 6, height: 6 },
-                            shadowOpacity: 0.3
-                          }}
-                        >
-                          <View style={{ flex: 1 }}>
-                            {data.profileImgUrl ? (
-                              <Image
-                                source={{ uri: data.profileImgUrl }}
-                                style={{
-                                  alignSelf: "center",
-                                  width: 40,
-                                  height: 40,
-                                  borderRadius: 20
-                                }}
-                              />
-                            ) : (
-                              <Image
-                                source={IconsMap.icon_contact_avatar}
-                                style={{
-                                  alignSelf: "center",
-                                  width: 40,
-                                  height: 40,
-                                  borderRadius: 20
-                                }}
-                              />
-                            )}
-                          </View>
-                          <View style={{ flex: 4, justifyContent: "center" }}>
-                            <Text
-                              style={
-                                data.colorChange
-                                  ? { fontSize: 17, color: "red" }
-                                  : {
-                                      fontSize: 17,
-                                      position: "relative",
-                                      top: -3
-                                    }
-                              }
-                            >
-                              {data.name}
-                            </Text>
-                          </View>
-                          {data.preselect ? (
-                            <Button
-                              transparent
-                              icon
-                              disabled={
-                                _.has(data, "status") &&
-                                (data.status == "going" ||
-                                  data.status == "maybe")
-                                  ? true
-                                  : false
-                              }
-                              style={{ alignSelf: "center" }}
-                              onPress={() =>
-                                this.removeUserAsInviteeFromEvent(data)
-                              }
-                            >
-                              {this.minusIcon(data)}
-                            </Button>
-                          ) : (
-                            <Button
-                              transparent
-                              icon
-                              style={{ alignSelf: "center" }}
-                              onPress={() => this.addUserAsInviteeToEvent(data)}
-                            >
-                              <Icon
-                                type="FontAwesome"
-                                name="plus"
-                                style={{ color: "#6EB25A" }}
-                              />
-                            </Button>
-                          )}
-                        </View>
-                      </View>
+                      <InviteeItem
+                        data={data}
+                        key={key}
+                        removeToEvent={this.removeUserAsInviteeFromEvent}
+                        addToEvent={this.addUserAsInviteeToEvent}
+                        viewType="addInvitee"
+                      />
                     );
                   })
                 ) : (
@@ -948,6 +805,7 @@ class AddInviteeContainer extends Component {
                     <Text>No {this.state.emptyListOf} to show right now</Text>
                   </View>
                 )}
+                <View style={{marginTop: 10}} />
               </View>
             </View>
           </Content>
@@ -1050,6 +908,7 @@ class AddInviteeContainer extends Component {
               <Text style={AddInviteeStyles.textSearchList}>Z</Text>
             </TouchableOpacity>
           </View>
+
           {Platform.OS === "ios" ? (
             <Footer style={AddInviteeStyles.bottomView_ios}>
               <Left>

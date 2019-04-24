@@ -34,6 +34,8 @@ class MenuPage extends Component {
       privacyUrl: "https://hoozin.app/privacypolicy",
       cookiesUrl: "https://hoozin.app/useofcookies"
     };
+
+    this.onPressed = this.onPressed.bind(this);
   }
   static navigationOptions = {
     header: null,
@@ -51,6 +53,15 @@ class MenuPage extends Component {
     console.log("store report", this.props.user);
   }
 
+  onPressed(key) {
+    this.props.navigation.navigate({
+      routeName: "MenuTabContainer",
+      params: {
+        initialPage: key
+      }
+    });
+  }
+
   render() {
     return (
       <Container style={{ backgroundColor: "#ffffff" }}>
@@ -58,19 +69,12 @@ class MenuPage extends Component {
         <Content>
           <List>
             <ListItem
-              style={{
-                borderBottomColor: "#00000",
-                borderBottomWidth: 1
-              }}
+              style={styles.listStyle}
               button
-              onPress={() => this.onAboutPressed()}
+              onPress={() => this.onPressed(0)}
             >
               <Text
-                style={{
-                  paddingLeft: 10,
-                  color: "#004D9B",
-                  paddingRight: 10
-                }}
+                style={styles.textStyle}
               >
                 About
               </Text>
@@ -78,46 +82,36 @@ class MenuPage extends Component {
 
             <ListItem
               button
-              onPress={() => this.onProfilePressed()}
-              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
+              onPress={() => this.onPressed(1)}
+              style={styles.listStyle}
             >
-              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>Profile</Text>
+              <Text style={styles.textStyle}>Profile</Text>
             </ListItem>
 
             <ListItem
               button
-              onPress={() => this.onFriendsPressed()}
-              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
+              onPress={() => this.onPressed(2)}
+              style={styles.listStyle}
             >
-              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>Friends</Text>
+              <Text style={styles.textStyle}>Friends</Text>
             </ListItem>
 
             <ListItem
               button
               onPress={() => this.onTermsAndConditionPressed(this.state.tosUrl)}
-              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
+              style={styles.listStyle}
             >
-              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>
+              <Text style={styles.textStyle}>
                 Terms of Service
               </Text>
             </ListItem>
 
             <ListItem
               button
-              onPress={() => this.onProvideFeedbackPressed()}
-              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
-            >
-              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>
-                Provide Feedback
-              </Text>
-            </ListItem>
-
-            <ListItem
-              button
               onPress={() => this.onPrivacyPressed(this.state.privacyUrl)}
-              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
+              style={styles.listStyle}
             >
-              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>
+              <Text style={styles.textStyle}>
                 Privacy Policy
               </Text>
             </ListItem>
@@ -125,19 +119,29 @@ class MenuPage extends Component {
             <ListItem
               button
               onPress={() => this.onCookieUsagePressed(this.state.cookiesUrl)}
-              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
+              style={styles.listStyle}
             >
-              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>
-                User of Cookies
+              <Text style={styles.textStyle}>
+                Use of Cookies
+              </Text>
+            </ListItem>
+
+            <ListItem
+              button
+              onPress={() => this.onProvideFeedbackPressed()}
+              style={styles.listStyle}
+            >
+              <Text style={styles.textStyle}>
+                Provide Feedback
               </Text>
             </ListItem>
 
             <ListItem
               button
               onPress={() => this.onLogoutPressed()}
-              style={{ borderBottomColor: "#00000", borderBottomWidth: 1 }}
+              style={styles.listStyle}
             >
-              <Text style={{ paddingLeft: 10, color: "#004D9B" }}>Logout</Text>
+              <Text style={styles.textStyle}>Logout</Text>
             </ListItem>
           </List>
         </Content>
@@ -311,7 +315,12 @@ class MenuPage extends Component {
     });
   }
 
-  onFriendsPressed() {}
+  onFriendsPressed() {
+    this.props.navigation.navigate({
+      routeName: "Friends",
+      key: "Friends"
+    });
+  }
 
   onTermsAndConditionPressed(url) {
     Linking.canOpenURL(url)
@@ -361,20 +370,27 @@ class MenuPage extends Component {
     const { navigate } = this.props.navigation;
     //this.props.navigation.popToTop();
 
-    AsyncStorage.removeItem('userId').then(() => {
+    AsyncStorage.removeItem("userId").then(() => {
       navigate({
         routeName: "Login",
         key: "Login"
       });
     });
-    
-    
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  listStyle: {
+    borderBottomColor: "rgba(0,0,0,.3)",
+    borderBottomWidth: 1,
+    marginLeft: 0
+  },
+  textStyle: {
+    paddingLeft: 30,
+    color: "#004D9B"
   },
   header: {
     height: 50,

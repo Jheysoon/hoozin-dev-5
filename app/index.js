@@ -8,6 +8,7 @@ import bgMessaging from './src/bgMessaging'
 const bugsnag = new Client("6c10791f6aba53199acc2ecd662a6125"); */
 
 //bugsnag.notify(new Error("Test error"));
+console.disableYellowBox = true;
 
 
 AppRegistry.registerComponent('hoozin', () => RootAppComponent);
