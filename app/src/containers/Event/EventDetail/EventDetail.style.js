@@ -84,6 +84,7 @@ export const EventDetailStyles = StyleSheet.create({
         borderTopWidth: 0,
         justifyContent: 'center',
         flexDirection: 'row',
+        width: 400
     },
     bottomView_android: {
         width: '100%',
@@ -92,6 +93,7 @@ export const EventDetailStyles = StyleSheet.create({
         borderTopWidth: 0,
         justifyContent: 'center',
         flexDirection: 'row',
+        width: 300
     },
     bottomBtn: {
         marginRight: 20,

@@ -29,7 +29,10 @@ import { filterInviteeByRSVP } from "../../../utils/eventListFilter";
 // stylesheet
 import { EventDetailStyles } from "./EventDetail.style";
 import { EventServiceAPI, UserManagementServiceAPI } from "../../../api";
-import { getEventList } from './../../../actions/events/list';
+import { getEventList } from "./../../../actions/events/list";
+import InviteeFilter from "./InviteeFilter";
+import InviteeItem from "./../../../components/InviteeItem";
+import FilterItems from "../../../components/FilterItems";
 
 const inviteeStatusMarker = {
   going: "rgba(110, 178, 90, 0.55)",
@@ -63,10 +66,13 @@ class EventDetailContainer extends Component {
         longitude: -122.4324,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421
-      }
+      },
+      activeFilter: "all"
     };
 
     this.getEventInformation = this.getEventInformation.bind(this);
+    this.filterEventInviteesByRSVP = this.filterEventInviteesByRSVP.bind(this);
+    this.showUserProfile = this.showUserProfile.bind(this);
   }
   componentWillMount() {
     const { params } = this.props.navigation.state;
@@ -149,12 +155,12 @@ class EventDetailContainer extends Component {
             longitudeDelta: 0.0421
           }
         : this.state.defaultOrEventLocation;
-      this.filterEventInviteesByRSVP(
+      /* this.filterEventInviteesByRSVP(
         "all",
         this.refs.textForStatusAll,
         this.refs.activeBarForStatusAll,
         "hsla(207, 97%, 75%, 1)"
-      );
+      ); */
       this.setState({
         unfilteredEventData: invitees,
         unfilteredInviteeList: invitees,
@@ -220,7 +226,7 @@ class EventDetailContainer extends Component {
             }
           );
           this.setState({ eventData }, () => {
-            this.props.getEventList(this.props.user.socialUID)
+            this.props.getEventList(this.props.user.socialUID);
           });
         });
     } else {
@@ -246,13 +252,9 @@ class EventDetailContainer extends Component {
    * @description filter event invitees by RSVP status
    * @param {string} responseStatus
    */
-  filterEventInviteesByRSVP(
-    responseStatus,
-    textElemRef,
-    barElemRef,
-    currentColor
-  ) {
+  filterEventInviteesByRSVP(responseStatus) {
     let filteredInvitee = [];
+
     if (responseStatus != "friends") {
       filteredInvitee = this.state.unfilteredInviteeList.filter(invitee =>
         filterInviteeByRSVP(invitee, responseStatus)
@@ -262,29 +264,8 @@ class EventDetailContainer extends Component {
     }
     this.setState({
       filteredInvitedList: filteredInvitee,
-      prevTextElemRef: textElemRef,
-      prevBarElemColor: currentColor,
-      prevBarElemRef: barElemRef
+      activeFilter: responseStatus
     });
-    textElemRef.setNativeProps({
-      style: { fontWeight: "700" }
-    });
-    barElemRef.setNativeProps({
-      style: { backgroundColor: this.calculateActiveColor(currentColor) }
-    });
-    if (
-      this.state.prevTextElemRef != this.state.textElemRef &&
-      this.state.prevBarElemRef != barElemRef &&
-      this.state.prevBarElemColor
-    ) {
-      this.state.prevTextElemRef.setNativeProps({
-        style: { fontWeight: "400" }
-      });
-
-      this.state.prevBarElemRef.setNativeProps({
-        style: { backgroundColor: this.state.prevBarElemColor }
-      });
-    }
   }
 
   /**
@@ -304,15 +285,23 @@ class EventDetailContainer extends Component {
     });
   }
 
-  showUserProfile(userId, eventId, hostId) {
+  showUserProfile(userId) {
+    const { eventData, hostId } = this.state;
+
     this.props.navigation.navigate({
       routeName: "EventActiveUser",
       key: "EventActiveUser",
-      params: { hostId: userId, eventId: eventId, eventHostId: hostId }
+      params: {
+        hostId: userId,
+        eventId: eventData.eventId,
+        eventHostId: hostId
+      }
     });
   }
 
   render() {
+    const FooterWrapper = Platform.OS === "ios" ? Footer : View;
+
     return (
       <React.Fragment>
         <Container style={{ backgroundColor: "#ffffff" }}>
@@ -358,11 +347,11 @@ class EventDetailContainer extends Component {
                   </View>
                 </View>
                 <View style={EventDetailStyles.cardDetail}>
-                  {/* <View>
-                                        <Text style={EventDetailStyles.eventTitle}>
-                                            {this.props.event.eventTitle || this.state.eventData.eventTitle}
-                                        </Text>
-                                    </View> */}
+                  <View>
+                    <Text style={EventDetailStyles.eventTitle}>
+                      {this.state.eventData.eventTitle}
+                    </Text>
+                  </View>
                   <View style={EventDetailStyles.eventMetaWrapper}>
                     <View style={{ flex: 1 }}>
                       <Text
@@ -394,11 +383,8 @@ class EventDetailContainer extends Component {
                           color: "#000000"
                         }}
                       >
-                        {this.props.event.startTime ||
-                          this.state.eventData.startTime}{" "}
-                        -{" "}
-                        {this.props.event.endTime ||
-                          this.state.eventData.endTime}
+                        {this.state.eventData.startTime} -{" "}
+                        {this.state.eventData.endTime}
                       </Text>
                       <Text
                         style={{
@@ -409,8 +395,7 @@ class EventDetailContainer extends Component {
                           marginTop: 10
                         }}
                       >
-                        {this.props.event.location ||
-                          this.state.eventData.location}
+                        {this.state.eventData.location}
                       </Text>
                       <Text
                         style={{
@@ -420,12 +405,11 @@ class EventDetailContainer extends Component {
                           textAlign: "right",
                           marginTop: 40,
                           position: "absolute",
-                          right: -70,
-                          top: 40
+                          right: -55,
+                          top: 30
                         }}
                       >
-                        {this.props.event.eventType ||
-                          this.state.eventData.eventType}
+                        {this.state.eventData.eventType}
                       </Text>
                     </View>
                     <View style={{ flex: 1.5, marginLeft: 10 }}>
@@ -434,15 +418,19 @@ class EventDetailContainer extends Component {
                           shadowColor: "#000000",
                           shadowOpacity: 0.16,
                           shadowOffset: { width: 6, height: 6 },
-                          shadowRadius: 20
+                          shadowRadius: 32,
+                          width: 64,
+                          height: 64,
+                          borderRadius: 32,
+                          overflow: "hidden"
+                          //marginTop: 20
                         }}
                       >
                         <MapView
                           style={{
-                            width: 64,
-                            height: 64,
-                            borderRadius: 32,
-                            marginTop: 10
+                            width: "100%",
+                            height: "100%",
+                            borderRadius: 32
                           }}
                           onPress={() =>
                             this.showEventLocationMap(
@@ -459,24 +447,26 @@ class EventDetailContainer extends Component {
             </View>
           ) : (
             <View>
-              {/* <Text style={[EventDetailStyles.eventTitle, { textAlign: 'center' }]}>
-                                {this.props.event.eventTitle || this.state.eventData.eventTitle}
-                            </Text> */}
+              <Text
+                style={[EventDetailStyles.eventTitle, { textAlign: "center" }]}
+              >
+                {this.props.event.eventTitle || this.state.eventData.eventTitle}
+              </Text>
             </View>
           )}
           <View style={{ flex: 1, position: "relative" }}>
             <View
               style={{
                 width: "95%",
-                height: 1,
+                height: 2,
                 backgroundColor: "#BCE0FD",
-                marginBottom: 10,
+                marginBottom: 15,
                 position: "relative",
                 left: 10,
                 top: 10
               }}
             />
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={{ position: "absolute", right: 4, top: 8, zIndex: 9999 }}
               onPress={() => this.toggleInviteeOnlyView()}
             >
@@ -529,157 +519,20 @@ class EventDetailContainer extends Component {
                   style={{ width: 48, height: 48 }}
                 />
               )}
-            </TouchableOpacity>
-            <View>
-              <ScrollView horizontal={true}>
-                <View>
-                  <TouchableOpacity
-                    style={EventDetailStyles.btnGroups}
-                    onPress={() =>
-                      this.filterEventInviteesByRSVP(
-                        "all",
-                        this.refs.textForStatusAll,
-                        this.refs.activeBarForStatusAll,
-                        "hsla(207, 97%, 75%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusAll"
-                      style={EventDetailStyles.btnGroupTxt}
-                    >
-                      All
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusAll"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(207, 97%, 75%, 1)"
-                    }}
-                  />
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={EventDetailStyles.btnGroups}
-                    onPress={() =>
-                      this.filterEventInviteesByRSVP(
-                        "accepted",
-                        this.refs.textForStatusAccepted,
-                        this.refs.activeBarForStatusAccepted,
-                        "hsla(106, 36%, 52%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusAccepted"
-                      style={EventDetailStyles.btnGroupTxt}
-                    >
-                      Accepted
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusAccepted"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(106, 36%, 52%, 1)"
-                    }}
-                  />
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={EventDetailStyles.btnGroups}
-                    onPress={() =>
-                      this.filterEventInviteesByRSVP(
-                        "maybe",
-                        this.refs.textForStatusInvited,
-                        this.refs.activeBarForStatusInvited,
-                        "hsla(37, 87%, 50%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusInvited"
-                      style={EventDetailStyles.btnGroupTxt}
-                    >
-                      Maybe
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusInvited"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(37, 87%, 50%, 1)"
-                    }}
-                  />
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={EventDetailStyles.btnGroups}
-                    onPress={() =>
-                      this.filterEventInviteesByRSVP(
-                        "declined",
-                        this.refs.textForStatusDeclined,
-                        this.refs.activeBarForStatusDeclined,
-                        "hsla(346, 100%, 50%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusDeclined"
-                      style={EventDetailStyles.btnGroupTxt}
-                    >
-                      Declined
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusDeclined"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(346, 100%, 50%, 1)"
-                    }}
-                  />
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={EventDetailStyles.btnGroups}
-                    onPress={() =>
-                      this.filterEventInviteesByRSVP(
-                        "friends",
-                        this.refs.textForStatusFriends,
-                        this.refs.activeBarForStatusFriends,
-                        "hsla(208, 96%, 57%, 1)"
-                      )
-                    }
-                  >
-                    <Text
-                      ref="textForStatusFriends"
-                      style={EventDetailStyles.btnGroupTxt}
-                    >
-                      Friends
-                    </Text>
-                  </TouchableOpacity>
-                  <View
-                    ref="activeBarForStatusFriends"
-                    style={{
-                      height: 3,
-                      width: "100%",
-                      backgroundColor: "hsla(208, 96%, 57%, 1)"
-                    }}
-                  />
-                </View>
-              </ScrollView>
-            </View>
+            </TouchableOpacity> */}
+
+            <InviteeFilter
+              filterInvitee={this.filterEventInviteesByRSVP}
+              active={this.state.activeFilter}
+            />
+
             <Content>
               <View
                 style={{
                   flexDirection: "row",
                   flexWrap: "wrap",
-                  marginTop: 10
+                  marginTop: 10,
+                  marginBottom: 30
                 }}
               >
                 <View style={{ flex: 18 }}>
@@ -687,147 +540,12 @@ class EventDetailContainer extends Component {
                   this.state.filteredInvitedList.length > 0
                     ? this.state.filteredInvitedList.map((data, key) => {
                         return (
-                          <View
-                            style={{
-                              width: "95%",
-                              marginLeft: 5,
-                              paddingTop: 3,
-                              borderBottomWidth: 0,
-                              borderBottomColor: "#D8D8D8",
-                              borderWidth: 0,
-                              borderRadius: 2,
-                              borderColor: "#D8D8D8",
-                              shadowColor: "#000",
-                              shadowOffset: { width: 0, height: 2 },
-                              shadowOpacity: 0.3,
-                              shadowRadius: 2,
-                              elevation: 1
-                            }}
+                          <InviteeItem
+                            data={data}
                             key={key}
-                          >
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "center",
-                                backgroundColor: "white",
-                                borderRadius: 40,
-                                marginLeft: 2
-                              }}
-                            >
-                              <View style={{ flex: 1 }}>
-                                {data.profileImgUrl ? (
-                                  <TouchableOpacity
-                                    onPress={() =>
-                                      this.showUserProfile(
-                                        data.inviteeId,
-                                        this.state.eventData.eventId,
-                                        this.state.hostId
-                                      )
-                                    }
-                                  >
-                                    <Image
-                                      source={{ uri: data.profileImgUrl }}
-                                      style={{
-                                        alignSelf: "center",
-                                        width: 40,
-                                        height: 40,
-                                        borderRadius: 20,
-                                        left: -14,
-                                        top: 0
-                                      }}
-                                    />
-                                  </TouchableOpacity>
-                                ) : (
-                                  <TouchableOpacity
-                                    onPress={() =>
-                                      this.showUserProfile(
-                                        data.inviteeId,
-                                        this.state.eventData.eventId,
-                                        this.state.hostId
-                                      )
-                                    }
-                                  >
-                                    <Image
-                                      source={IconsMap.icon_contact_avatar}
-                                      style={{
-                                        alignSelf: "center",
-                                        width: 40,
-                                        height: 40,
-                                        borderRadius: 20,
-                                        left: -14,
-                                        top: 0
-                                      }}
-                                    />
-                                  </TouchableOpacity>
-                                )}
-                              </View>
-                              <View
-                                style={{ flex: 4, justifyContent: "center" }}
-                              >
-                                <Text
-                                  style={
-                                    data.colorChange
-                                      ? { fontSize: 17, color: "red" }
-                                      : {
-                                          fontSize: 17,
-                                          position: "relative",
-                                          left: -10
-                                        }
-                                  }
-                                >
-                                  {data.name}
-                                </Text>
-                              </View>
-                              <View
-                                style={{
-                                  flex: 1,
-                                  justifyContent: "center",
-                                  position: "relative",
-                                  left: 10
-                                }}
-                              >
-                                {data.status == "invited" ||
-                                data.status == "maybe" ? (
-                                  <View
-                                    style={{
-                                      width: 25,
-                                      height: 25,
-                                      borderRadius: 12.5,
-                                      backgroundColor:
-                                        inviteeStatusMarker.invited,
-                                      position: "relative",
-                                      left: 20
-                                    }}
-                                  />
-                                ) : data.status == "going" ||
-                                  data.status == "accepted" ? (
-                                  <View
-                                    style={{
-                                      width: 25,
-                                      height: 25,
-                                      borderRadius: 12.5,
-                                      backgroundColor:
-                                        inviteeStatusMarker.going,
-                                      position: "relative",
-                                      left: 20
-                                    }}
-                                  />
-                                ) : (
-                                  <View
-                                    style={{
-                                      width: 25,
-                                      height: 25,
-                                      borderRadius: 12.5,
-                                      backgroundColor:
-                                        inviteeStatusMarker.declined,
-                                      position: "relative",
-                                      left: 20
-                                    }}
-                                  />
-                                )}
-                              </View>
-                            </View>
-                          </View>
+                            showUserProfile={this.showUserProfile}
+                            viewType="eventDetail"
+                          />
                         );
                       })
                     : null}
@@ -845,415 +563,46 @@ class EventDetailContainer extends Component {
                 top: 20
               }}
             />
-            {Platform.OS === "ios" ? (
-              <Footer style={EventDetailStyles.bottomView_ios}>
+
+            <View style={{ justifyContent: "center", flexDirection: "row" }}>
+              <FooterWrapper
+                style={Platform.select({
+                  ios: EventDetailStyles.bottomView_ios,
+                  android: EventDetailStyles.bottomView_android
+                })}
+              >
                 <Left>
-                  <TouchableOpacity
+                  <FilterItems
+                    text="Going"
+                    type="going"
+                    bg="hsla(106, 36%, 52%, 1)"
+                    highlight="#ffffff"
+                    active=""
                     onPress={() => this.updateInviteeResponse("going")}
-                    style={EventDetailStyles.fabLeftWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_going}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{
-                          uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 93 39.5">
-                                        <defs>
-                                          <style>
-                                            .cls-1 {
-                                              fill: #004d9b;
-                                              font-size: 14px;
-                                              font-family: Lato-Regular, Lato;
-                                            }
-                                      
-                                            .cls-2 {
-                                              fill: none;
-                                              stroke: #6eb25a;
-                                              stroke-width: 4px;
-                                            }
-                                      
-                                            .cls-3 {
-                                              filter: url(#Line_58);
-                                            }
-                                      
-                                            .cls-4 {
-                                              filter: url(#Going);
-                                            }
-                                          </style>
-                                          <filter id="Going" x="19.5" y="0" width="55" height="35" filterUnits="userSpaceOnUse">
-                                            <feOffset dy="3" input="SourceAlpha"/>
-                                            <feGaussianBlur stdDeviation="3" result="blur"/>
-                                            <feFlood flood-opacity="0.161"/>
-                                            <feComposite operator="in" in2="blur"/>
-                                            <feComposite in="SourceGraphic"/>
-                                          </filter>
-                                          <filter id="Line_58" x="0" y="17.5" width="93" height="22" filterUnits="userSpaceOnUse">
-                                            <feOffset dy="3" input="SourceAlpha"/>
-                                            <feGaussianBlur stdDeviation="3" result="blur-2"/>
-                                            <feFlood flood-opacity="0.161"/>
-                                            <feComposite operator="in" in2="blur-2"/>
-                                            <feComposite in="SourceGraphic"/>
-                                          </filter>
-                                        </defs>
-                                        <g id="btn_Going" transform="translate(-51.5 -624)">
-                                          <g class="cls-4" transform="matrix(1, 0, 0, 1, 51.5, 624)">
-                                            <text id="Going-2" data-name="Going" class="cls-1" transform="translate(28.5 20)"><tspan x="0" y="0">Going</tspan></text>
-                                          </g>
-                                          <g class="cls-3" transform="matrix(1, 0, 0, 1, 51.5, 624)">
-                                            <line id="Line_58-2" data-name="Line 58" class="cls-2" x2="75" transform="translate(9 25.5)"/>
-                                          </g>
-                                        </g>
-                                      </svg>
-                                      `
-                        }}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
+                  />
                 </Left>
                 <Body>
-                  <TouchableOpacity
+                  <FilterItems
+                    text="Maybe"
+                    type="maybe"
+                    bg="hsla(37, 87%, 50%, 1)"
+                    highlight="#ffffff"
+                    active=""
                     onPress={() => this.updateInviteeResponse("maybe")}
-                    style={EventDetailStyles.fabLeftWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_maybe}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{
-                          uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 93 39.5">
-                                        <defs>
-                                          <style>
-                                            .cls-1 {
-                                              fill: #004d9b;
-                                              font-size: 14px;
-                                              font-family: Lato-Regular, Lato;
-                                            }
-                                      
-                                            .cls-2 {
-                                              fill: none;
-                                              stroke: #ef9a12;
-                                              stroke-width: 4px;
-                                            }
-                                      
-                                            .cls-3 {
-                                              filter: url(#Line_59);
-                                            }
-                                      
-                                            .cls-4 {
-                                              filter: url(#Maybe);
-                                            }
-                                          </style>
-                                          <filter id="Maybe" x="16.5" y="0" width="61" height="35" filterUnits="userSpaceOnUse">
-                                            <feOffset dy="3" input="SourceAlpha"/>
-                                            <feGaussianBlur stdDeviation="3" result="blur"/>
-                                            <feFlood flood-opacity="0.161"/>
-                                            <feComposite operator="in" in2="blur"/>
-                                            <feComposite in="SourceGraphic"/>
-                                          </filter>
-                                          <filter id="Line_59" x="0" y="17.5" width="93" height="22" filterUnits="userSpaceOnUse">
-                                            <feOffset dy="3" input="SourceAlpha"/>
-                                            <feGaussianBlur stdDeviation="3" result="blur-2"/>
-                                            <feFlood flood-opacity="0.161"/>
-                                            <feComposite operator="in" in2="blur-2"/>
-                                            <feComposite in="SourceGraphic"/>
-                                          </filter>
-                                        </defs>
-                                        <g id="btn_Maybe" transform="translate(-134.5 -624)">
-                                          <g class="cls-4" transform="matrix(1, 0, 0, 1, 134.5, 624)">
-                                            <text id="Maybe-2" data-name="Maybe" class="cls-1" transform="translate(25.5 20)"><tspan x="0" y="0">Maybe</tspan></text>
-                                          </g>
-                                          <g class="cls-3" transform="matrix(1, 0, 0, 1, 134.5, 624)">
-                                            <line id="Line_59-2" data-name="Line 59" class="cls-2" x2="75" transform="translate(9 25.5)"/>
-                                          </g>
-                                        </g>
-                                      </svg>
-                                      `
-                        }}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
+                  />
                 </Body>
                 <Right>
-                  <TouchableOpacity
+                  <FilterItems
+                    text="Decline"
+                    type="decline"
+                    bg="hsla(346, 96%, 60%, 1)"
+                    highlight="#ffffff"
+                    active=""
                     onPress={() => this.updateInviteeResponse("declined")}
-                    style={EventDetailStyles.fabRightWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_decline}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{
-                          uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 93 39.5">
-                                        <defs>
-                                          <style>
-                                            .cls-1 {
-                                              fill: #004d9b;
-                                              font-size: 14px;
-                                              font-family: Lato-Regular, Lato;
-                                            }
-                                      
-                                            .cls-2 {
-                                              fill: none;
-                                              stroke: #ff003b;
-                                              stroke-width: 4px;
-                                            }
-                                      
-                                            .cls-3 {
-                                              filter: url(#Line_60);
-                                            }
-                                      
-                                            .cls-4 {
-                                              filter: url(#Decline);
-                                            }
-                                          </style>
-                                          <filter id="Decline" x="14.5" y="0" width="65" height="35" filterUnits="userSpaceOnUse">
-                                            <feOffset dy="3" input="SourceAlpha"/>
-                                            <feGaussianBlur stdDeviation="3" result="blur"/>
-                                            <feFlood flood-opacity="0.161"/>
-                                            <feComposite operator="in" in2="blur"/>
-                                            <feComposite in="SourceGraphic"/>
-                                          </filter>
-                                          <filter id="Line_60" x="0" y="17.5" width="93" height="22" filterUnits="userSpaceOnUse">
-                                            <feOffset dy="3" input="SourceAlpha"/>
-                                            <feGaussianBlur stdDeviation="3" result="blur-2"/>
-                                            <feFlood flood-opacity="0.161"/>
-                                            <feComposite operator="in" in2="blur-2"/>
-                                            <feComposite in="SourceGraphic"/>
-                                          </filter>
-                                        </defs>
-                                        <g id="btn_Decline" transform="translate(-217.5 -624)">
-                                          <g class="cls-4" transform="matrix(1, 0, 0, 1, 217.5, 624)">
-                                            <text id="Decline-2" data-name="Decline" class="cls-1" transform="translate(23.5 20)"><tspan x="0" y="0">Decline</tspan></text>
-                                          </g>
-                                          <g class="cls-3" transform="matrix(1, 0, 0, 1, 217.5, 624)">
-                                            <line id="Line_60-2" data-name="Line 60" class="cls-2" x2="75" transform="translate(9 25.5)"/>
-                                          </g>
-                                        </g>
-                                      </svg>
-                                      `
-                        }}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
+                  />
                 </Right>
-              </Footer>
-            ) : (
-              <View style={EventDetailStyles.bottomView_android}>
-                <Left>
-                  <TouchableOpacity
-                    onPress={() => this.updateInviteeResponse("going")}
-                    style={EventDetailStyles.fabLeftWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_going}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{
-                          uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 93 39.5">
-                                    <defs>
-                                      <style>
-                                        .cls-1 {
-                                          fill: #004d9b;
-                                          font-size: 14px;
-                                          font-family: Lato-Regular, Lato;
-                                        }
-                                  
-                                        .cls-2 {
-                                          fill: none;
-                                          stroke: #6eb25a;
-                                          stroke-width: 4px;
-                                        }
-                                  
-                                        .cls-3 {
-                                          filter: url(#Line_58);
-                                        }
-                                  
-                                        .cls-4 {
-                                          filter: url(#Going);
-                                        }
-                                      </style>
-                                      <filter id="Going" x="19.5" y="0" width="55" height="35" filterUnits="userSpaceOnUse">
-                                        <feOffset dy="3" input="SourceAlpha"/>
-                                        <feGaussianBlur stdDeviation="3" result="blur"/>
-                                        <feFlood flood-opacity="0.161"/>
-                                        <feComposite operator="in" in2="blur"/>
-                                        <feComposite in="SourceGraphic"/>
-                                      </filter>
-                                      <filter id="Line_58" x="0" y="17.5" width="93" height="22" filterUnits="userSpaceOnUse">
-                                        <feOffset dy="3" input="SourceAlpha"/>
-                                        <feGaussianBlur stdDeviation="3" result="blur-2"/>
-                                        <feFlood flood-opacity="0.161"/>
-                                        <feComposite operator="in" in2="blur-2"/>
-                                        <feComposite in="SourceGraphic"/>
-                                      </filter>
-                                    </defs>
-                                    <g id="btn_Going" transform="translate(-51.5 -624)">
-                                      <g class="cls-4" transform="matrix(1, 0, 0, 1, 51.5, 624)">
-                                        <text id="Going-2" data-name="Going" class="cls-1" transform="translate(28.5 20)"><tspan x="0" y="0">Going</tspan></text>
-                                      </g>
-                                      <g class="cls-3" transform="matrix(1, 0, 0, 1, 51.5, 624)">
-                                        <line id="Line_58-2" data-name="Line 58" class="cls-2" x2="75" transform="translate(9 25.5)"/>
-                                      </g>
-                                    </g>
-                                  </svg>
-                                  `
-                        }}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
-                </Left>
-                <Body>
-                  <TouchableOpacity
-                    onPress={() => this.updateInviteeResponse("maybe")}
-                    style={EventDetailStyles.fabLeftWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_maybe}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{
-                          uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 93 39.5">
-                                    <defs>
-                                      <style>
-                                        .cls-1 {
-                                          fill: #004d9b;
-                                          font-size: 14px;
-                                          font-family: Lato-Regular, Lato;
-                                        }
-                                  
-                                        .cls-2 {
-                                          fill: none;
-                                          stroke: #ef9a12;
-                                          stroke-width: 4px;
-                                        }
-                                  
-                                        .cls-3 {
-                                          filter: url(#Line_59);
-                                        }
-                                  
-                                        .cls-4 {
-                                          filter: url(#Maybe);
-                                        }
-                                      </style>
-                                      <filter id="Maybe" x="16.5" y="0" width="61" height="35" filterUnits="userSpaceOnUse">
-                                        <feOffset dy="3" input="SourceAlpha"/>
-                                        <feGaussianBlur stdDeviation="3" result="blur"/>
-                                        <feFlood flood-opacity="0.161"/>
-                                        <feComposite operator="in" in2="blur"/>
-                                        <feComposite in="SourceGraphic"/>
-                                      </filter>
-                                      <filter id="Line_59" x="0" y="17.5" width="93" height="22" filterUnits="userSpaceOnUse">
-                                        <feOffset dy="3" input="SourceAlpha"/>
-                                        <feGaussianBlur stdDeviation="3" result="blur-2"/>
-                                        <feFlood flood-opacity="0.161"/>
-                                        <feComposite operator="in" in2="blur-2"/>
-                                        <feComposite in="SourceGraphic"/>
-                                      </filter>
-                                    </defs>
-                                    <g id="btn_Maybe" transform="translate(-134.5 -624)">
-                                      <g class="cls-4" transform="matrix(1, 0, 0, 1, 134.5, 624)">
-                                        <text id="Maybe-2" data-name="Maybe" class="cls-1" transform="translate(25.5 20)"><tspan x="0" y="0">Maybe</tspan></text>
-                                      </g>
-                                      <g class="cls-3" transform="matrix(1, 0, 0, 1, 134.5, 624)">
-                                        <line id="Line_59-2" data-name="Line 59" class="cls-2" x2="75" transform="translate(9 25.5)"/>
-                                      </g>
-                                    </g>
-                                  </svg>
-                                  `
-                        }}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
-                </Body>
-                <Right>
-                  <TouchableOpacity
-                    onPress={() => this.updateInviteeResponse("declined")}
-                    style={EventDetailStyles.fabRightWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_decline}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{
-                          uri: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 93 39.5">
-                                    <defs>
-                                      <style>
-                                        .cls-1 {
-                                          fill: #004d9b;
-                                          font-size: 14px;
-                                          font-family: Lato-Regular, Lato;
-                                        }
-                                  
-                                        .cls-2 {
-                                          fill: none;
-                                          stroke: #ff003b;
-                                          stroke-width: 4px;
-                                        }
-                                  
-                                        .cls-3 {
-                                          filter: url(#Line_60);
-                                        }
-                                  
-                                        .cls-4 {
-                                          filter: url(#Decline);
-                                        }
-                                      </style>
-                                      <filter id="Decline" x="14.5" y="0" width="65" height="35" filterUnits="userSpaceOnUse">
-                                        <feOffset dy="3" input="SourceAlpha"/>
-                                        <feGaussianBlur stdDeviation="3" result="blur"/>
-                                        <feFlood flood-opacity="0.161"/>
-                                        <feComposite operator="in" in2="blur"/>
-                                        <feComposite in="SourceGraphic"/>
-                                      </filter>
-                                      <filter id="Line_60" x="0" y="17.5" width="93" height="22" filterUnits="userSpaceOnUse">
-                                        <feOffset dy="3" input="SourceAlpha"/>
-                                        <feGaussianBlur stdDeviation="3" result="blur-2"/>
-                                        <feFlood flood-opacity="0.161"/>
-                                        <feComposite operator="in" in2="blur-2"/>
-                                        <feComposite in="SourceGraphic"/>
-                                      </filter>
-                                    </defs>
-                                    <g id="btn_Decline" transform="translate(-217.5 -624)">
-                                      <g class="cls-4" transform="matrix(1, 0, 0, 1, 217.5, 624)">
-                                        <text id="Decline-2" data-name="Decline" class="cls-1" transform="translate(23.5 20)"><tspan x="0" y="0">Decline</tspan></text>
-                                      </g>
-                                      <g class="cls-3" transform="matrix(1, 0, 0, 1, 217.5, 624)">
-                                        <line id="Line_60-2" data-name="Line 60" class="cls-2" x2="75" transform="translate(9 25.5)"/>
-                                      </g>
-                                    </g>
-                                  </svg>
-                                  `
-                        }}
-                        style={EventDetailStyles.rsvpStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
-                </Right>
-              </View>
-            )}
+              </FooterWrapper>
+            </View>
           </View>
         </Container>
         {this.state.animating && (
@@ -1284,8 +633,8 @@ const mapDispatchToProps = dispatch => {
     onShowIndicator: bShow => {
       dispatch(setVisibleIndicator(bShow));
     },
-    getEventList: (user_id) => {
-      dispatch(getEventList(user_id))
+    getEventList: user_id => {
+      dispatch(getEventList(user_id));
     }
   };
 };

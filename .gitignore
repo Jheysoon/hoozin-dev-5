@@ -1,2 +1,4 @@
 
 functions/firebase-debug\.log
+.vscode/*
+node_modules/*

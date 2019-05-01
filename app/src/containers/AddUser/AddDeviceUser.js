@@ -223,23 +223,23 @@ class AddDeviceUserContainer extends Component {
                     <View style={{ paddingTop: 3 }} key={key}>
                       <View style={{
                         width: '95%',
-                        marginBottom: 10,
+                        marginBottom: 2,
                         flexDirection: 'row',
                         flexWrap: 'wrap',
                         justifyContent: 'center', backgroundColor: 'white',
-                        borderRadius: 40, marginLeft: 2, shadowColor: '#707070', shadowOffset: { width: 4, height: 6 }, shadowOpacity: 0.3
+                        borderRadius: 40, marginLeft: 2, shadowColor: '#707070', shadowOffset: { width: 4, height: 6 }, shadowOpacity: 0.3, elevation: 3
                       }}>
                         <View style={{ flex: 1 }}>
                           {
                             data.thumbnailPath ?
                               <Image
                                 source={{ uri: data.thumbnailPath }}
-                                style={{ alignSelf: 'center', width: 40, height: 40, borderRadius: 20 }}
+                                style={{ alignSelf: 'center', width: 40, height: 40, borderRadius: 20, marginLeft: -15  }}
                               />
                               :
                               <Image
                                 source={IconsMap.icon_contact_avatar}
-                                style={{ alignSelf: 'center', width: 40, height: 40, borderRadius: 20, top: 0 }}
+                                style={{ alignSelf: 'center', width: 40, height: 40, borderRadius: 20, top: 0, marginLeft: -15 }}
                               />
                           }
                         </View>
@@ -247,7 +247,7 @@ class AddDeviceUserContainer extends Component {
                           <Text style={data.colorChange ? { fontSize: 14, color: 'red', position: 'relative',  } : { fontSize: 14, fontFamily: 'Lato', position: 'relative' }}>{data.givenName || null + " " + data.familyName || null}</Text>
                           <View style={{ width: '90%', flex: 1, justifyContent: 'space-between', flexWrap: 'nowrap', flexDirection: 'row' }}>
                             <Text style={{ fontFamily: 'Lato', fontSize: 12, color: '#8E8E93' }}>E: {data.emailAddresses[0]?data.emailAddresses[0].email:''}</Text>
-                            <Text style={{ fontFamily: 'Lato', fontSize: 12, color: '#8E8E93' }}>P: {data.phoneNumbers[0]?data.phoneNumbers[0].number:''}</Text>
+                            <Text style={{ fontFamily: 'Lato', fontSize: 12, color: '#8E8E93' }}>M: {data.phoneNumbers[0]?data.phoneNumbers[0].number:''}</Text>
                           </View>
                         </View>
                         {
@@ -255,10 +255,10 @@ class AddDeviceUserContainer extends Component {
                             <Button 
                               transparent 
                               icon 
-                              style={{ alignSelf: 'center' }} 
+                              style={{ alignSelf: 'center', marginTop: -10}} 
                               onPress={() => this.onDeselectContact(data)}
                               >
-                              <Icon type="FontAwesome" name="minus" style={{ color: '#FC3764' }} />
+                              <Icon type="FontAwesome" name="plus" style={{ color: '#689F38', fontSize: 18, marginTop: 10 }} />
                             </Button>
                             :
                             <TouchableOpacity 

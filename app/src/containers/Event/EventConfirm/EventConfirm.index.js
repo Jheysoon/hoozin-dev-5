@@ -34,6 +34,7 @@ import { setVisibleIndicatorAction } from "../../../actions/auth";
 import { EventConfirmStyles } from "./eventconfirm.style";
 import { EventServiceAPI, UserManagementServiceAPI } from "../../../api";
 import { getEventInformation } from "../../../actions/events/event";
+import InviteeItem from "./../../../components/InviteeItem";
 
 /* Redux container component to confirm the ongoing event */
 class ConfirmEventContainer extends Component {
@@ -231,7 +232,6 @@ class ConfirmEventContainer extends Component {
     );
   }
   onConfirmEvent(msg) {
-
     const { params } = this.props.navigation.state;
 
     if (this.state.eventData.invitee.length == 0 && params.isPrivate == true) {
@@ -240,7 +240,7 @@ class ConfirmEventContainer extends Component {
       );
       return;
     }
-    
+
     Alert.alert(
       `Awesome, your event’s been ${msg}!`,
       "Just select your event from your event list if you need to update it.",
@@ -267,7 +267,10 @@ class ConfirmEventContainer extends Component {
             this.setState({ animating: false });
 
             if (result) {
-              if (_.size(this.props.addedInvitees) > 0 && this.state.isEditMode) {
+              if (
+                _.size(this.props.addedInvitees) > 0 &&
+                this.state.isEditMode
+              ) {
                 let eventInvitee = firebase
                   .functions()
                   .httpsCallable("eventInvitee");
@@ -385,28 +388,18 @@ class ConfirmEventContainer extends Component {
         }
       });
   }
+
   addFriend(data) {
-    console.log("addFriend", data);
-    let addedListUser = {
-      email: data.email,
-      name: data.name,
-      key: data.key
-    };
-    //let self = this;
-    let socialUID = this.props.user.socialUID;
     let eventKey = this.state.eventId;
 
-    firebase
-      .database()
-      .ref(`users/${socialUID}/event/${eventKey}/invitee/${data.inviteeId}`)
-      .set({
-        email: data.email,
-        name: data.name,
-        phone: data.phone
-      })
-      .then(data => {
-        this.getEventInformation(eventKey);
-      });
+    const insertInvitee = firebase.functions().httpsCallable("insertInvitee");
+
+    insertInvitee({
+      eventId: eventKey,
+      userId: data.inviteeId
+    }).then(() => {
+      this.getEventInformation(eventKey);
+    });
   }
 
   render() {
@@ -551,11 +544,12 @@ class ConfirmEventContainer extends Component {
               </View>
             </View>
           </View>
+
           <View
             style={{
-              width: "90%",
-              height: 1,
-              backgroundColor: "#BCE0FD",
+              width: "95%",
+              height: 1.5,
+              backgroundColor: "#2699FB",
               marginBottom: 10,
               position: "relative",
               left: 10,
@@ -564,101 +558,17 @@ class ConfirmEventContainer extends Component {
           />
           <Content>
             <View style={{ flexDirection: "row" }}>
-              <View style={{ flex: 18, paddingTop: 5 }}>
-                {console.log("ds", this.state.contactList)}
+              <View style={{ flex: 18, paddingTop: 5, marginBottom: 10 }}>
                 {this.state.eventData.invitee &&
                 this.state.eventData.invitee.length > 0
                   ? this.state.eventData.invitee.map((data, key) => {
                       return (
-                        <View
-                          style={{
-                            width: "95%",
-                            marginLeft: 5,
-                            paddingTop: 3,
-                            borderBottomWidth: 0,
-                            borderBottomColor: "#D8D8D8",
-                            borderWidth: 0,
-                            borderRadius: 2,
-                            borderColor: "#D8D8D8",
-                            shadowColor: "#000",
-                            shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: 0.3,
-                            shadowRadius: 2,
-                            elevation: 1
-                          }}
+                        <InviteeItem
+                          data={data}
                           key={key}
-                        >
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "center",
-                              backgroundColor: "white",
-                              borderRadius: 40,
-                              marginLeft: 2
-                            }}
-                          >
-                            <View style={{ flex: 1 }}>
-                              {data.profileImgUrl ? (
-                                <Image
-                                  source={{ uri: data.profileImgUrl }}
-                                  style={{
-                                    alignSelf: "center",
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: 20,
-                                    left: -8,
-                                    top: 2
-                                  }}
-                                  onLoadEnd={() => this.loadImagesComplete()}
-                                  onLoadStart={() => this.loadImagesStart()}
-                                />
-                              ) : (
-                                <Image
-                                  source={IconsMap.icon_contact_avatar}
-                                  style={{
-                                    alignSelf: "center",
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: 20,
-                                    position: "relative",
-                                    left: -8,
-                                    top: 2
-                                  }}
-                                />
-                              )}
-                            </View>
-                            <View style={{ flex: 4, justifyContent: "center" }}>
-                              <Text style={{ fontSize: 17 }}>{data.name}</Text>
-                            </View>
-                            {data.preselect ? (
-                              <Button
-                                transparent
-                                icon
-                                style={{ alignSelf: "center" }}
-                                onPress={() => this.removeFriend(data)}
-                              >
-                                <Icon
-                                  type="FontAwesome"
-                                  name="minus"
-                                  style={{ color: "#FC3764" }}
-                                />
-                              </Button>
-                            ) : (
-                              <Button
-                                transparent
-                                icon
-                                style={{ alignSelf: "center" }}
-                                onPress={() => this.addFriend(data)}
-                              >
-                                <Icon
-                                  type="FontAwesome"
-                                  name="plus"
-                                  style={{ color: "#6EB25A" }}
-                                />
-                              </Button>
-                            )}
-                          </View>
-                        </View>
+                          addToEvent={this.addFriend}
+                          removeToEvent={this.removeFriend}
+                        />
                       );
                     })
                   : null}

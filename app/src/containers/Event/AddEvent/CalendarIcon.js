@@ -45,8 +45,8 @@ const CalendarIcon = () => {
             width: 30,
             height: 30,
             position: "absolute",
-            left: 0,
-            top: 2
+            left: -10,
+            top: 12
           }}
         />
       )}

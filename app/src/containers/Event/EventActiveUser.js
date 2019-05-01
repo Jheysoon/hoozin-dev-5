@@ -39,8 +39,8 @@ class EventActiveUserContainer extends Component {
     // }
 
     componentDidMount() {
-        if (this.props.screenProps.rootNav.state.params) {
-            this.getHostUserDetails(this.props.screenProps.rootNav.state.params.hostId);
+        if (this.props.navigation.state.params) {
+            this.getHostUserDetails(this.props.navigation.state.params.hostId);
         }
     }
 

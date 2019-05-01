@@ -29,6 +29,8 @@ import AppBarComponent from "../../../components/AppBar/appbar.index";
 import { IconsMap } from "assets/assetMap";
 import { filterInviteeByRSVP } from "../../../utils/eventListFilter";
 import { EventServiceAPI, UserManagementServiceAPI } from "../../../api";
+import EventOverviewFilter from "./EventOverviewFilter";
+import InviteeItem from "components/InviteeItem";
 
 // stylesheet
 import { EventOverviewStyles } from "./eventoverview.style";
@@ -61,8 +63,12 @@ class EventOverviewContainer extends Component {
         longitude: -122.4324,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421
-      }
+      },
+      currentUserFriends: [],
+      status: "all"
     };
+
+    this.filterEventInviteesByRSVP = this.filterEventInviteesByRSVP.bind(this);
   }
   componentDidMount() {
     const { params } = this.props.navigation.state;
@@ -140,7 +146,7 @@ class EventOverviewContainer extends Component {
         "hsla(207, 97%, 75%, 1)"
       );
 
-      eventData['eventId'] = eventKey;
+      eventData["eventId"] = eventKey;
 
       this.setState({
         eventData: eventData,
@@ -179,9 +185,6 @@ class EventOverviewContainer extends Component {
   }
 
   onEditEvent() {
-    console.log("eventId here onEditEvent ########");
-    console.log(this.state.eventData.eventId);
-
     firebase
       .database()
       .ref(
@@ -217,17 +220,8 @@ class EventOverviewContainer extends Component {
       } else if (responseStatus == "friends") {
       }
     });
+    
     this.setState({ eventInviteeFiltered: filteredList });
-  }
-
-  /**
-   * @description calculate color value and return a darker shade of the color
-   * @param {string} color
-   */
-  calculateActiveColor(color) {
-    const colorComponents = color.split(",");
-    colorComponents[2] = `${parseInt(colorComponents[2]) - 20}%`;
-    return colorComponents.join(",");
   }
 
   /**
@@ -241,6 +235,7 @@ class EventOverviewContainer extends Component {
     currentColor
   ) {
     let filteredInvitee = [];
+
     if (responseStatus != "friends") {
       filteredInvitee = this.state.unfilteredInviteeList.filter(invitee =>
         filterInviteeByRSVP(invitee, responseStatus)
@@ -248,31 +243,14 @@ class EventOverviewContainer extends Component {
     } else {
       filteredInvitee = this.state.currentUserFriends;
     }
+
     this.setState({
       filteredInvitedList: filteredInvitee,
       prevTextElemRef: textElemRef,
       prevBarElemColor: currentColor,
-      prevBarElemRef: barElemRef
+      prevBarElemRef: barElemRef,
+      status: responseStatus
     });
-    textElemRef.setNativeProps({
-      style: { fontWeight: "700" }
-    });
-    barElemRef.setNativeProps({
-      style: { backgroundColor: this.calculateActiveColor(currentColor) }
-    });
-    if (
-      this.state.prevTextElemRef != this.state.textElemRef &&
-      this.state.prevBarElemRef != barElemRef &&
-      this.state.prevBarElemColor
-    ) {
-      this.state.prevTextElemRef.setNativeProps({
-        style: { fontWeight: "400" }
-      });
-
-      this.state.prevBarElemRef.setNativeProps({
-        style: { backgroundColor: this.state.prevBarElemColor }
-      });
-    }
   }
 
   render() {
@@ -320,9 +298,10 @@ class EventOverviewContainer extends Component {
               </View>
               <View style={EventOverviewStyles.cardDetail}>
                 <View>
-                  {/* <Text style={EventOverviewStyles.eventTitle}>
-                                        {this.props.event.eventTitle || this.state.eventData.eventTitle}
-                                    </Text> */}
+                  <Text style={EventOverviewStyles.eventTitle}>
+                    {this.props.event.eventTitle ||
+                      this.state.eventData.eventTitle}
+                  </Text>
                 </View>
                 <View style={EventOverviewStyles.eventMetaWrapper}>
                   <View style={{ flex: 1 }}>
@@ -419,272 +398,31 @@ class EventOverviewContainer extends Component {
               top: 10
             }}
           />
-          <View style={{ position: "relative", left: 20 }}>
-            <ScrollView horizontal={true}>
-              <View>
-                <TouchableOpacity
-                  style={EventOverviewStyles.btnGroups}
-                  onPress={() =>
-                    this.filterEventInviteesByRSVP(
-                      "all",
-                      this.refs.textForStatusAll,
-                      this.refs.activeBarForStatusAll,
-                      "hsla(207, 97%, 75%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusAll"
-                    style={EventOverviewStyles.btnGroupTxt}
-                  >
-                    All
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusAll"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(207, 97%, 75%, 1)"
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={EventOverviewStyles.btnGroups}
-                  onPress={() =>
-                    this.filterEventInviteesByRSVP(
-                      "accepted",
-                      this.refs.textForStatusAccepted,
-                      this.refs.activeBarForStatusAccepted,
-                      "hsla(106, 36%, 52%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusAccepted"
-                    style={EventOverviewStyles.btnGroupTxt}
-                  >
-                    Accepted
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusAccepted"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(106, 36%, 52%, 1)"
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={EventOverviewStyles.btnGroups}
-                  onPress={() =>
-                    this.filterEventInviteesByRSVP(
-                      "maybe",
-                      this.refs.textForStatusInvited,
-                      this.refs.activeBarForStatusInvited,
-                      "hsla(37, 87%, 50%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusInvited"
-                    style={EventOverviewStyles.btnGroupTxt}
-                  >
-                    Maybe
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusInvited"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(37, 87%, 50%, 1)"
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={EventOverviewStyles.btnGroups}
-                  onPress={() =>
-                    this.filterEventInviteesByRSVP(
-                      "declined",
-                      this.refs.textForStatusDeclined,
-                      this.refs.activeBarForStatusDeclined,
-                      "hsla(346, 100%, 50%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusDeclined"
-                    style={EventOverviewStyles.btnGroupTxt}
-                  >
-                    Declined
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusDeclined"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(346, 100%, 50%, 1)"
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  style={EventOverviewStyles.btnGroups}
-                  onPress={() =>
-                    this.filterEventInviteesByRSVP(
-                      "friends",
-                      this.refs.textForStatusFriends,
-                      this.refs.activeBarForStatusFriends,
-                      "hsla(208, 96%, 57%, 1)"
-                    )
-                  }
-                >
-                  <Text
-                    ref="textForStatusFriends"
-                    style={EventOverviewStyles.btnGroupTxt}
-                  >
-                    Friends
-                  </Text>
-                </TouchableOpacity>
-                <View
-                  ref="activeBarForStatusFriends"
-                  style={{
-                    height: 3,
-                    width: "100%",
-                    backgroundColor: "hsla(208, 96%, 57%, 1)"
-                  }}
-                />
-              </View>
-            </ScrollView>
-          </View>
+
+          <EventOverviewFilter
+            onPress={this.filterEventInviteesByRSVP}
+            active={this.state.status}
+          />
+
           <Content>
             <View
-              style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 10 }}
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                marginTop: 10,
+                marginBottom: 10
+              }}
             >
               <View style={{ flex: 18 }}>
                 {this.state.filteredInvitedList &&
                 this.state.filteredInvitedList.length > 0
                   ? this.state.filteredInvitedList.map((data, key) => {
                       return (
-                        <View
-                          style={{
-                            width: "95%",
-                            marginLeft: 5,
-                            paddingTop: 3,
-                            borderBottomWidth: 0,
-                            borderBottomColor: "#D8D8D8",
-                            borderWidth: 0,
-                            borderRadius: 2,
-                            borderColor: "#D8D8D8",
-                            shadowColor: "#000",
-                            shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: 0.3,
-                            shadowRadius: 2,
-                            elevation: 1
-                          }}
+                        <InviteeItem
+                          data={data}
                           key={key}
-                        >
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "center",
-                              backgroundColor: "white",
-                              borderRadius: 40,
-                              marginLeft: 2
-                            }}
-                          >
-                            <View style={{ flex: 2 }}>
-                              {data.profileImgUrl ? (
-                                <Image
-                                  source={{ uri: data.profileImgUrl }}
-                                  style={{
-                                    alignSelf: "center",
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: 20,
-                                    left: -28,
-                                    top: 0
-                                  }}
-                                  onLoadStart={() => this.loadImagesStart()}
-                                  onLoadEnd={() => this.loadImagesComplete()}
-                                />
-                              ) : (
-                                <Image
-                                  source={IconsMap.icon_contact_avatar}
-                                  style={{
-                                    alignSelf: "center",
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: 20,
-                                    left: -28,
-                                    top: 0
-                                  }}
-                                />
-                              )}
-                            </View>
-                            <View style={{ flex: 4, justifyContent: "center" }}>
-                              <Text
-                                style={
-                                  data.colorChange
-                                    ? { fontSize: 17, color: "red" }
-                                    : {
-                                        fontSize: 17,
-                                        position: "relative",
-                                        left: -50
-                                      }
-                                }
-                              >
-                                {data.name}
-                              </Text>
-                            </View>
-                            <View style={{ flex: 1, justifyContent: "center" }}>
-                              {data.status == "invited" ||
-                              data.status == "maybe" ? (
-                                <View
-                                  style={{
-                                    width: 25,
-                                    height: 25,
-                                    borderRadius: 12.5,
-                                    backgroundColor:
-                                      inviteeStatusMarker.invited,
-                                    position: "relative",
-                                    left: 20
-                                  }}
-                                />
-                              ) : data.status == "going" ||
-                                data.status == "accepted" ? (
-                                <View
-                                  style={{
-                                    width: 25,
-                                    height: 25,
-                                    borderRadius: 12.5,
-                                    backgroundColor: inviteeStatusMarker.going,
-                                    position: "relative",
-                                    left: 20
-                                  }}
-                                />
-                              ) : (
-                                <View
-                                  style={{
-                                    width: 25,
-                                    height: 25,
-                                    borderRadius: 12.5,
-                                    backgroundColor:
-                                      inviteeStatusMarker.declined,
-                                    position: "relative",
-                                    left: 20
-                                  }}
-                                />
-                              )}
-                            </View>
-                          </View>
-                        </View>
+                          viewType="eventOverview"
+                        />
                       );
                     })
                   : null}

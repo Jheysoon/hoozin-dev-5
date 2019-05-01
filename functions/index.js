@@ -17,6 +17,8 @@ const { removeEvent } = require("./src/removeEvent");
 const { eventDetail } = require("./src/eventDetail");
 const { eventInvitee } = require("./src/eventInvitee");
 const { getUser } = require("./src/getUser");
+const { insertInvitee } = require('./src/modules/Invitees/insertInvitee');
+const { getUserFriends } = require('./src/modules/Friends/getUserFriends');
 
 exports.event_created = event_created;
 exports.invitee_updated = invitee_updated;
@@ -30,6 +32,8 @@ exports.removeEvent = removeEvent;
 exports.eventDetail = eventDetail;
 exports.eventInvitee = eventInvitee;
 exports.getUser = getUser;
+exports.insertInvitee = insertInvitee;
+exports.getUserFriends = getUserFriends;
 
 /**
  * @TODO organize code
