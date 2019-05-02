@@ -22,7 +22,7 @@ exports.getUserFriends = functions.https.onCall((data, context) => {
           let output = [];
 
           _.forEach(users, val => {
-            if (val.exisits()) {
+            if (val.exists()) {
               let id = val["key"];
               val = val.val();
 
