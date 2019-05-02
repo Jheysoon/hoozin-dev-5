@@ -66,18 +66,20 @@ exports.eventDetail = functions.https.onCall((data, context) => {
             let output = [];
 
             _.forEach(friends, val => {
-              let id = val["key"];
-              val = val.val();
+              if (val.exists()) {
+                let id = val["key"];
+                val = val.val();
 
-              output.push({
-                id: id,
-                name: val.name,
-                email: val.email,
-                phone: val.photo,
-                eventList: val.eventList,
-                profileImgUrl: val.profileImgUrl || "",
-                preselect: false
-              });
+                output.push({
+                  id: id,
+                  name: val.name,
+                  email: val.email,
+                  phone: val.photo,
+                  eventList: val.eventList,
+                  profileImgUrl: val.profileImgUrl || "",
+                  preselect: false
+                });
+              }
             });
 
             rtn.friends = output;

@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   AsyncStorage,
   AppState,
-  Platform
+  Platform,
+  Alert
 } from "react-native";
 import GeoFire from "geofire";
 import Image from "react-native-remote-svg";
