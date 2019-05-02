@@ -22,22 +22,24 @@ exports.getUserFriends = functions.https.onCall((data, context) => {
           let output = [];
 
           _.forEach(users, val => {
-            let id = val["key"];
-            val = val.val();
+            if (val.exisits()) {
+              let id = val["key"];
+              val = val.val();
 
-            output.push({
-              id: id,
-              name: val.name,
-              email: val.email,
-              phone: val.phone,
-              profileImgUrl: val.profileImgUrl || ""
-            });
+              output.push({
+                id: id,
+                name: val.name,
+                email: val.email,
+                phone: val.phone,
+                profileImgUrl: val.profileImgUrl || ""
+              });
+            }
           });
 
           return output;
         });
       } else {
-        return []
+        return [];
       }
     });
 });
