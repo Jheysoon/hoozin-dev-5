@@ -14,6 +14,7 @@ import Image from "react-native-remote-svg";
 import { withNavigation } from "react-navigation";
 import { Header, Left, Right, Icon, Body, Button } from "native-base";
 import BackgroundGeolocation from "react-native-mauron85-background-geolocation";
+import Permissions from "react-native-permissions";
 
 import AppBar from "../../svgs/AppBar";
 import AppBarFilter from "./AppBarFilter";
@@ -69,8 +70,8 @@ class AppBarComponent extends Component {
       interval: 10000,
       fastestInterval: 5000,
       activitiesInterval: 10000,
-      stopOnStillActivity: false,
-      url: "http://192.168.81.15:3000/location",
+      stopOnStillActivity: true,
+      url: "",
       notificationsEnabled: false,
       startForeground: false,
       httpHeaders: {
@@ -84,102 +85,35 @@ class AppBarComponent extends Component {
       }
     });
 
-    BackgroundGeolocation.on("location", location => {
-      /* console.log("+------------------------------+");
-      console.log("|                              |");
-      console.log("|                              |");
-      console.log("|      Location Changed        |");
-      console.log("|                              |");
-      console.log("|                              |");
-      console.log("+------------------------------+"); */
-      // handle your locations here
-      // to perform long running operation on iOS
-      // you need to create background task
-      BackgroundGeolocation.startTask(taskKey => {
-        // execute long running task
-        // eg. ajax post location
-        // IMPORTANT: task has to be ended by endTask
-        BackgroundGeolocation.endTask(taskKey);
-      });
-    });
-
-    BackgroundGeolocation.on("authorization", status => {
-      console.log(
-        "[INFO] BackgroundGeolocation authorization status: " + status
-      );
-      if (status !== BackgroundGeolocation.AUTHORIZED) {
-        // we need to set delay or otherwise alert may not be shown
-        setTimeout(
-          () =>
-            Alert.alert(
-              "App requires location tracking permission",
-              "Would you like to open app settings?",
-              [
-                {
-                  text: "Yes",
-                  onPress: () => BackgroundGeolocation.showAppSettings()
-                },
-                {
-                  text: "No",
-                  onPress: () => console.log("No Pressed"),
-                  style: "cancel"
-                }
-              ]
-            ),
-          1000
-        );
-      }
-    });
-
-    BackgroundGeolocation.on("background", () => {
+    BackgroundGeolocation.on("background", async () => {
       console.log("[INFO] App is in background");
 
-      // add a workaround for now...
-      // @TODO research for the plugin to not run first the background
-      if (!this.state.first) {
-        navigator.geolocation.setRNConfiguration({
-          skipPermissionRequests: true
-        });
+      let permission = await Permissions.check("location", "whenInUse");
 
-        navigator.geolocation.watchPosition(data => {
-          AsyncStorage.getItem("userId").then(userIdString => {
-            const { uid: userId } = JSON.parse(userIdString);
-
-            this.props.changeLocation(userId, data.coords);
+      if (permission == "authorize") {
+        // add a workaround for now...
+        // @TODO research for the plugin to not run first the background
+        if (!this.state.first) {
+          navigator.geolocation.setRNConfiguration({
+            skipPermissionRequests: true
           });
-        });
-      } else {
-        this.setState({
-          first: false
-        });
+
+          navigator.geolocation.watchPosition(data => {
+            AsyncStorage.getItem("userId").then(userIdString => {
+              const { uid: userId } = JSON.parse(userIdString);
+
+              this.props.changeLocation(userId, data.coords);
+            });
+          });
+        } else {
+          this.setState({
+            first: false
+          });
+        }
       }
-    });
-
-    BackgroundGeolocation.on("foreground", () => {
-      console.log("[INFO] App is in foreground");
-      /* navigator.geolocation.watchPosition((data) => {
-        AsyncStorage.getItem("userId").then(userIdString => {
-          const { uid: userId } = JSON.parse(userIdString);
-
-          this.props.changeLocation(userId, data.coords);
-        });
-      }); */
-      //console.log(navigator.geolocation);
     });
 
     BackgroundGeolocation.checkStatus(status => {
-      console.log(
-        "[INFO] BackgroundGeolocation service is running",
-        status.isRunning
-      );
-      console.log(
-        "[INFO] BackgroundGeolocation services enabled",
-        status.locationServicesEnabled
-      );
-      console.log(
-        "[INFO] BackgroundGeolocation auth status: " + status.authorization
-      );
-
       // you don't need to check status before start (this is just the example)
       if (!status.isRunning) {
         BackgroundGeolocation.start(); //triggers start on start event

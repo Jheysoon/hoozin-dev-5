@@ -47,18 +47,20 @@ class InviteeMarker extends React.Component {
       keyNode: this.props.eventId
     });
 
-    // filter invitees for the going status only
-    _.forEach(inviteeList, val => {
-      if (
-        val.status == "going" &&
-        this.determineTime(
-          eventDetail.startDateTimeInUTC,
-          eventDetail.endDateTimeInUTC
-        )
-      ) {
-        invitees.push(val.userId);
-      }
-    });
+    if (eventDetail) {
+      // filter invitees for the going status only
+      _.forEach(inviteeList, val => {
+        if (
+          val.status == "going" &&
+          this.determineTime(
+            eventDetail.startDateTimeInUTC,
+            eventDetail.endDateTimeInUTC
+          )
+        ) {
+          invitees.push(val.userId);
+        }
+      });
+    }
 
     if (this.props.hostId) {
       invitees.push(this.props.hostId);
