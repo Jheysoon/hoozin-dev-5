@@ -84,6 +84,7 @@
 		D78ACB94209AB65900AE16EF /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D78ACB90209AB65900AE16EF /* FBSDKCoreKit.framework */; };
 		D78ACB95209AB65900AE16EF /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D78ACB91209AB65900AE16EF /* Bolts.framework */; };
 		D78ACC40209AC0BD00AE16EF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D78ACC19209AC0BD00AE16EF /* GoogleService-Info.plist */; };
+		D7A302FE227C163A009FFF9B /* libRCTFBSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D78ACB8D209AB4E600AE16EF /* libRCTFBSDK.a */; };
 		D7AACAFE226D5347000BE64C /* libfishhook.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6841FA4F8DC00B85C8A /* libfishhook.a */; };
 		D7AACB01226D5DE7000BE64C /* InputMask.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7AACAFF226D5B2C000BE64C /* InputMask.framework */; };
 		D7AACB02226D5DE7000BE64C /* InputMask.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D7AACAFF226D5B2C000BE64C /* InputMask.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -590,6 +591,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7A302FE227C163A009FFF9B /* libRCTFBSDK.a in Frameworks */,
 				D7AACAFE226D5347000BE64C /* libfishhook.a in Frameworks */,
 				32A6D20C20EC1CF200B548AC /* GoogleMaps.framework in Frameworks */,
 				CA69F5FD20E5228A008002A3 /* libRNGeocoder.a in Frameworks */,

@@ -95,13 +95,14 @@
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
   // ADD THE FOLLOWING CODE
-  if ([[GIDSignIn sharedInstance] handleURL:url
+
+  return [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                        openURL:url
+                                              sourceApplication:sourceApplication
+                                                     annotation:annotation] ||
+  [[GIDSignIn sharedInstance] handleURL:url
                           sourceApplication:sourceApplication
-                                 annotation:annotation]) {
-    return YES;
-  }
-  // ADD THE ABOVE CODE
-  return YES;
+                                 annotation:annotation];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
