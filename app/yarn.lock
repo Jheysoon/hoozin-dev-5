@@ -6336,6 +6336,11 @@ react-native-parsed-text@^0.0.20:
     babel-plugin-check-es2015-constants "6.22.0"
     prop-types "^15.5.10"
 
+react-native-permissions@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-1.1.1.tgz#4876004681ff8556454613d85249b01baff9b35b"
+  integrity sha512-t0Ujm177bagjUOSzhpmkSz+LqFW04HnY9TeZFavDCmV521fQvFz82aD+POXqWsAdsJVOK3umJYBNNqCjC3g0hQ==
+
 react-native-reanimated@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.1.tgz#5ecb6a2f6dad0351077ac9b771ca943b7ad6feda"

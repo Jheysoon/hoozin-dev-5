@@ -301,7 +301,11 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - ReactNativePermissions (1.1.1):
+    - React
   - RNFS (2.11.15):
+    - React
+  - RNGestureHandler (1.1.0):
     - React
   - RNGoogleSignin (1.2.0):
     - GoogleSignIn
@@ -312,6 +316,8 @@ PODS:
     - QBImagePickerController
     - React/Core
     - RSKImageCropper
+  - RNReanimated (1.0.1):
+    - React
   - RNVectorIcons (4.6.0):
     - React
   - RSKImageCropper (2.2.1)
@@ -353,10 +359,13 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - ReactNativePermissions (from `../node_modules/react-native-permissions`)
   - RNFS (from `../node_modules/react-native-fs`)
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNGoogleSignin (from `../node_modules/react-native-google-signin`)
   - RNI18n (from `../node_modules/react-native-i18n`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
+  - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga/yoga.podspec`)
 
@@ -414,14 +423,20 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-maps"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
+  ReactNativePermissions:
+    :path: "../node_modules/react-native-permissions"
   RNFS:
     :path: "../node_modules/react-native-fs"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
     :path: "../node_modules/react-native-google-signin"
   RNI18n:
     :path: "../node_modules/react-native-i18n"
   RNImageCropPicker:
     :path: "../node_modules/react-native-image-crop-picker"
+  RNReanimated:
+    :path: "../node_modules/react-native-reanimated"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
   yoga:
@@ -468,14 +483,17 @@ SPEC CHECKSUMS:
   react-native-fetch-blob: 63394b1d7b0781547b3e4463b3195790177b1222
   react-native-google-maps: b946d62e25dc66097921ed82520e45b0b081768a
   react-native-maps: 066c2afcc89e18726377bcc685315f989ca22449
+  ReactNativePermissions: 9f2d9c45c98800795e6c2ed330e25d11a66a8169
   RNFS: bbb1a64eb245763daf34aea86f97c97c4e85f74c
+  RNGestureHandler: afde2addc517e85cc97a25bfe119acbee779a7ce
   RNGoogleSignin: 8b08beabff7f3b1373b2821b0944b38de36ba95e
   RNI18n: db9be06a40336f04d136f24dd5de3f5eb9f3207c
   RNImageCropPicker: 32ca4b9fef4e1b7b85ba69494242122948117e06
+  RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
   RNVectorIcons: c0dbfbf6068fefa240c37b0f71bd03b45dddac44
   RSKImageCropper: 98296ad26b41753f796b6898d015509598f13d97
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 05fbbdf25700d11e482deafaa3f8cf8093651c71
+PODFILE CHECKSUM: 915b07b4e145b97710445570769d56230cfe4841
 
 COCOAPODS: 1.5.3

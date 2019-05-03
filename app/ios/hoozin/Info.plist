@@ -54,7 +54,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>3</string>
 	<key>FacebookAppID</key>
 	<string>299314147574748</string>
 	<key>FacebookDisplayName</key>
@@ -81,6 +81,10 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>$(PRODUCT_NAME) bluetooth use.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>$(PRODUCT_NAME) calendar use.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This will allow user to take event pictures</string>
 	<key>NSContactsUsageDescription</key>
@@ -95,6 +99,8 @@
 	<string>App requires motion tracking</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Upload profile picture</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>$(PRODUCT_NAME) speech recognition use.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Lato-Bold.ttf</string>
@@ -136,5 +142,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>$(PRODUCT_NAME) play music</string>
 </dict>
 </plist>
