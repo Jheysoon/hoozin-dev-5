@@ -52,8 +52,8 @@ exports.status_changed = functions.database
                   if (deviceTokens) {
                     // prettier-ignore
                     var msg = "You have been invited by " + eventD.name + " for an event " + newer.eventTitle + ", of type " +
-                      newer.eventType + " which starts on " + newer.startDate +  " at" + newer.startTime + " and will end on " +
-                      newer.endDate + " at" + newer.endTime;
+                      newer.eventType + " which starts on " + newer.startDate +  " at " + newer.startTime + " and will end on " +
+                      newer.endDate + " at " + newer.endTime;
 
                     const { eventId, userId } = context.params;
 
@@ -64,8 +64,8 @@ exports.status_changed = functions.database
                      */
                     // prettier-ignore
                     let msg = "Hi! " + val.name + ", you have been invited by " + eventD.name + " for an event " +
-                      newer.eventTitle + ", of type " + newer.eventType + " which starts on " + newer.startDate + " at" +
-                      newer.startTime + " and will end on " + newer.endDate +  " at" + newer.endTime;
+                      newer.eventTitle + ", of type " + newer.eventType + " which starts on " + newer.startDate + " at " +
+                      newer.startTime + " and will end on " + newer.endDate +  " at " + newer.endTime;
 
                     sendSMS(val.phone, msg);
                   } else {
