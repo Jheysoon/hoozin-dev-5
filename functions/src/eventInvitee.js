@@ -35,8 +35,8 @@ exports.eventInvitee = functions.https.onCall((data, context) => {
 
                 // prettier-ignore
                 var msg = "You have been invited by " + hostUser.name + " for an event " + event.eventTitle + ", of type " +
-                event.eventType + " which starts on " + event.startDate +  " at" + event.startTime + " and will end on " +
-                event.endDate + " at" + event.endTime;
+                event.eventType + " which starts on " + event.startDate +  " at " + event.startTime + " and will end on " +
+                event.endDate + " at " + event.endTime;
 
                 sendEventNotification(msg, deviceTokens, eventId, event.hostID);
               });
