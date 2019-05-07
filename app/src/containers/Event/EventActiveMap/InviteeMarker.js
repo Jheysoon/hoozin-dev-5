@@ -74,6 +74,7 @@ class InviteeMarker extends React.Component {
     let connected = await eventServiceApi.checkForConnection();
 
     if (connected.val()) {
+      // @TODO: if the event is public the invitees is not required
       reference = firebase.database().ref(`invitees/${this.props.eventId}`);
       listener = reference.on("value", inviteeSnapshot => {
         if (inviteeSnapshot.val()) {

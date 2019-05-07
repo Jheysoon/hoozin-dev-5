@@ -33,6 +33,8 @@ import InviteeMarker from "./InviteeMarker";
 
 import { CachedImage } from "react-native-cached-image";
 import InviteeList from "./../../../components/EventList/InviteeList";
+import { getEvent } from "../../../actions/events/event";
+import ActiveMap from "./ActiveMap";
 
 let hostUserLocationWatcher;
 let attendeeLocationWatcher;
@@ -53,6 +55,7 @@ class EventActiveMapContainer extends Component {
       jumpToIndex(scene.index);
     }
   });
+
   constructor() {
     super();
     this.state = {
@@ -86,7 +89,10 @@ class EventActiveMapContainer extends Component {
       isGalleryAtStart: true,
       chats: [],
       chatCounter: 0,
+      isReady: false
     };
+
+    this.getEventAndHostDetails = this.getEventAndHostDetails.bind(this);
   }
   async componentDidMount() {
     const {
@@ -113,10 +119,14 @@ class EventActiveMapContainer extends Component {
       showInviteeLocation &&
       withInviteeId
     ) {
-      await this.getEventAndHostDetails(eventId, hostId, isHostUser, true);
+      this.props.getEvent(eventId);
+      this.setState({
+        singleUserOnly: true
+      });
+      //await this.getEventAndHostDetails(eventId, hostId, isHostUser, true);
       //await this.watchForIncomingChats(hostId, eventId, isHostUser);
-      await this.showInviteeLocation(withInviteeId);
-      return;
+      //await this.showInviteeLocation(withInviteeId);
+      //return;
     } else if (
       eventId &&
       hostId &&
@@ -124,9 +134,13 @@ class EventActiveMapContainer extends Component {
       !showInviteeLocation &&
       !withInviteeId
     ) {
-      await this.getEventAndHostDetails(eventId, hostId, isHostUser, false);
+      //await this.getEventAndHostDetails(eventId, hostId, isHostUser, false);
       //await this.watchForIncomingChats(hostId, eventId, isHostUser);
-      return;
+      //return;
+      this.props.getEvent(eventId);
+      this.setState({
+        singleUserOnly: false
+      });
     }
   }
 
@@ -145,7 +159,7 @@ class EventActiveMapContainer extends Component {
       prevPropsParams != currentPropsParams &&
       currentPropsParams.showInviteeLocation
     ) {
-      this.showInviteeLocation(currentPropsParams.withInviteeId);
+      //this.showInviteeLocation(currentPropsParams.withInviteeId);
     }
   }
 
@@ -262,7 +276,8 @@ class EventActiveMapContainer extends Component {
             eventImagePinCounter: pinCounter,
             unfilteredInviteeList: eventAndHostData.invitee,
             filteredInvitedList: eventAndHostData.invitee,
-            currentUserFriends: currentUsrFrnds
+            currentUserFriends: currentUsrFrnds,
+            isReady: true
           });
         }
       })
@@ -348,6 +363,8 @@ class EventActiveMapContainer extends Component {
   }
 
   render() {
+    const { host, event } = this.props.eventDetail;
+
     return (
       <Container style={{ backgroundColor: "#ffffff" }}>
         <AppBarComponent
@@ -409,15 +426,14 @@ class EventActiveMapContainer extends Component {
                 <TouchableOpacity
                   onPress={() =>
                     this.props.navigation.navigate("EventActiveUser", {
-                      withUser: this.state.eventAndHostData.hostId
+                      withUser: host.id
                     })
                   }
                 >
-                  {this.state.eventAndHostData &&
-                  this.state.eventAndHostData.hostProfileImgUrl ? (
+                  {host && host.profileImgUrl ? (
                     <CachedImage
                       source={{
-                        uri: this.state.eventAndHostData.hostProfileImgUrl
+                        uri: host.profileImgUrl
                       }}
                       style={{ width: 70, height: 70, borderRadius: 35 }}
                     />
@@ -445,7 +461,7 @@ class EventActiveMapContainer extends Component {
                     color: "#004D9B"
                   }}
                 >
-                  {this.state.eventAndHostData.eventTitle}
+                  {event.eventTitle}
                 </Text>
                 <Text
                   style={{
@@ -456,57 +472,28 @@ class EventActiveMapContainer extends Component {
                     color: "#000000"
                   }}
                 >
-                  {this.state.eventAndHostData.hostName}
+                  {host.name}
                 </Text>
               </Body>
             </Item>
 
             {this.props.navigation.state.routeName === "EventActiveMap" ? (
               <Item style={{ borderBottomWidth: 0 }}>
-                {this.state.eventAndHostData && this.state.eventAndHostData.eventId != undefined && (
-                  <InviteeList eventId={this.state.eventAndHostData.eventId} />
+                {event && event.id != undefined && (
+                  <InviteeList eventId={event.id} />
                 )}
               </Item>
             ) : null}
           </View>
         </View>
 
-        <MapView
-          style={styles.map}
-          initialRegion={this.state.defaultOrEventLocation}
-          region={this.state.userDraggedRegion}
-          onRegionChangeComplete={() => this.handleMapDragEvents()}
-          customMapStyle={mapStyle}
-          loadingEnabled={true}
-        >
-          {!this.state.singleUserOnly && (
-            <Marker
-              coordinate={{
-                latitude: this.state.defaultOrEventLocation.latitude,
-                longitude: this.state.defaultOrEventLocation.longitude
-              }}
-            >
-              {Platform.OS === "ios" ? (
-                <Image
-                  source={IconsMap.icon_event_location}
-                  style={{ width: 30, height: 35 }}
-                />
-              ) : (
-                <Image
-                  source={IconsMap.icon_location_marker_png}
-                  style={{ width: 30, height: 35 }}
-                />
-              )}
-            </Marker>
-          )}
-
-          {this.state.animating == false && (
-            <InviteeMarker
-              eventId={this.state.eventAndHostData.eventId}
-              hostId={this.state.eventAndHostData.hostId}
-            />
-          )}
-        </MapView>
+        {event && event.evtCoords && (
+          <ActiveMap
+            singleUserOnly={this.state.singleUserOnly}
+            event={event}
+            {...event.evtCoords}
+          />
+        )}
       </Container>
     );
   }
@@ -532,7 +519,8 @@ const mapStateToProps = (state, ownProps) => {
     user: state.auth.user,
     event: state.event.details,
     indicatorShow: state.auth.indicatorShow,
-    eventList: state.eventList.events
+    eventList: state.eventList.events,
+    eventDetail: state.HoozEvent.event
   };
 };
 
@@ -540,6 +528,9 @@ const mapDispatchToProps = dispatch => {
   return {
     onShowIndicator: bShow => {
       dispatch(setVisibleIndicator(bShow));
+    },
+    getEvent: id => {
+      dispatch(getEvent(id));
     }
   };
 };

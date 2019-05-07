@@ -5,6 +5,7 @@ import connection from './offlineReducer';
 import eventList from './events/list';
 import invitee from './events/invitee';
 import friends from './friends';
+import HoozEvent from './events/event';
 
 const rootReducer = combineReducers({
   auth,
@@ -13,7 +14,8 @@ const rootReducer = combineReducers({
   // @TODO remove `eventReducer` and change `eventList` reducer to `events`
   eventList,
   invitee,
-  friends
+  friends,
+  HoozEvent
 });
 
 export default rootReducer;
