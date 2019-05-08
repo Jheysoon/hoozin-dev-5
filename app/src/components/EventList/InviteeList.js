@@ -2,6 +2,7 @@ import React from "react";
 import Image from "react-native-remote-svg";
 import { List, ListItem } from "native-base";
 import { CachedImage } from "react-native-cached-image";
+import UserAvatar from "react-native-user-avatar";
 
 import { EventServiceAPI } from "../../api";
 import { IconsMap } from "../../../assets/assetMap";
@@ -40,23 +41,13 @@ class InviteeList extends React.Component {
             }}
           >
             {item.profileImgUrl ? (
-              <CachedImage
-                source={{ uri: item.profileImgUrl }}
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 24
-                }}
+              <UserAvatar
+                size={48}
+                src={item.profileImgUrl}
+                component={CachedImage}
               />
             ) : (
-              <Image
-                source={IconsMap.icon_contact_avatar}
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 24
-                }}
-              />
+              <UserAvatar name={item.name} size={48} />
             )}
           </ListItem>
         )}

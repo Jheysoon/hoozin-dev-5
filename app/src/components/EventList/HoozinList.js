@@ -4,6 +4,7 @@ import Image from "react-native-remote-svg";
 import { withNavigation } from "react-navigation";
 import { CachedImage } from "react-native-cached-image";
 import { Text, View, TouchableOpacity } from "react-native";
+import UserAvatar from "react-native-user-avatar";
 
 import styles from "./style";
 import InviteeList from "./InviteeList";
@@ -50,26 +51,20 @@ class HoozinList extends React.Component {
               <View>
                 {eventData.hostProfileImgUrl ? (
                   <View style={styles.cardAvatar}>
-                    <CachedImage
-                      source={{ uri: eventData.hostProfileImgUrl }}
-                      style={{
-                        alignSelf: "center",
-                        width: 85,
-                        height: 85,
-                        borderRadius: 85 / 2
-                      }}
+                    <UserAvatar
+                      name={eventData.hostName}
+                      size={85}
+                      src={eventData.hostProfileImgUrl}
+                      component={CachedImage}
+                      style={{ alignSelf: "center" }}
                     />
                   </View>
                 ) : (
                   <View style={styles.cardAvatar}>
-                    <Image
-                      source={IconsMap.icon_contact_avatar}
-                      style={{
-                        alignSelf: "center",
-                        width: 85,
-                        height: 85,
-                        borderRadius: 85 / 2
-                      }}
+                    <UserAvatar
+                      name={eventData.hostName}
+                      size={85}
+                      style={{ alignSelf: "center" }}
                     />
                   </View>
                 )}

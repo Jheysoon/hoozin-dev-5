@@ -1,18 +1,26 @@
 import React from "react";
 import { withNavigation } from "react-navigation";
 import { Col, Grid } from "react-native-easy-grid";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Platform } from "react-native";
 import { Left, Body, Icon, ListItem, Thumbnail } from "native-base";
+import UserAvatar from "react-native-user-avatar";
 
 import { IconsMap } from "assets/assetMap";
 
 const FriendItem = ({ data, navigation }) => {
   return (
-    <ListItem avatar style={styles.list} onPress={() => {
-      navigation.navigate("FriendView", {
-        id: data.id
-      })
-    }}>
+    <ListItem
+      avatar
+      style={Platform.select({
+        ios: styles.listIos,
+        android: styles.listAndroid
+      })}
+      onPress={() => {
+        navigation.navigate("FriendView", {
+          id: data.id
+        });
+      }}
+    >
       <Left>
         {data.profileImgUrl ? (
           <Thumbnail
@@ -27,9 +35,11 @@ const FriendItem = ({ data, navigation }) => {
             source={{ uri: data.profileImgUrl }}
           />
         ) : (
-          <Thumbnail
-            source={IconsMap.icon_contact_avatar}
-            style={[styles.baseAvatar, styles.avatar]}
+          <UserAvatar
+            size={38}
+            name={data.name}
+            containerStyle={[styles.baseAvatar, styles.avatar]}
+            component={Thumbnail}
           />
         )}
       </Left>
@@ -70,17 +80,22 @@ const styles = StyleSheet.create({
   },
   avatar: {
     alignSelf: "center",
-    marginTop: -10,
+    marginTop: -30,
     marginLeft: 4
   },
-  list: {
+  listIos: {
     marginLeft: 4,
     marginRight: 4,
     marginTop: 3,
-    shadowColor: "#000000",
-    shadowColor: "#707070",
-    shadowOffset: { width: 6, height: 12 },
-    shadowOpacity: 1,
+    borderRadius: 5,
+    borderWidth: 0.5,
+    paddingTop: 5,
+    borderColor: "rgba(0,0,0,.3)"
+  },
+  listAndroid: {
+    marginLeft: 4,
+    marginRight: 4,
+    marginTop: 3,
     borderRadius: 5,
     elevation: 2
   },
