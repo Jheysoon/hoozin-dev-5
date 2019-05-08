@@ -3,6 +3,7 @@ import React from "react";
 import Image from "react-native-remote-svg";
 import { View, Text, StyleSheet } from "react-native";
 import { CachedImage } from "react-native-cached-image";
+import UserAvatar from "react-native-user-avatar";
 
 import { IconsMap } from "../../../assets/assetMap";
 import EventAddInviteeItem from "./EventAddInviteeItem";
@@ -25,10 +26,9 @@ const InviteeItem = ({
           backgroundColor: "#ffffff",
           borderRadius: 40,
           marginLeft: 2,
-          shadowColor: "#000000",
           shadowColor: "#707070",
-          shadowOffset: { width: 6, height: 12 },
-          shadowOpacity: 1,
+          shadowOffset: { width: 1, height: 2 },
+          shadowOpacity: 0.5,
           borderColor: "#707070",
           elevation: 2
         }}
@@ -49,16 +49,14 @@ const InviteeItem = ({
                     marginLeft: 3
                   }}
                 >
-                  <CachedImage
-                    source={{ uri: data.profileImgUrl }}
-                    style={{ width: 40, height: 40, borderRadius: 20 }}
+                  <UserAvatar
+                    size={40}
+                    src={data.profileImgUrl}
+                    component={CachedImage}
                   />
                 </View>
               ) : (
-                <Image
-                  source={IconsMap.icon_contact_avatar}
-                  style={styles.avatar}
-                />
+                <UserAvatar size={40} name={data.name} style={styles.avatar} />
               )}
             </React.Fragment>
           )}
@@ -101,8 +99,8 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginTop: 2,
-    borderRadius: 20,
-    marginLeft: -8
+    borderRadius: 20
+    //marginLeft: -8
   }
 });
 

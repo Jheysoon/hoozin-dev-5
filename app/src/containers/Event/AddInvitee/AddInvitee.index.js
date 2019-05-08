@@ -664,6 +664,8 @@ class AddInviteeContainer extends Component {
   }
 
   render() {
+    const ComponentWrap = Platform.OS === "ios" ? Footer : View;
+
     return (
       <React.Fragment>
         <Container style={{ backgroundColor: "#ffffff" }}>
@@ -805,7 +807,7 @@ class AddInviteeContainer extends Component {
                     <Text>No {this.state.emptyListOf} to show right now</Text>
                   </View>
                 )}
-                <View style={{marginTop: 10}} />
+                <View style={{ marginTop: 10 }} />
               </View>
             </View>
           </Content>
@@ -909,204 +911,113 @@ class AddInviteeContainer extends Component {
             </TouchableOpacity>
           </View>
 
-          {Platform.OS === "ios" ? (
-            <Footer style={AddInviteeStyles.bottomView_ios}>
-              <Left>
-                {this.state.editMode ? (
-                  <TouchableOpacity
-                    onPress={() => this.discardEvent()}
-                    style={AddInviteeStyles.fabLeftWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_close_red}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{ uri: AddInviteeSvg.icon_close_red }}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => this.discardEvent()}
-                    style={AddInviteeStyles.fabLeftWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_close_gray}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{ uri: AddInviteeSvg.icon_close_gray }}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
-                )}
-                {this.state.editMode ? (
-                  <TouchableOpacity
-                    onPress={() => this.props.navigation.goBack()}
-                    style={{ position: "absolute", left: 80, bottom: -32 }}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_chevron_left}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{ uri: AddInviteeSvg.icon_chevron_left }}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
-                ) : null}
-              </Left>
-              <Body style={AddInviteeStyles.bottomView_android}>
+          <ComponentWrap
+            style={Platform.select({
+              ios: AddInviteeStyles.bottomView_ios,
+              android: AddInviteeStyles.bottomView_android
+            })}
+          >
+            <Left>
+              {this.state.editMode ? (
                 <TouchableOpacity
-                  onPress={() => this.addContact()}
-                  style={{ position: "absolute", bottom: -32, left: 20 }}
+                  onPress={() => this.discardEvent()}
+                  style={AddInviteeStyles.fabLeftWrapperStyles}
                 >
                   {Platform.OS === "ios" ? (
                     <Image
-                      source={IconsMap.icon_add_user_event}
-                      style={{ width: 82, height: 82 }}
-                    />
-                  ) : (
-                    <Image
-                      source={{
-                        uri: AddInviteeSvg.icon_add_user_event
-                      }}
-                      style={{ width: 82, height: 82 }}
-                    />
-                  )}
-                </TouchableOpacity>
-              </Body>
-              <Right>
-                <TouchableOpacity
-                  onPress={() => this.proceedToConfirmation()}
-                  style={AddInviteeStyles.fabRightWrapperStyles}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_next}
+                      source={IconsMap.icon_close_red}
                       style={AddInviteeStyles.fabStyles}
                     />
                   ) : (
                     <Image
-                      source={{ uri: AddInviteeSvg.icon_next }}
+                      source={{ uri: AddInviteeSvg.icon_close_red }}
                       style={AddInviteeStyles.fabStyles}
                     />
                   )}
                 </TouchableOpacity>
-              </Right>
-            </Footer>
-          ) : (
-            <View style={AddInviteeStyles.bottomView_android}>
-              <Left>
-                {this.state.editMode ? (
-                  <TouchableOpacity
-                    onPress={() => this.discardEvent()}
-                    style={AddInviteeStyles.fabLeftWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_close_red}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{ uri: AddInviteeSvg.icon_close_red }}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => this.discardEvent()}
+                  style={AddInviteeStyles.fabLeftWrapperStyles}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_close_gray}
+                      style={AddInviteeStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{ uri: AddInviteeSvg.icon_close_gray }}
+                      style={AddInviteeStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              )}
+              {this.state.editMode ? (
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.goBack()}
+                  style={{ position: "absolute", left: 80, bottom: -32 }}
+                >
+                  {Platform.OS === "ios" ? (
+                    <Image
+                      source={IconsMap.icon_chevron_left}
+                      style={AddInviteeStyles.fabStyles}
+                    />
+                  ) : (
+                    <Image
+                      source={{ uri: AddInviteeSvg.icon_chevron_left }}
+                      style={AddInviteeStyles.fabStyles}
+                    />
+                  )}
+                </TouchableOpacity>
+              ) : null}
+            </Left>
+            <Body style={AddInviteeStyles.bottomView_android}>
+              <TouchableOpacity
+                onPress={() => this.addContact()}
+                style={{
+                  position: "absolute",
+                  bottom: Platform.select({
+                    ios: 10,
+                    android: -32
+                  }),
+                  left: 20
+                }}
+              >
+                {Platform.OS === "ios" ? (
+                  <Image
+                    source={IconsMap.icon_add_user_event}
+                    style={{ width: 82, height: 82 }}
+                  />
                 ) : (
-                  <TouchableOpacity
-                    onPress={() => this.discardEvent()}
-                    style={AddInviteeStyles.fabLeftWrapperStyles}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_close_gray}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{ uri: AddInviteeSvg.icon_close_gray }}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
-                )}
-                {this.state.editMode ? (
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.props.navigation.replace("AddEvent", {
-                        isEditMode: true,
-                        eventId: this.state.eventId
-                      });
+                  <Image
+                    source={{
+                      uri: AddInviteeSvg.icon_add_user_event
                     }}
-                    style={{ position: "absolute", left: 80, bottom: -32 }}
-                  >
-                    {Platform.OS === "ios" ? (
-                      <Image
-                        source={IconsMap.icon_chevron_left}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    ) : (
-                      <Image
-                        source={{ uri: AddInviteeSvg.icon_chevron_left }}
-                        style={AddInviteeStyles.fabStyles}
-                      />
-                    )}
-                  </TouchableOpacity>
-                ) : null}
-              </Left>
-              <Body>
-                <TouchableOpacity
-                  onPress={() => this.addContact()}
-                  style={{ position: "absolute", bottom: -32, left: 20 }}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_add_user_event}
-                      style={{ width: 78, height: 78 }}
-                    />
-                  ) : (
-                    <Image
-                      source={{
-                        uri: AddInviteeSvg.icon_add_user_event
-                      }}
-                      style={{ width: 78, height: 78 }}
-                    />
-                  )}
-                </TouchableOpacity>
-              </Body>
-              <Right>
-                <TouchableOpacity
-                  onPress={() => this.proceedToConfirmation()}
-                  style={AddInviteeStyles.fabRightWrapperStyles}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_next}
-                      style={AddInviteeStyles.fabStyles}
-                    />
-                  ) : (
-                    <Image
-                      source={{ uri: AddInviteeSvg.icon_next }}
-                      style={AddInviteeStyles.fabStyles}
-                    />
-                  )}
-                </TouchableOpacity>
-              </Right>
-            </View>
-          )}
+                    style={{ width: 82, height: 82 }}
+                  />
+                )}
+              </TouchableOpacity>
+            </Body>
+            <Right>
+              <TouchableOpacity
+                onPress={() => this.proceedToConfirmation()}
+                style={AddInviteeStyles.fabRightWrapperStyles}
+              >
+                {Platform.OS === "ios" ? (
+                  <Image
+                    source={IconsMap.icon_next}
+                    style={AddInviteeStyles.fabStyles}
+                  />
+                ) : (
+                  <Image
+                    source={{ uri: AddInviteeSvg.icon_next }}
+                    style={AddInviteeStyles.fabStyles}
+                  />
+                )}
+              </TouchableOpacity>
+            </Right>
+          </ComponentWrap>
         </Container>
         {this.state.animating && (
           <View style={AddInviteeStyles.overlay}>

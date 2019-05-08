@@ -19,10 +19,10 @@ const AddInviteeList = ({ list, addToEvent, removeToEvent }) => {
               justifyContent: "center",
               backgroundColor: "white",
               borderRadius: 40,
-              marginLeft: 2,
-              shadowColor: "#707070",
-              shadowOffset: { width: 6, height: 6 },
-              shadowOpacity: 0.3
+              marginLeft: 2
+              //shadowColor: "#707070",
+              //shadowOffset: { width: 1, height: 1 },
+              //shadowOpacity: 0.1
             }}
           >
             <View style={{ flex: 1 }}>

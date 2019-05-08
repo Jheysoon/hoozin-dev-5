@@ -25,6 +25,8 @@ import MapView from "react-native-maps";
 import { connect } from "react-redux";
 import moment from "moment";
 import firebase from "react-native-firebase";
+import UserAvatar from "react-native-user-avatar";
+
 import AppBarComponent from "../../../components/AppBar/appbar.index";
 import { IconsMap } from "assets/assetMap";
 import { filterInviteeByRSVP } from "../../../utils/eventListFilter";
@@ -220,7 +222,7 @@ class EventOverviewContainer extends Component {
       } else if (responseStatus == "friends") {
       }
     });
-    
+
     this.setState({ eventInviteeFiltered: filteredList });
   }
 
@@ -278,15 +280,7 @@ class EventOverviewContainer extends Component {
                     </View>
                   ) : (
                     <View style={EventOverviewStyles.cardAvatar}>
-                      <Image
-                        source={IconsMap.icon_contact_avatar}
-                        style={{
-                          alignSelf: "center",
-                          width: 85,
-                          height: 85,
-                          borderRadius: 85 / 2
-                        }}
-                      />
+                      <UserAvatar name={this.state.currentUserName} size={85} />
                     </View>
                   )}
                 </View>
