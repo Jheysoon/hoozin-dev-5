@@ -1898,7 +1898,7 @@ buffer@^5.0.8:
     base64-js "^1.0.2"
     ieee754 "^1.1.4"
 
-bugsnag-react-native@^2.15.0:
+bugsnag-react-native@2.15.0:
   version "2.15.0"
   resolved "https://registry.yarnpkg.com/bugsnag-react-native/-/bugsnag-react-native-2.15.0.tgz#8cdee8d62af8b1bdb86437f456072e91d27409a9"
   integrity sha512-9v6zZ91GSayS0BzzraRM2+FdHZp7iygYFphLXcLMBSx8hkAi7fnGJOgd3LI5NBZH7iv6pG2xxUQxvqrWhjmboA==
@@ -6341,7 +6341,7 @@ react-native-parsed-text@^0.0.20:
     babel-plugin-check-es2015-constants "6.22.0"
     prop-types "^15.5.10"
 
-react-native-permissions@^1.1.1:
+react-native-permissions@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-1.1.1.tgz#4876004681ff8556454613d85249b01baff9b35b"
   integrity sha512-t0Ujm177bagjUOSzhpmkSz+LqFW04HnY9TeZFavDCmV521fQvFz82aD+POXqWsAdsJVOK3umJYBNNqCjC3g0hQ==
@@ -6412,7 +6412,7 @@ react-native-text-input-mask@0.7.0:
   resolved "https://registry.yarnpkg.com/react-native-text-input-mask/-/react-native-text-input-mask-0.7.0.tgz#2e4571560c47b3c9c0c3f360fd29b192b36a9694"
   integrity sha512-sUIDXe96AgctxqBWTcCFxRSD3yTLtKlTUV8+qduyd90dqCF7Km5XzCn0XBOYUqCADsRcGiViiMCLSPqdlpSmxQ==
 
-react-native-user-avatar@^1.0.4:
+react-native-user-avatar@1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/react-native-user-avatar/-/react-native-user-avatar-1.0.4.tgz#38be5dbaee6358b014c509a044008387287f00cb"
   integrity sha512-tP/oNsDSQy3e16arJC/neP4laG5t6enwwYZUnYnuSeUl/Z40kkjRRf+ZVo1LCTT3cC7zez8YLWCZcpRrdnAiKA==
@@ -6657,10 +6657,10 @@ redux-saga@^0.16.2:
   resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.16.2.tgz#993662e86bc945d8509ac2b8daba3a8c615cc971"
   integrity sha512-iIjKnRThI5sKPEASpUvySemjzwqwI13e3qP7oLub+FycCRDysLSAOwt958niZW6LhxfmS6Qm1BzbU70w/Koc4w==
 
-redux-thunk@2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.2.0.tgz#e615a16e16b47a19a515766133d1e3e99b7852e5"
-  integrity sha1-5hWhbha0ehmlFXZhM9Hj6Zt4UuU=
+redux-thunk@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.3.0.tgz#51c2c19a185ed5187aaa9a2d08b666d0d6467622"
+  integrity sha512-km6dclyFnmcvxhAcrQV2AkZmPQjzPDjgVlQtR0EQjxZPyJ0BnMf3in1ryuR8A2qU0HldVRfxYXbFSKlI3N7Slw==
 
 redux@4.0.0:
   version "4.0.0"

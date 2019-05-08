@@ -17,17 +17,27 @@ export const getEventInformation = (eventId, userId = null) => {
   };
 };
 
-export const getEvent = eventId => {
+export const setLoading = () => {
   return dispatch => {
-    const getEvent = firebase.functions().httpsCallable("getEvent");
-
-    getEvent({
-      id: eventId
-    }).then(({ data }) => {
-      dispatch({
-        type: "HZ_EVENT_DETAIL",
-        payload: data
-      });
+    dispatch({
+      type: "HZ_DETAIL_LOADING"
     });
   };
+};
+
+export const getEvent = eventId => async dispatch => {
+  dispatch({
+    type: "HZ_DETAIL_LOADING"
+  });
+
+  const getEvent = firebase.functions().httpsCallable("getEvent");
+
+  getEvent({
+    id: eventId
+  }).then(({ data }) => {
+    dispatch({
+      type: "HZ_EVENT_DETAIL",
+      payload: data
+    });
+  });
 };
