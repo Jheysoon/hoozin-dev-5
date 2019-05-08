@@ -51,15 +51,15 @@ class InviteeMarker extends React.Component {
     if (eventDetail) {
       // filter invitees for the going status only
       _.forEach(inviteeList, val => {
-        /* if (
+        if (
           val.status == "going" &&
           this.determineTime(
             eventDetail.startDateTimeInUTC,
             eventDetail.endDateTimeInUTC
           )
-        ) { */
+        ) {
           invitees.push(val.userId);
-        //}
+        }
       });
     }
 
