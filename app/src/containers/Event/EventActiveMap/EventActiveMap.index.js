@@ -454,7 +454,7 @@ class EventActiveMapContainer extends Component {
                     })
                   }
                 >
-                  {this.renderAvatar()}
+                  {loading == false && this.renderAvatar()}
                 </TouchableOpacity>
               </Left>
               <Body
@@ -464,29 +464,33 @@ class EventActiveMapContainer extends Component {
                   alignSelf: "flex-start"
                 }}
               >
-                <Text
-                  style={{
-                    textAlign: "left",
-                    fontFamily: "Lato",
-                    fontSize: 16,
-                    fontWeight: "700",
-                    color: "#004D9B"
-                  }}
-                >
-                  {event.eventTitle}
-                </Text>
-                <Text
-                  style={{
-                    textAlign: "left",
-                    fontFamily: "Lato",
-                    fontSize: 14,
-                    fontWeight: "400",
-                    color: "#000000",
-                    marginLeft: 5
-                  }}
-                >
-                  {host.name}
-                </Text>
+                {loading == false && (
+                  <React.Fragment>
+                    <Text
+                      style={{
+                        textAlign: "left",
+                        fontFamily: "Lato",
+                        fontSize: 16,
+                        fontWeight: "700",
+                        color: "#004D9B"
+                      }}
+                    >
+                      {event.eventTitle}
+                    </Text>
+                    <Text
+                      style={{
+                        textAlign: "left",
+                        fontFamily: "Lato",
+                        fontSize: 14,
+                        fontWeight: "400",
+                        color: "#000000",
+                        marginLeft: 5
+                      }}
+                    >
+                      {host.name}
+                    </Text>
+                  </React.Fragment>
+                )}
               </Body>
             </Item>
 
