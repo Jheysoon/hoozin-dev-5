@@ -28,11 +28,9 @@ export const getInviteeLocation = invitees => async dispatch => {
 };
 
 export const detachListeners = () => async dispatch => {
-  return dispatch => {
-    if (ref) {
-      ref.off("value", listener);
-    }
-  };
+  if (ref) {
+    ref.off("value", listener);
+  }
 };
 
 export const addUserToEvent = (userInvitee, inviteeId, eventId) => {

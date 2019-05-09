@@ -8,8 +8,11 @@ import firebase from "react-native-firebase";
 
 import { EventServiceAPI } from "../../../api";
 import { IconsMap } from "../../../../assets/assetMap";
-import { getInviteeLocation, detachListeners } from "../../../actions/events/invitee";
-import UserAvatar from '../../../components/UserAvatar';
+import {
+  getInviteeLocation,
+  detachListeners
+} from "../../../actions/events/invitee";
+import UserAvatar from "../../../components/UserAvatar";
 
 const eventServiceApi = new EventServiceAPI();
 
@@ -32,14 +35,10 @@ class InviteeMarker extends React.Component {
     const subtractStart = startDateTimeInUtc.subtract(15, "minutes");
     const subtractEnd = endDateTimeInUtc.subtract(15, "minutes");
 
-    if (
+    return (
       currentDateTimeInUtc.isSameOrAfter(subtractStart) &&
       currentDateTimeInUtc.isSameOrBefore(subtractEnd)
-    ) {
-      return true;
-    }
-
-    return false;
+    );
   }
 
   subInvitee(inviteeList) {

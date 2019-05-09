@@ -16,7 +16,7 @@ import MapView, { Marker } from "react-native-maps";
 import { connect } from "react-redux";
 
 /* Third-party UI modules */
-import { Container, Body, Icon, Item, Left } from "native-base";
+import { Container, Body, Icon, Item, Left, Spinner } from "native-base";
 
 /* Custom reusable component / modules */
 import AppBarComponent from "../../../components/AppBar/appbar.index";
@@ -389,9 +389,6 @@ class EventActiveMapContainer extends Component {
     const { host, event } = this.props.eventDetail;
     const { loading } = this.props;
 
-    console.log('loading here ##########');
-    console.log(loading);
-
     return (
       <Container style={{ backgroundColor: "#ffffff" }}>
         <AppBarComponent
@@ -495,9 +492,7 @@ class EventActiveMapContainer extends Component {
 
             {this.props.navigation.state.routeName === "EventActiveMap" ? (
               <Item style={{ borderBottomWidth: 0 }}>
-                {loading == false && (
-                  <InviteeList eventId={event.id} />
-                )}
+                {loading == false && <InviteeList eventId={event.id} />}
               </Item>
             ) : null}
           </View>
@@ -509,6 +504,12 @@ class EventActiveMapContainer extends Component {
             event={event}
             {...event.evtCoords}
           />
+        )}
+
+        {loading && (
+          <View style={styles.overlay}>
+            <Spinner color={"lightgoldenrodyellow"} style={styles.spinner} />
+          </View>
         )}
       </Container>
     );
@@ -527,6 +528,19 @@ const styles = StyleSheet.create({
   },
   btnGroupTxt: {
     color: "#004D9B"
+  },
+  overlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.45)"
+  },
+  spinner: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
 
@@ -550,7 +564,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(getEvent(id));
     },
     setLoading: () => {
-      dispatch(setLoading())
+      dispatch(setLoading());
     }
   };
 };
