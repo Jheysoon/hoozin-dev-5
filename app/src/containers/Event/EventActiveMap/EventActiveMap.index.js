@@ -10,12 +10,11 @@ import {
 } from "react-native";
 import _ from "lodash";
 
-/* Third-party non UI modules */
-import Image from "react-native-remote-svg";
-import MapView, { Marker } from "react-native-maps";
 import { connect } from "react-redux";
-
-/* Third-party UI modules */
+import Image from "react-native-remote-svg";
+import UserAvatar from "react-native-user-avatar";
+import MapView, { Marker } from "react-native-maps";
+import { CachedImage } from "react-native-cached-image";
 import { Container, Body, Icon, Item, Left, Spinner } from "native-base";
 
 /* Custom reusable component / modules */
@@ -24,27 +23,10 @@ import AppBarComponent from "../../../components/AppBar/appbar.index";
 /* API services */
 import { EventServiceAPI, UserManagementServiceAPI } from "../../../api";
 
-/* Icons map */
-import { IconsMap } from "../../../../assets/assetMap";
-
-import { mapStyle } from "../../../components/NearbyEvents/config";
-
-import InviteeMarker from "./InviteeMarker";
-
-import { CachedImage } from "react-native-cached-image";
 import InviteeList from "./../../../components/EventList/InviteeList";
+import Ribbon from "./../../../components/EventActiveMap/Ribbon";
 import { getEvent, setLoading } from "../../../actions/events/event";
 import ActiveMap from "./ActiveMap";
-import UserAvatar from "react-native-user-avatar";
-
-let hostUserLocationWatcher;
-let attendeeLocationWatcher;
-
-const inviteeStatusMarker = {
-  going: "rgba(110, 178, 90, 0.55)",
-  invited: "rgba(239, 154, 18, 0.55)",
-  declined: "rgba(255, 0, 59, 0.55)"
-};
 
 /* Redux container component to present a detailed view of the created event */
 class EventActiveMapContainer extends Component {
@@ -93,7 +75,6 @@ class EventActiveMapContainer extends Component {
       isReady: false
     };
 
-    this.getEventAndHostDetails = this.getEventAndHostDetails.bind(this);
     this.renderAvatar = this.renderAvatar.bind(this);
   }
   async componentDidMount() {
@@ -106,12 +87,14 @@ class EventActiveMapContainer extends Component {
     } = this.props.screenProps.rootNav.state.params;
 
     this.props.navigation.setParams({
-      resetMap: this.repositionMapToEventLocation.bind(this)
+      resetMap: () => {
+        // set focus of active map here
+      }
     });
 
-    this.props.navigation.addListener("didFocus", () => {
+    /* this.props.navigation.addListener("didFocus", () => {
       this.repositionMapToEventLocation();
-    });
+    }); */
 
     // 29.10.2018 - reapplied this from the code
     if (
@@ -147,10 +130,6 @@ class EventActiveMapContainer extends Component {
   }
 
   componentWillUnmount() {
-    clearInterval(hostUserLocationWatcher);
-    clearInterval(attendeeLocationWatcher);
-    hostUserLocationWatcher = null;
-    attendeeLocationWatcher = null;
     this.props.setLoading();
   }
 
@@ -166,148 +145,10 @@ class EventActiveMapContainer extends Component {
     }
   }
 
-  /**
-   * @description get a particular event information along with host user
-   * @param {string} eventId
-   * @param {string} hostUserId
-   * @param {boolean} scopeToinviteeOnly
-   */
-  async getEventAndHostDetails(
-    eventId,
-    hostUserId,
-    isHostUser,
-    scopeToinviteeOnly
-  ) {
-    const eventSvc = new EventServiceAPI();
-    const userSvc = new UserManagementServiceAPI();
-
-    let eventDetail = _.find(this.props.eventList, { keyNode: eventId });
-
-    let evHostData = {
-      eventId: eventId,
-      hostId: hostUserId,
-      hostName: eventDetail.hostName,
-      isHostUser: isHostUser || false,
-      hostProfileImgUrl: eventDetail.hostProfileImgUrl || "",
-      eventTitle: eventDetail.eventTitle
-    };
-
-    this.setState({
-      eventAndHostData: evHostData
-    });
-
-    /**
-     * NOTE - Chat counter got reset when we come from Event list. so uncommenting
-     */
-    //this.resetUnreadMsgCount(hostUserId, eventId, isHostUser);
-    Promise.all([
-      //eventSvc.getEventDetailsAPI2(eventId, hostUserId),
-      //eventSvc.getUserDetailsAPI2(hostUserId),
-      eventSvc.getEventInviteesDetailsAPI2(eventId, hostUserId),
-      userSvc.getUsersFriendListAPI(this.props.user.socialUID)
-    ])
-      .then(eventAndHostResult => {
-        //console.log('eventAndHostResult #############');
-        //console.log(eventAndHostResult[1]);
-
-        let currFriends =
-          eventAndHostResult[1] == null ? [] : eventAndHostResult[1];
-        const currentUsrFrnds = currFriends.filter(friend => {
-          if (friend.eventList) {
-            return (
-              friend.eventList.filter(event => {
-                if (event.eventId == eventId) {
-                  friend["status"] = "maybe";
-                  return true;
-                }
-              }).length > 0
-            );
-          } else if (friend.event) {
-            if (Object.keys(friend.event).includes(eventId)) {
-              friend["status"] = "going";
-              return true;
-            }
-          }
-        });
-
-        const eventAndHostData = {
-          eventId: eventId,
-          hostId: hostUserId,
-          hostName: eventDetail.hostName,
-          isHostUser: isHostUser || false,
-          hostProfileImgUrl: eventDetail.hostProfileImgUrl || "",
-          eventTitle: eventDetail.eventTitle,
-          invitee: eventAndHostResult[0] == null ? [] : eventAndHostResult[0]
-        };
-        const pinCounter = eventDetail.photos && eventDetail.photos.length;
-
-        //// CHANGED ON: 23rd October, 2018
-        if (!scopeToinviteeOnly) {
-          this.setState({
-            animating: false,
-            eventAndHostData: eventAndHostData,
-            eventImagePinCounter: pinCounter,
-            unfilteredInviteeList: eventAndHostData.invitee,
-            filteredInvitedList: eventAndHostData.invitee,
-            currentUserFriends: currentUsrFrnds,
-            defaultOrEventLocation: {
-              latitude: eventDetail.evtCoords
-                ? eventDetail.evtCoords.lat
-                : this.state.defaultOrEventLocation.latitude, //
-              longitude: eventDetail.evtCoords
-                ? eventDetail.evtCoords.lng
-                : this.state.defaultOrEventLocation.longitude, //
-              latitudeDelta: this.state.defaultOrEventLocation.latitudeDelta,
-              longitudeDelta: this.state.defaultOrEventLocation.longitudeDelta
-            },
-            userDraggedRegion: {
-              latitude: eventDetail.evtCoords
-                ? eventDetail.evtCoords.lat
-                : this.state.defaultOrEventLocation.latitude, //
-              longitude: eventDetail.evtCoords
-                ? eventDetail.evtCoords.lng
-                : this.state.defaultOrEventLocation.longitude, //
-              latitudeDelta: this.state.defaultOrEventLocation.latitudeDelta,
-              longitudeDelta: this.state.defaultOrEventLocation.longitudeDelta
-            }
-          });
-        } else {
-          this.setState({
-            animating: false,
-            eventAndHostData: eventAndHostData,
-            eventImagePinCounter: pinCounter,
-            unfilteredInviteeList: eventAndHostData.invitee,
-            filteredInvitedList: eventAndHostData.invitee,
-            currentUserFriends: currentUsrFrnds,
-            isReady: true
-          });
-        }
-      })
-      .catch(e => {
-        console.log("error here ##########");
-        console.log(e);
-      });
-  }
-
   feedbackToUser() {
     Alert.alert("Oops!!", "You cannot set more than 5 images to an event!", [
       { text: "OK", style: "default" }
     ]);
-  }
-
-  handleMapDragEvents() {
-    this.setState({ userDraggedRegion: null });
-  }
-
-  repositionMapToEventLocation() {
-    this.setState({
-      userDraggedRegion: {
-        latitude: this.state.defaultOrEventLocation.latitude,
-        longitude: this.state.defaultOrEventLocation.longitude,
-        latitudeDelta: this.state.defaultOrEventLocation.latitudeDelta,
-        longitudeDelta: this.state.defaultOrEventLocation.longitudeDelta
-      }
-    });
   }
 
   toggleActiveAttendeeView() {
@@ -330,38 +171,6 @@ class EventActiveMapContainer extends Component {
       key: "EventActiveUser",
       params: { hostId: userId, eventId: eventId, eventHostId: hostId }
     });
-  }
-
-  loadImagesStart() {
-    //this.setState({ animating: true });
-  }
-
-  loadImagesComplete() {
-    //this.setState({ animating: false });
-  }
-
-  async showInviteeLocation(inviteeId) {
-    console.log("++ Hello universe! ++");
-    const userSvc = new UserManagementServiceAPI();
-
-    const userData = await userSvc.getUserDetailsAPI(inviteeId);
-    if (userData && userData.userLocation) {
-      this.setState({
-        inviteeLocation: [
-          {
-            userLocation: userData.userLocation,
-            userProfileImg: userData.profileImgUrl
-          }
-        ],
-        userDraggedRegion: {
-          latitude: userData.userLocation.lat,
-          longitude: userData.userLocation.lng,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421
-        },
-        isAttendeeViewActive: false
-      });
-    }
   }
 
   renderAvatar() {
@@ -399,40 +208,7 @@ class EventActiveMapContainer extends Component {
         />
         <View style={{ zIndex: 99 }}>
           {this.props.navigation.state.routeName === "EventActiveMap" ? (
-            <Item
-              style={{
-                width: "100%",
-                height: 30,
-                backgroundColor: "#FC3764",
-                marginLeft: 0,
-                paddingTop: 4,
-                paddingBottom: 4,
-                paddingLeft: 14,
-                paddingRight: 14,
-                zIndex: 99999,
-                justifyContent: "flex-start",
-                flexWrap: "nowrap",
-                display: "flex"
-              }}
-            >
-              <Icon
-                type="FontAwesome"
-                name="exclamation"
-                style={{ color: "#ffffff" }}
-              />
-              <Body>
-                <Text
-                  style={{
-                    color: "#ffffff",
-                    textAlign: "center",
-                    fontFamily: "Lato",
-                    fontSize: 11
-                  }}
-                >
-                  This event is Active. Your location is shared with the group
-                </Text>
-              </Body>
-            </Item>
+            <Ribbon />
           ) : null}
 
           <View
@@ -454,7 +230,7 @@ class EventActiveMapContainer extends Component {
                     })
                   }
                 >
-                  {this.renderAvatar()}
+                  {loading == false && this.renderAvatar()}
                 </TouchableOpacity>
               </Left>
               <Body
@@ -464,29 +240,33 @@ class EventActiveMapContainer extends Component {
                   alignSelf: "flex-start"
                 }}
               >
-                <Text
-                  style={{
-                    textAlign: "left",
-                    fontFamily: "Lato",
-                    fontSize: 16,
-                    fontWeight: "700",
-                    color: "#004D9B"
-                  }}
-                >
-                  {event.eventTitle}
-                </Text>
-                <Text
-                  style={{
-                    textAlign: "left",
-                    fontFamily: "Lato",
-                    fontSize: 14,
-                    fontWeight: "400",
-                    color: "#000000",
-                    marginLeft: 5
-                  }}
-                >
-                  {host.name}
-                </Text>
+                {loading == false && (
+                  <React.Fragment>
+                    <Text
+                      style={{
+                        textAlign: "left",
+                        fontFamily: "Lato",
+                        fontSize: 16,
+                        fontWeight: "700",
+                        color: "#004D9B"
+                      }}
+                    >
+                      {event.eventTitle}
+                    </Text>
+                    <Text
+                      style={{
+                        textAlign: "left",
+                        fontFamily: "Lato",
+                        fontSize: 14,
+                        fontWeight: "400",
+                        color: "#000000",
+                        marginLeft: 5
+                      }}
+                    >
+                      {host.name}
+                    </Text>
+                  </React.Fragment>
+                )}
               </Body>
             </Item>
 

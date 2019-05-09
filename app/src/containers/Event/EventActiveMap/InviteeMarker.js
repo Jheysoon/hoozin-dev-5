@@ -107,6 +107,8 @@ class InviteeMarker extends React.Component {
       invitees.push(val);
     });
 
+    //https://ui-avatars.com/api/?background=8e44ad&color=fff&name=jayson&bold=true&rounded=true&uppercase=false
+
     return invitees && invitees.length
       ? invitees.map((invitee, key) => (
           <Marker
@@ -124,7 +126,7 @@ class InviteeMarker extends React.Component {
             ) : (
               <Image
                 source={IconsMap.icon_contact_avatar}
-                style={{ width: 47, height: 47, borderRadius: 47 / 2 }}
+                style={{ width: 44, height: 44, borderRadius: 44 / 2 }}
               />
             )}
           </Marker>
