@@ -27,11 +27,6 @@ export class LocationServiceAPI {
    * @param {*} coordinate
    */
   async updateUserLocation(userId, coordinate) {
-    const userSvc = new UserManagementServiceAPI();
-    const payload = {
-      userLocation: { lat: coordinate.latitude, lng: coordinate.longitude }
-    };
-    const updateOpResult = await userSvc.updateUserDetailsAPI(userId, payload);
 
     // new node for updating userlocation
     let connectedRef = firebase.database().ref(".info/connected");

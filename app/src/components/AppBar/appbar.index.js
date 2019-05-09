@@ -300,12 +300,13 @@ class AppBarComponent extends Component {
     /** +++ ADDED ON 05.11.2018 by SOMNATH for the issue of back button not working after implementing
      * the tab bar by Kinjal and her team
      **/
+
     if (
       this.props.currentScreen == "activeMap" &&
       this.props.skipCacheBurst &&
       this.props.withNav
     ) {
-      return this.props.withNav.navigate("EventList");
+      return this.props.withNav.goBack();
     } else if (
       this.props.currentScreen != "activeMap" &&
       this.props.skipCacheBurst
