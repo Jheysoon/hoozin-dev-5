@@ -51,6 +51,7 @@ const InviteeItem = ({
                 >
                   <UserAvatar
                     size={40}
+                    name={data.name}
                     src={data.profileImgUrl}
                     component={CachedImage}
                   />

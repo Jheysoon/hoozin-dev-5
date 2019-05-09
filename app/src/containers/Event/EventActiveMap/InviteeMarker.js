@@ -8,7 +8,11 @@ import firebase from "react-native-firebase";
 
 import { EventServiceAPI } from "../../../api";
 import { IconsMap } from "../../../../assets/assetMap";
-import { getInviteeLocation } from "../../../actions/events/invitee";
+import {
+  getInviteeLocation,
+  detachListeners
+} from "../../../actions/events/invitee";
+import UserAvatar from "../../../components/UserAvatar";
 
 const eventServiceApi = new EventServiceAPI();
 
@@ -31,14 +35,10 @@ class InviteeMarker extends React.Component {
     const subtractStart = startDateTimeInUtc.subtract(15, "minutes");
     const subtractEnd = endDateTimeInUtc.subtract(15, "minutes");
 
-    if (
+    return (
       currentDateTimeInUtc.isSameOrAfter(subtractStart) &&
       currentDateTimeInUtc.isSameOrBefore(subtractEnd)
-    ) {
-      return true;
-    }
-
-    return false;
+    );
   }
 
   subInvitee(inviteeList) {
@@ -74,6 +74,7 @@ class InviteeMarker extends React.Component {
     let connected = await eventServiceApi.checkForConnection();
 
     if (connected.val()) {
+
       // @TODO: if the event is public the invitees is not required
       reference = firebase.database().ref(`invitees/${this.props.eventId}`);
       listener = reference.on("value", inviteeSnapshot => {
@@ -93,6 +94,8 @@ class InviteeMarker extends React.Component {
     if (reference) {
       reference.off("value", listener);
     }
+
+    this.props.detachListeners();
   }
 
   render() {
@@ -141,6 +144,9 @@ const mapDispatchToProps = dispatch => {
   return {
     getInviteeLocation: invitees => {
       dispatch(getInviteeLocation(invitees));
+    },
+    detachListeners: () => {
+      dispatch(detachListeners());
     }
   };
 };

@@ -16,7 +16,7 @@ import MapView, { Marker } from "react-native-maps";
 import { connect } from "react-redux";
 
 /* Third-party UI modules */
-import { Container, Body, Icon, Item, Left } from "native-base";
+import { Container, Body, Icon, Item, Left, Spinner } from "native-base";
 
 /* Custom reusable component / modules */
 import AppBarComponent from "../../../components/AppBar/appbar.index";
@@ -33,8 +33,9 @@ import InviteeMarker from "./InviteeMarker";
 
 import { CachedImage } from "react-native-cached-image";
 import InviteeList from "./../../../components/EventList/InviteeList";
-import { getEvent } from "../../../actions/events/event";
+import { getEvent, setLoading } from "../../../actions/events/event";
 import ActiveMap from "./ActiveMap";
+import UserAvatar from "react-native-user-avatar";
 
 let hostUserLocationWatcher;
 let attendeeLocationWatcher;
@@ -93,6 +94,7 @@ class EventActiveMapContainer extends Component {
     };
 
     this.getEventAndHostDetails = this.getEventAndHostDetails.bind(this);
+    this.renderAvatar = this.renderAvatar.bind(this);
   }
   async componentDidMount() {
     const {
@@ -149,6 +151,7 @@ class EventActiveMapContainer extends Component {
     clearInterval(attendeeLocationWatcher);
     hostUserLocationWatcher = null;
     attendeeLocationWatcher = null;
+    this.props.setLoading();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -204,7 +207,6 @@ class EventActiveMapContainer extends Component {
       userSvc.getUsersFriendListAPI(this.props.user.socialUID)
     ])
       .then(eventAndHostResult => {
-
         //console.log('eventAndHostResult #############');
         //console.log(eventAndHostResult[1]);
 
@@ -362,8 +364,30 @@ class EventActiveMapContainer extends Component {
     }
   }
 
+  renderAvatar() {
+    const { host } = this.props.eventDetail;
+
+    if (host) {
+      if (host.profileImgUrl != "") {
+        return (
+          <CachedImage
+            source={{
+              uri: host.profileImgUrl
+            }}
+            style={{ width: 70, height: 70, borderRadius: 35 }}
+          />
+        );
+      }
+
+      return <UserAvatar name={host.name} size={70} />;
+    }
+
+    return null;
+  }
+
   render() {
     const { host, event } = this.props.eventDetail;
+    const { loading } = this.props;
 
     return (
       <Container style={{ backgroundColor: "#ffffff" }}>
@@ -430,19 +454,7 @@ class EventActiveMapContainer extends Component {
                     })
                   }
                 >
-                  {host && host.profileImgUrl ? (
-                    <CachedImage
-                      source={{
-                        uri: host.profileImgUrl
-                      }}
-                      style={{ width: 70, height: 70, borderRadius: 35 }}
-                    />
-                  ) : (
-                    <Image
-                      source={IconsMap.icon_contact_avatar}
-                      style={{ width: 70, height: 70, borderRadius: 35 }}
-                    />
-                  )}
+                  {this.renderAvatar()}
                 </TouchableOpacity>
               </Left>
               <Body
@@ -469,7 +481,8 @@ class EventActiveMapContainer extends Component {
                     fontFamily: "Lato",
                     fontSize: 14,
                     fontWeight: "400",
-                    color: "#000000"
+                    color: "#000000",
+                    marginLeft: 5
                   }}
                 >
                   {host.name}
@@ -479,20 +492,24 @@ class EventActiveMapContainer extends Component {
 
             {this.props.navigation.state.routeName === "EventActiveMap" ? (
               <Item style={{ borderBottomWidth: 0 }}>
-                {event && event.id != undefined && (
-                  <InviteeList eventId={event.id} />
-                )}
+                {loading == false && <InviteeList eventId={event.id} />}
               </Item>
             ) : null}
           </View>
         </View>
 
-        {event && event.evtCoords && (
+        {loading == false && (
           <ActiveMap
             singleUserOnly={this.state.singleUserOnly}
             event={event}
             {...event.evtCoords}
           />
+        )}
+
+        {loading && (
+          <View style={styles.overlay}>
+            <Spinner color={"lightgoldenrodyellow"} style={styles.spinner} />
+          </View>
         )}
       </Container>
     );
@@ -511,6 +528,19 @@ const styles = StyleSheet.create({
   },
   btnGroupTxt: {
     color: "#004D9B"
+  },
+  overlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.45)"
+  },
+  spinner: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
 
@@ -520,7 +550,8 @@ const mapStateToProps = (state, ownProps) => {
     event: state.event.details,
     indicatorShow: state.auth.indicatorShow,
     eventList: state.eventList.events,
-    eventDetail: state.HoozEvent.event
+    eventDetail: state.HoozEvent.event,
+    loading: state.HoozEvent.loading
   };
 };
 
@@ -531,6 +562,9 @@ const mapDispatchToProps = dispatch => {
     },
     getEvent: id => {
       dispatch(getEvent(id));
+    },
+    setLoading: () => {
+      dispatch(setLoading());
     }
   };
 };

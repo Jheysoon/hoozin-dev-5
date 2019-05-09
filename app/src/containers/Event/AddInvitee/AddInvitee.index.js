@@ -977,10 +977,7 @@ class AddInviteeContainer extends Component {
                 onPress={() => this.addContact()}
                 style={{
                   position: "absolute",
-                  bottom: Platform.select({
-                    ios: 10,
-                    android: -32
-                  }),
+                  bottom: 10,
                   left: 20
                 }}
               >

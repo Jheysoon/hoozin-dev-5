@@ -280,7 +280,15 @@ class EventOverviewContainer extends Component {
                     </View>
                   ) : (
                     <View style={EventOverviewStyles.cardAvatar}>
-                      <UserAvatar name={this.state.currentUserName} size={85} />
+                      <Image
+                        source={IconsMap.icon_contact_avatar}
+                        style={{
+                          alignSelf: "center",
+                          width: 85,
+                          height: 85,
+                          borderRadius: 85 / 2
+                        }}
+                      />
                     </View>
                   )}
                 </View>

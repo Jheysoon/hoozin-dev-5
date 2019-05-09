@@ -1,30 +1,36 @@
 import firebase from "react-native-firebase";
 
-export const getInviteeLocation = invitees => {
-  return dispatch => {
-    let connectedRef = firebase.database().ref(".info/connected");
+let ref = null;
+let listener = null;
 
-    connectedRef.on("value", snap => {
-      if (snap.val()) {
-        firebase
-          .database()
-          .ref("userLocation")
-          .on("value", snapshot => {
-            const result = {};
-            invitees.forEach(userId => {
-              result[userId] = snapshot._value[userId] || null;
-            });
+export const getInviteeLocation = invitees => async dispatch => {
+  let connectedRef = firebase.database().ref(".info/connected");
 
-            dispatch({
-              type: "INVITEE_LOCATIONS",
-              payload: {
-                locations: result
-              }
-            });
-          });
-      }
-    });
-  };
+  connectedRef.on("value", snap => {
+    if (snap.val()) {
+      ref = firebase.database().ref("userLocation");
+
+      listener = ref.on("value", snapshot => {
+        const result = {};
+        invitees.forEach(userId => {
+          result[userId] = snapshot._value[userId] || null;
+        });
+
+        dispatch({
+          type: "INVITEE_LOCATIONS",
+          payload: {
+            locations: result
+          }
+        });
+      });
+    }
+  });
+};
+
+export const detachListeners = () => async dispatch => {
+  if (ref) {
+    ref.off("value", listener);
+  }
 };
 
 export const addUserToEvent = (userInvitee, inviteeId, eventId) => {

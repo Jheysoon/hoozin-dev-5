@@ -43,6 +43,7 @@ class InviteeList extends React.Component {
             {item.profileImgUrl ? (
               <UserAvatar
                 size={48}
+                name={item.name}
                 src={item.profileImgUrl}
                 component={CachedImage}
               />
