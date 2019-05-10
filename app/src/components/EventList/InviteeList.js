@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "react-native-remote-svg";
-import { List, ListItem } from "native-base";
+import { List, ListItem, Icon } from "native-base";
 import { CachedImage } from "react-native-cached-image";
 import UserAvatar from "react-native-user-avatar";
 
@@ -46,9 +46,15 @@ class InviteeList extends React.Component {
                 name={item.name}
                 src={item.profileImgUrl}
                 component={CachedImage}
+                containerStyle={{ opacity: item.status == "going" ? 1 : 0.3 }}
               />
             ) : (
-              <UserAvatar name={item.name} size={48} />
+              <UserAvatar
+                name={item.name}
+                size={48}
+                containerStyle={{ opacity: item.status == "going" ? 1 : 0.3 }}
+                textColor={item.status == "going" ? "#fff" : "rgba(0,0,0,.5)"}
+              />
             )}
           </ListItem>
         )}
