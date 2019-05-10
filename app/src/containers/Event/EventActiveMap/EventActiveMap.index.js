@@ -42,37 +42,9 @@ class EventActiveMapContainer extends Component {
   constructor() {
     super();
     this.state = {
-      eventAndHostData: {},
-      hostUserLocation: null,
-      inviteeLocation: null,
-      filteredInvitedList: [],
-      unfilteredInviteeList: [],
-      prevTextElemRef: null,
-      prevBarElemRef: null,
-      prevBarElemColor: null,
-      hostId: "",
       singleUserOnly: false,
       isAttendeeViewActive: false,
-      isHostUserCameragalleryActive: false,
-      defaultOrEventLocation: {
-        latitude: 37.78825,
-        longitude: -122.4324,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421
-      },
-      eventPhotos: null,
-      eventPhotosStash: null,
-      userDraggedRegion: null,
       animating: true,
-      isCameraActive: false,
-      selectedImgUrl: "",
-      eventImagePinCounter: 0,
-      selectedImageIndex: 0,
-      isGalleryAtEnd: false,
-      isGalleryAtStart: true,
-      chats: [],
-      chatCounter: 0,
-      isReady: false
     };
 
     this.renderAvatar = this.renderAvatar.bind(this);
