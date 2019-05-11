@@ -65,24 +65,29 @@ class AppBarComponent extends Component {
 
           this.props.changeLocation(userId, data.coords);
         });
-      });
+      }, () => {});
     }
   }
 
   async componentDidMount() {
     AppState.addEventListener("change", nextAppState => {});
 
-    let permission = await Permissions.check("location", "whenInUse");
+    let permission = await Permissions.check("location", "always");
 
     if (permission == "authorized") {
       // add a workaround for now...
       // @TODO research for the plugin to not run first the background
       this.watchLocation();
-      
     } else {
-      await Permissions.request("location");
+      permission = await Permissions.check("location", "whenInUse");
 
-      this.watchLocation();
+      if (permission == "authorized") {
+        this.watchLocation();
+      } else {
+        await Permissions.request("location");
+
+        this.watchLocation();
+      }
     }
 
     //backgroundLocation.run();
