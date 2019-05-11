@@ -27,6 +27,8 @@ import NotificationService from "../../utils/notification.service";
 import { UserManagementServiceAPI, EventServiceAPI } from "../../api";
 import { extractHostAndInvitedEventsInfo } from "../../utils/eventListFilter";
 
+let watchId = null;
+
 /**
  * Component to hold the app bar (top navigation plus tab filter bar)
  */
@@ -40,86 +42,50 @@ class AppBarComponent extends Component {
       eventListFiltered: [],
       hostAndInvitedEventList: [],
       isEventListModified: false,
-      prevTextElemRef: null,
-      prevBarElemRef: null,
-      prevBarElemColor: null,
       userId: null,
       currentFilterType: "all",
       existingInvitedEvents: [],
-      first: true,
       filter: "all"
     };
 
     this.handleEventStatusFilter = this.handleEventStatusFilter.bind(this);
+    this.watchLocation = this.watchLocation.bind(this);
   }
   static navigationOptions = {
     header: null
   };
 
-  componentDidMount() {
+  watchLocation() {
+    if (watchId == null) {
+      watchId = navigator.geolocation.watchPosition(data => {
+        AsyncStorage.getItem("userId").then(userIdString => {
+          const { uid: userId } = JSON.parse(userIdString);
+
+          console.log("watch location here #########");
+
+          this.props.changeLocation(userId, data.coords);
+        });
+      });
+    }
+  }
+
+  async componentDidMount() {
     AppState.addEventListener("change", nextAppState => {});
-    // ------------------------------------Background Tracker------------------------------------
-    BackgroundGeolocation.configure({
-      desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
-      stationaryRadius: 50,
-      distanceFilter: 50,
-      debug: false,
-      startOnBoot: false,
-      stopOnTerminate: true,
-      locationProvider: BackgroundGeolocation.ACTIVITY_PROVIDER,
-      interval: 10000,
-      fastestInterval: 5000,
-      activitiesInterval: 10000,
-      stopOnStillActivity: true,
-      url: "",
-      notificationsEnabled: false,
-      startForeground: false,
-      httpHeaders: {
-        "X-FOO": "bar"
-      },
-      // customize post properties
-      postTemplate: {
-        lat: "@latitude",
-        lon: "@longitude",
-        foo: "bar" // you can also add your own properties
-      }
-    });
 
-    BackgroundGeolocation.on("background", async () => {
-      console.log("[INFO] App is in background");
+    let permission = await Permissions.check("location", "whenInUse");
 
-      let permission = await Permissions.check("location", "whenInUse");
+    if (permission == "authorized") {
+      // add a workaround for now...
+      // @TODO research for the plugin to not run first the background
+      this.watchLocation();
+      
+    } else {
+      await Permissions.request("location");
 
-      if (permission == "authorize") {
-        // add a workaround for now...
-        // @TODO research for the plugin to not run first the background
-        if (!this.state.first) {
-          navigator.geolocation.setRNConfiguration({
-            skipPermissionRequests: true
-          });
+      this.watchLocation();
+    }
 
-          navigator.geolocation.watchPosition(data => {
-            AsyncStorage.getItem("userId").then(userIdString => {
-              const { uid: userId } = JSON.parse(userIdString);
-
-              this.props.changeLocation(userId, data.coords);
-            });
-          });
-        } else {
-          this.setState({
-            first: false
-          });
-        }
-      }
-    });
-
-    BackgroundGeolocation.checkStatus(status => {
-      // you don't need to check status before start (this is just the example)
-      if (!status.isRunning) {
-        BackgroundGeolocation.start(); //triggers start on start event
-      }
-    });
-    // ------------------------------------Background Tracker------------------------------------
+    //backgroundLocation.run();
 
     if (this.props.isRibbonVisible) {
       const userSvc = new UserManagementServiceAPI();

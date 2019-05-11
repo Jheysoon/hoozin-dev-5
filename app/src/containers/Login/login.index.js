@@ -60,7 +60,7 @@ class LoginContainer extends Component {
 
         const locationService = new LocationServiceAPI();
         // start tracking of user
-        locationService.watchUserLocation(uid);
+        //locationService.watchUserLocation(uid);
 
         // HOOZ-23 - Maintaining logged in state
         this.props.fetchProfileForLogin(uid, parseResult);
