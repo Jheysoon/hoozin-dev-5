@@ -141,7 +141,6 @@ class EventList extends Component {
     console.log("[EventList] event id", keyNode);
 
     if (isHostEvent && !isActive && !isPastEvent) {
-      console.log('eventOVerview here ########')
       this.props.navigation.navigate({
         routeName: "EventOverview",
         key: "EventOverview_" + keyNode,
@@ -233,6 +232,8 @@ class EventList extends Component {
 
   render() {
     let { eventList } = this.props;
+
+    const ComponentWrap = Platform.OS === "ios" ? Footer : View;
 
     return (
       <React.Fragment>
@@ -367,131 +368,73 @@ class EventList extends Component {
               </View>
             )}
           </Content>
-          {Platform.OS === "ios" ? (
-            <Footer style={styles.bottomView_ios}>
-              <Left>
-                <TouchableOpacity
-                  onPress={() =>
-                    this.props.navigation.navigate({
-                      routeName: "NearbyEvents",
-                      key: "NearbyEvents"
-                    })
-                  }
-                  style={styles.fabLeftWrapperStyles}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_map}
-                      style={styles.fabStyles}
-                    />
-                  ) : (
-                    <Image
-                      source={{ uri: EventListSvg.Ellipse_368 }}
-                      style={styles.fabStyles}
-                    />
-                  )}
-                </TouchableOpacity>
-              </Left>
-              <Body>
-                <TouchableOpacity
-                  onPress={() =>
-                    this.props.navigation.navigate({
-                      routeName: "AddEvent",
-                      key: "AddEvent"
-                    })
-                  }
-                  style={{ position: "absolute", bottom: -30, left: 30 }}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_add_circle}
-                      style={styles.fabStyles}
-                    />
-                  ) : (
-                    <Image
-                      source={{ uri: EventListSvg.Search_Field }}
-                      style={styles.fabStyles}
-                    />
-                  )}
-                </TouchableOpacity>
-              </Body>
-              <Right>
-                <TouchableOpacity
-                  style={styles.fabRightWrapperStyles}
-                  onPress={() => this.displayEventsFilterView()}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_search}
-                      style={styles.fabStyles}
-                    />
-                  ) : (
-                    <Image
-                      source={{ uri: EventListSvg.Search_Field1 }}
-                      style={styles.fabStyles}
-                    />
-                  )}
-                </TouchableOpacity>
-              </Right>
-            </Footer>
-          ) : (
-            <View style={styles.bottomView_android}>
-              <Left>
-                <TouchableOpacity
-                  onPress={() => this.props.navigation.navigate("NearbyEvents")}
-                  style={styles.fabLeftWrapperStyles}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_map}
-                      style={styles.fabStyles}
-                    />
-                  ) : (
-                    <Image
-                      source={{ uri: EventListSvg.btn_EventMap }}
-                      style={styles.fabStyles}
-                    />
-                  )}
-                </TouchableOpacity>
-              </Left>
-              <Body>
-                <TouchableOpacity
-                  onPress={() => this.props.navigation.navigate("AddEvent")}
-                  style={{ position: "absolute", bottom: -30, left: 30 }}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_add_circle}
-                      style={styles.fabStyles}
-                    />
-                  ) : (
-                    <Image
-                      source={{ uri: EventListSvg.Search_Field2 }}
-                      style={styles.fabStyles}
-                    />
-                  )}
-                </TouchableOpacity>
-              </Body>
-              <Right>
-                <TouchableOpacity
-                  style={styles.fabRightWrapperStyles}
-                  onPress={() => this.displayEventsFilterView()}
-                >
-                  {Platform.OS === "ios" ? (
-                    <Image
-                      source={IconsMap.icon_search}
-                      style={styles.fabStyles}
-                    />
-                  ) : (
-                    <Image
-                      source={{ uri: EventListSvg.Search_Field3 }}
-                      style={styles.fabStyles}
-                    />
-                  )}
-                </TouchableOpacity>
-              </Right>
-            </View>
-          )}
+
+          <ComponentWrap
+            style={Platform.select({
+              ios: styles.bottomView_ios,
+              android: styles.bottomView_android
+            })}
+          >
+            <Left>
+              <TouchableOpacity
+                onPress={() =>
+                  this.props.navigation.navigate({
+                    routeName: "NearbyEvents"
+                  })
+                }
+                style={styles.fabLeftWrapperStyles}
+              >
+                {Platform.OS === "ios" ? (
+                  <Image source={IconsMap.icon_map} style={styles.fabStyles} />
+                ) : (
+                  <Image
+                    source={{ uri: EventListSvg.Ellipse_368 }}
+                    style={styles.fabStyles}
+                  />
+                )}
+              </TouchableOpacity>
+            </Left>
+            <Body>
+              <TouchableOpacity
+                onPress={() =>
+                  this.props.navigation.navigate({
+                    routeName: "AddEvent"
+                  })
+                }
+                style={{ position: "absolute", bottom: -30, left: 30 }}
+              >
+                {Platform.OS === "ios" ? (
+                  <Image
+                    source={IconsMap.icon_add_circle}
+                    style={styles.fabStyles}
+                  />
+                ) : (
+                  <Image
+                    source={{ uri: EventListSvg.Search_Field }}
+                    style={styles.fabStyles}
+                  />
+                )}
+              </TouchableOpacity>
+            </Body>
+            <Right>
+              <TouchableOpacity
+                style={styles.fabRightWrapperStyles}
+                onPress={() => this.displayEventsFilterView()}
+              >
+                {Platform.OS === "ios" ? (
+                  <Image
+                    source={IconsMap.icon_search}
+                    style={styles.fabStyles}
+                  />
+                ) : (
+                  <Image
+                    source={{ uri: EventListSvg.Search_Field1 }}
+                    style={styles.fabStyles}
+                  />
+                )}
+              </TouchableOpacity>
+            </Right>
+          </ComponentWrap>
         </Container>
         {this.state.animating && (
           <View style={styles.overlay}>

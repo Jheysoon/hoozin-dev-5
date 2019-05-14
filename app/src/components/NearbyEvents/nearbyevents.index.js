@@ -263,6 +263,8 @@ class NearbyEventsComponent extends Component {
   }
 
   handleMapDragEvents() {
+    this.setState({ userDraggedRegion: null });
+
     if (this.state.isMapDraggedCounter > 0) {
       this.state.GPSLocationPointer.color != "#CCCCCC"
         ? this.setState({

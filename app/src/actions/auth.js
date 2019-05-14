@@ -413,7 +413,7 @@ export const fetchProfileForLogin = (socialUID, asyncData) => {
       .then(val => {
         dispatch({
           type: USER.DTATFETCH,
-          data: { socialUID, ...val.data, ...asyncData }
+          data: {...val.data, ...asyncData, socialUID }
         });
       })
       .catch(err => {

@@ -2,7 +2,7 @@ import _ from "lodash";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, AsyncStorage } from "react-native";
 import { Container, Content } from "native-base";
 import { UIActivityIndicator } from "react-native-indicators";
 
@@ -26,7 +26,6 @@ class CreateOrEditEventContainer extends Component {
   constructor() {
     super();
     this.state = {
-      chosenDate: new Date(),
       startDate: "",
       startTime: "",
       endDate: "",
@@ -39,9 +38,7 @@ class CreateOrEditEventContainer extends Component {
       animating: false,
       eventId: "",
       isEditMode: false,
-      isEventFormEmpty: false,
       evtCoords: null,
-      textInputHeight: 0
     };
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -132,14 +129,24 @@ class CreateOrEditEventContainer extends Component {
     this.props.onShowIndicator(true);
     this.setState({ animating: true, privateValue: values["privateValue"] });
 
-    values = {
-      ...values,
-      status: this.state.isEditMode ? "Editing" : this.state.status,
-      socialUID: this.props.user.socialUID,
-      eventId: this.state.eventId ? this.state.eventId : ""
-    };
+    AsyncStorage.getItem("userId", (err, result) => {
+      if (err) {
+        console.error(err.message);
+      }
+      if (result) {
+        let parseResult = JSON.parse(result);
+        const { accountType, uid } = parseResult;
 
-    this.props.upsertEventDataAction(values);
+        values = {
+          ...values,
+          status: this.state.isEditMode ? "Editing" : this.state.status,
+          socialUID: uid,
+          eventId: this.state.eventId ? this.state.eventId : ""
+        };
+
+        this.props.upsertEventDataAction(values);
+      }
+    });
   }
 
   render() {

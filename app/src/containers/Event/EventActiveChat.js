@@ -1,3 +1,4 @@
+import _ from "lodash";
 import React, { Component } from "react";
 import {
   TouchableOpacity,
@@ -11,7 +12,7 @@ import {
   Platform
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { Spinner } from "native-base";
+import { Spinner, Icon } from "native-base";
 import Image from "react-native-remote-svg";
 import {
   Container,
@@ -43,7 +44,9 @@ class EventActiveChatContainer extends Component {
       chatCounter: 0,
       animating: false,
       currentNavStackDepth: 0,
-      activeEventData: null
+      activeEventData: null,
+      keyboardOpen: false,
+      iconHeight: 10
     };
   }
 
@@ -283,7 +286,8 @@ class EventActiveChatContainer extends Component {
                         fontFamily: "Lato",
                         fontSize: 14,
                         fontWeight: "400",
-                        color: "#000000"
+                        color: "#000000",
+                        marginLeft: 2
                       }}
                     >
                       {this.state.activeEventData.hostName}
@@ -412,7 +416,7 @@ class EventActiveChatContainer extends Component {
                         {item.createdAt
                           ? moment(item.createdAt)
                               .local()
-                              .format("MMMM D, YYYY h:m a")
+                              .format("MMMM D, YYYY h:mm a")
                           : ""}
                       </Text>
                     </View>
@@ -423,7 +427,7 @@ class EventActiveChatContainer extends Component {
           <View style={{ height: "10%", marginTop: 20 }}>
             <ScrollView
               keyboardShouldPersistTaps="always"
-              keyboardDismissMode="interactive"
+              keyboardDismissMode="none"
             >
               <View style={{ width: "90%", position: "relative", left: 14 }}>
                 <TextInput
@@ -435,6 +439,20 @@ class EventActiveChatContainer extends Component {
                   onFocus={() => this.repositionChatArea(true)}
                   onBlur={() => this.repositionChatArea(false)}
                   onSubmitEditing={() => this.sendComposedMessage()}
+                  onContentSizeChange={event => {
+                    let height = event.nativeEvent.contentSize.height;
+
+                    if (height > 40) {
+                      let h = event.nativeEvent.contentSize.height / 2;
+                      this.setState({
+                        iconHeight: h - 10
+                      });
+                    } else {
+                      this.setState({
+                        iconHeight: 10
+                      })
+                    }
+                  }}
                   underlineColorAndroid="transparent"
                   style={{
                     paddingLeft: 20,
@@ -452,17 +470,23 @@ class EventActiveChatContainer extends Component {
                   placeholderTextColor="#2699FB"
                 />
                 <TouchableOpacity
-                  style={{ position: "absolute", right: 5, top: 3 }}
+                  style={{
+                    position: "absolute",
+                    right: 5,
+                    top: this.state.iconHeight
+                  }}
                   onPress={() => this.sendComposedMessage()}
                 >
-                  {Platform.OS === "ios" ? (
-                    <Image source={IconsMap.icon_send_msg} />
-                  ) : (
-                    <Image
-                      source={{ uri: EventActiveChatSvg.Group_1066 }}
-                      style={styles.sendBtnAndroid}
-                    />
-                  )}
+                  <Icon
+                    type="FontAwesome5"
+                    style={{
+                      color:
+                        _.size(this.state.messageText) > 0
+                          ? "rgb(38, 153, 251)"
+                          : "rgb(188, 224, 253)"
+                    }}
+                    name="arrow-circle-up"
+                  />
                 </TouchableOpacity>
               </View>
             </ScrollView>
