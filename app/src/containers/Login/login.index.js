@@ -58,10 +58,6 @@ class LoginContainer extends Component {
         let parseResult = JSON.parse(result);
         const { accountType, uid } = parseResult;
 
-        const locationService = new LocationServiceAPI();
-        // start tracking of user
-        //locationService.watchUserLocation(uid);
-
         // HOOZ-23 - Maintaining logged in state
         this.props.fetchProfileForLogin(uid, parseResult);
 
