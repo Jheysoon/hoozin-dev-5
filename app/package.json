@@ -12,7 +12,8 @@
     "bundle-ios": "react-native bundle --dev false --entry-file index.js --bundle-output ios/main.jsbundle --platform ios",
     "release-android": "cd android && gradlew assembleRelease && cd ..",
     "clean-android": "cd android && gradlew clean && cd ..",
-    "postinstall": "rndebugger-open"
+    "postinstall": "rndebugger-open",
+    "changelog": "conventional-changelog -p hoozin -i CHANGELOG.md -s"
   },
   "dependencies": {
     "@types/moment": "2.13.0",
