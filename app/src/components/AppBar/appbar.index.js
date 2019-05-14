@@ -57,29 +57,32 @@ class AppBarComponent extends Component {
 
   watchLocation() {
     if (watchId == null) {
-      watchId = navigator.geolocation.watchPosition(data => {
-        AsyncStorage.getItem("userId").then(userIdString => {
-          const { uid: userId } = JSON.parse(userIdString);
+      watchId = navigator.geolocation.watchPosition(
+        data => {
+          AsyncStorage.getItem("userId").then(userIdString => {
+            const { uid: userId } = JSON.parse(userIdString);
 
-          console.log("watch location here #########");
+            console.log("watch location here #########");
 
-          this.props.changeLocation(userId, data.coords);
-        });
-      }, () => {});
+            this.props.changeLocation(userId, data.coords);
+          });
+        },
+        () => {}
+      );
     }
   }
 
   async componentDidMount() {
     AppState.addEventListener("change", nextAppState => {});
 
-    let permission = await Permissions.check("location", "always");
+    let permission = await Permissions.check("location", { type: "always" });
 
     if (permission == "authorized") {
       // add a workaround for now...
       // @TODO research for the plugin to not run first the background
       this.watchLocation();
     } else {
-      permission = await Permissions.check("location", "whenInUse");
+      permission = await Permissions.check("location", { type: "whenInUse" });
 
       if (permission == "authorized") {
         this.watchLocation();
