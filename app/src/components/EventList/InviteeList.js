@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "react-native-remote-svg";
+import firebase from "react-native-firebase";
 import { List, ListItem, Icon } from "native-base";
 import { CachedImage } from "react-native-cached-image";
 import UserAvatar from "react-native-user-avatar";
@@ -8,6 +9,10 @@ import { EventServiceAPI } from "../../api";
 import { IconsMap } from "../../../assets/assetMap";
 
 const eventSrv = new EventServiceAPI();
+let conRef = null;
+let conListener = null;
+let ref = null;
+let listener = null;
 
 class InviteeList extends React.Component {
   constructor(props) {
@@ -18,11 +23,39 @@ class InviteeList extends React.Component {
     };
   }
 
-  async componentDidMount() {
-    let list = await eventSrv.getEventInvitees(this.props.eventId);
+  componentWillUnmount() {
+    if (ref) {
+      ref.off("value", listener);
+    }
 
-    this.setState({
-      list: list
+    if (conRef) {
+      conRef.off("value", conListener);
+    }
+  }
+
+  componentDidMount() {
+    const { eventId } = this.props;
+
+    conRef = firebase.database().ref(".info/connected");
+
+    conListener = conRef.on("value", snap => {
+      if (snap.val()) {
+        ref = firebase.database().ref(`invitees/${eventId}`);
+        listener = ref.on("value", snapshot => {
+          let list = [];
+
+          if (snapshot._value) {
+            list = Object.keys(snapshot._value).map(key => {
+              snapshot._value[key]["inviteeId"] = key;
+              return snapshot._value[key];
+            });
+          }
+
+          this.setState({
+            list: list
+          });
+        });
+      }
     });
   }
 

@@ -1,4 +1,11 @@
-## <small>0.0.1 (2019-05-11)</small>
+## 0.0.2 (2019-05-14)
+
+* HOOZ-68 - Render the commit button within the text message properly ([6ff94a7](https://bitbucket.org/devtac/hoozin-code-base/commits/6ff94a7))
+* HOOZ-87 - Investigate Background Location ([a178cf9](https://bitbucket.org/devtac/hoozin-code-base/commits/a178cf9))
+* HOOZ-87 - Investigate Background Location ([906f308](https://bitbucket.org/devtac/hoozin-code-base/commits/906f308))
+* HOOZ-89 - Investigate Creation of Event issue ([03a90a1](https://bitbucket.org/devtac/hoozin-code-base/commits/03a90a1))
+
+## 0.0.1 (2019-05-11)
 
 * .gitIgnore edited online with Bitbucket ([80c9220](https://bitbucket.org/devtac/hoozin-code-base/commits/80c9220))
 * Add bugsnag ([92fc4d7](https://bitbucket.org/devtac/hoozin-code-base/commits/92fc4d7))
