@@ -560,7 +560,7 @@ class EventDetailContainer extends Component {
                 marginBottom: 10,
                 position: "relative",
                 left: 10,
-                top: 20
+                top: Platform.OS == "ios" ? 10 : 20
               }}
             />
 
