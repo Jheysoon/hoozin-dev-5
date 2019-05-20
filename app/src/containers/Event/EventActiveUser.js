@@ -40,7 +40,7 @@ class EventActiveUserContainer extends Component {
 
     componentDidMount() {
         if (this.props.navigation.state.params) {
-            this.getHostUserDetails(this.props.navigation.state.params.hostId);
+            this.getHostUserDetails(this.props.navigation.state.params.withUser);
         }
     }
 

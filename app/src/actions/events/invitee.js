@@ -13,7 +13,8 @@ export const getInviteeLocation = invitees => async dispatch => {
       listener = ref.on("value", snapshot => {
         const result = {};
         invitees.forEach(userId => {
-          result[userId] = snapshot._value[userId] || null;
+          result[userId] =
+            { ...snapshot._value[userId], inviteeId: userId } || null;
         });
 
         dispatch({
@@ -96,4 +97,11 @@ export const getEventInvitee = eventId => {
       }
     });
   };
+};
+
+export const activeMapCoords = coords => async dispatch => {
+  dispatch({
+    type: "SET_ACTIVE_MAP_COORDS",
+    payload: coords
+  });
 };

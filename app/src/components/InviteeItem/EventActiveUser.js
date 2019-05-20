@@ -6,7 +6,7 @@ import UserAvatar from "react-native-user-avatar";
 
 import { IconsMap } from "../../../assets/assetMap";
 
-const EventDetailInvitee = ({ data, showUserProfile }) => {
+const EventActiveUser = ({ data }) => {
   return (
     <TouchableOpacity
       onPress={() => showUserProfile(data.inviteeId)}
@@ -28,15 +28,4 @@ const EventDetailInvitee = ({ data, showUserProfile }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  avatar: {
-    alignSelf: "center",
-    width: 40,
-    height: 40,
-    marginTop: 2,
-    borderRadius: 20,
-    marginLeft: -8
-  }
-});
-
-export default EventDetailInvitee;
+export default EventActiveUser;

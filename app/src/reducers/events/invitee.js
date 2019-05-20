@@ -7,7 +7,8 @@ const initialState = {
     lng: 0,
     profileImgUrl: ""
   },
-  addedInvitees: []
+  addedInvitees: [],
+  activeMapCoords: {}
 };
 
 export default (state = initialState, action) => {
@@ -35,6 +36,9 @@ export default (state = initialState, action) => {
 
     case "EMPTY_INVITEE":
       return { ...state, addedInvitees: [] };
+
+    case "SET_ACTIVE_MAP_COORDS":
+      return { ...state, activeMapCoords: action.payload };
 
     default:
       return { ...state };

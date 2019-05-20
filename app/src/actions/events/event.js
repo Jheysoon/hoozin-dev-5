@@ -36,6 +36,15 @@ export const getEvent = eventId => async dispatch => {
     id: eventId
   }).then(({ data }) => {
     dispatch({
+      type: "SET_ACTIVE_MAP_COORDS",
+      payload: {
+        longitude: data.event.evtCoords.lng,
+        latitude: data.event.evtCoords.lat,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421
+      }
+    });
+    dispatch({
       type: "HZ_EVENT_DETAIL",
       payload: data
     });

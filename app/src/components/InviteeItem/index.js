@@ -1,7 +1,7 @@
 import _ from "lodash";
 import React from "react";
 import Image from "react-native-remote-svg";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { CachedImage } from "react-native-cached-image";
 import UserAvatar from "react-native-user-avatar";
 
@@ -15,7 +15,8 @@ const InviteeItem = ({
   addToEvent,
   removeToEvent,
   viewType,
-  showUserProfile
+  showUserProfile,
+  showInviteeLocation
 }) => {
   return (
     <View style={{ paddingTop: 3 }}>
@@ -34,11 +35,11 @@ const InviteeItem = ({
         }}
       >
         <View style={{ flex: 1 }}>
-          {viewType == "eventDetail" && (
+          {(viewType == "eventDetail" || viewType == "eventActiveUser") && (
             <EventDetailInvitee showUserProfile={showUserProfile} data={data} />
           )}
 
-          {viewType != "eventDetail" && (
+          {viewType != "eventDetail" && viewType != "eventActiveUser" && (
             <React.Fragment>
               {data.profileImgUrl ? (
                 <View
@@ -79,6 +80,18 @@ const InviteeItem = ({
           </Text>
         </View>
 
+        {viewType == "eventActiveUser" && data.status == "going" && (
+          <TouchableOpacity
+            style={{ marginRight: 4, marginTop: 5 }}
+            onPress={() => showInviteeLocation(data.inviteeId || data.userId)}
+          >
+            <Image
+              source={IconsMap.icon_location_pin}
+              style={{ width: 26, height: 26 }}
+            />
+          </TouchableOpacity>
+        )}
+
         {viewType == "addInvitee" && (
           <EventAddInviteeItem
             data={data}
@@ -87,8 +100,9 @@ const InviteeItem = ({
           />
         )}
 
-        {viewType == "eventOverview" ||
-          (viewType == "eventDetail" && <EventOverviewItem data={data} />)}
+        {(viewType == "eventOverview" ||
+          viewType == "eventActiveUser" ||
+          viewType == "eventDetail") && <EventOverviewItem data={data} />}
       </View>
     </View>
   );

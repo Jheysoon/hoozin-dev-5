@@ -5,10 +5,8 @@ import { List, ListItem, Icon } from "native-base";
 import { CachedImage } from "react-native-cached-image";
 import UserAvatar from "react-native-user-avatar";
 
-import { EventServiceAPI } from "../../api";
 import { IconsMap } from "../../../assets/assetMap";
 
-const eventSrv = new EventServiceAPI();
 let conRef = null;
 let conListener = null;
 let ref = null;
