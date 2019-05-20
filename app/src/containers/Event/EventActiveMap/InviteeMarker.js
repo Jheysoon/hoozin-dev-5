@@ -74,7 +74,6 @@ class InviteeMarker extends React.Component {
     let connected = await eventServiceApi.checkForConnection();
 
     if (connected.val()) {
-
       // @TODO: if the event is public the invitees is not required
       reference = firebase.database().ref(`invitees/${this.props.eventId}`);
       listener = reference.on("value", inviteeSnapshot => {
@@ -99,7 +98,7 @@ class InviteeMarker extends React.Component {
   }
 
   render() {
-    const { inviteeLocations } = this.props;
+    const { inviteeLocations, hostId } = this.props;
 
     let invitees = [];
 
@@ -121,12 +120,24 @@ class InviteeMarker extends React.Component {
             {invitee.profileImgUrl ? (
               <Image
                 source={{ uri: invitee.profileImgUrl }}
-                style={{ width: 47, height: 47, borderRadius: 47 / 2 }}
+                style={{
+                  width: 47,
+                  height: 47,
+                  borderRadius: 47 / 2,
+                  borderWidth: invitee.inviteeId == hostId ? 1 : 0,
+                  borderColor: "red"
+                }}
               />
             ) : (
               <Image
                 source={IconsMap.icon_contact_avatar}
-                style={{ width: 44, height: 44, borderRadius: 44 / 2 }}
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 44 / 2,
+                  borderWidth: invitee.inviteeId == hostId ? 1 : 0,
+                  borderColor: "red"
+                }}
               />
             )}
           </Marker>

@@ -123,20 +123,6 @@ class EventActiveMapContainer extends Component {
     ]);
   }
 
-  toggleActiveAttendeeView() {
-    this.setState({ isAttendeeViewActive: !this.state.isAttendeeViewActive });
-    setTimeout(
-      () =>
-        this.filterEventInviteesByRSVP(
-          "all",
-          this.refs.textForStatusAll,
-          this.refs.activeBarForStatusAll,
-          "hsla(207, 97%, 75%, 1)"
-        ),
-      1
-    );
-  }
-
   showUserProfile(userId, eventId, hostId) {
     this.props.navigation.navigate({
       routeName: "EventActiveUser",
@@ -169,6 +155,13 @@ class EventActiveMapContainer extends Component {
   render() {
     const { host, event } = this.props.eventDetail;
     const { loading } = this.props;
+    let showInviteeLocation = false;
+    let withInviteeId = null;
+
+    if (this.props.navigation.state.params) {
+      showInviteeLocation = this.props.navigation.state.params.showInviteeLocation;
+      withInviteeId = this.props.navigation.state.params.withInviteeId;
+    }
 
     return (
       <Container style={{ backgroundColor: "#ffffff" }}>
