@@ -450,7 +450,7 @@ class EventActiveChatContainer extends Component {
                     } else {
                       this.setState({
                         iconHeight: 10
-                      })
+                      });
                     }
                   }}
                   underlineColorAndroid="transparent"
@@ -473,7 +473,7 @@ class EventActiveChatContainer extends Component {
                   style={{
                     position: "absolute",
                     right: 5,
-                    top: this.state.iconHeight
+                    top: Platform.OS == "ios" ? 3 : this.state.iconHeight
                   }}
                   onPress={() => this.sendComposedMessage()}
                 >
